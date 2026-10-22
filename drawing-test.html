@@ -3,443 +3,182 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DraftMate — Engineering Drawing Lab</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DraftMate Drawing Lab</title>
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  padding: 16px;
-  background: #0b1020;
-  color: #e7edff;
-  font-family: Arial, sans-serif;
-}
-
-h1 { font-size: 26px; }
-h2 { font-size: 21px; }
-p { color: #aebbd5; line-height: 1.5; }
-
-select, button {
-  padding: 12px;
-  margin: 5px 4px 8px 0;
-  border-radius: 8px;
-  border: 1px solid #465574;
-  font-size: 15px;
-}
-
-select {
-  background: #18233e;
-  color: white;
-  max-width: 100%;
-}
-
-button {
-  background: #334a9a;
-  color: white;
-  cursor: pointer;
-}
-
-.panel {
-  background: #141c30;
-  border: 1px solid #33415f;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 16px 0;
-}
-
-canvas {
-  display: block;
-  width: 100%;
-  height: auto;
-  background: white;
-  border-radius: 4px;
-}
-
-#status {
-  padding: 12px;
-  border-radius: 8px;
-  background: #172b35;
-  overflow-wrap: anywhere;
-  line-height: 1.6;
-}
-
-.legend {
-  font-size: 14px;
-  line-height: 1.8;
-}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:#0b1020;color:#e7edff;font-family:Arial,sans-serif}
+h1{font-size:25px}
+h2{font-size:20px}
+p{line-height:1.5;color:#c1cce0}
+.panel{padding:12px;margin:15px 0;background:#141c30;border:1px solid #35435f;border-radius:12px}
+select,button{padding:12px;margin:5px 4px 8px 0;border-radius:8px;font-size:15px}
+select{background:#18233e;color:white}
+button{background:#334a9a;color:white;border:0}
+canvas{display:block;width:100%;height:auto;background:white;border-radius:4px}
+#status{white-space:pre-wrap;overflow-wrap:anywhere;background:#172b35;padding:12px;border-radius:8px}
 </style>
 </head>
-
 <body>
-<h1>DraftMate — Engineering Drawing Lab</h1>
+<h1>DraftMate — 2D Drawing Lab</h1>
+<p>Standalone test page. Your main DraftMate website is unchanged.</p>
 
-<p>
-Experimental orthographic projections with a basic geometric
-visible/hidden edge classifier. This is a test page and does
-not modify the main website.
-</p>
-
-<label for="solid">Choose a solid:</label>
+<label for="solid">Select solid:</label>
 <select id="solid">
-  <option value="prism">Hexagonal Prism</option>
-  <option value="pyramid">Square Pyramid</option>
-  <option value="cylinder">Cylinder</option>
-  <option value="cone">Cone</option>
+<option value="prism">Hexagonal prism</option>
+<option value="pyramid">Square pyramid</option>
+<option value="cylinder">Cylinder</option>
+<option value="cone">Cone</option>
 </select>
+<button id="draw">Draw views</button>
 
-<button id="draw">Generate Drawings</button>
-
-<div class="panel">
-  <h2>Front View (FV)</h2>
-  <canvas id="fv" width="700" height="320"></canvas>
-</div>
-
-<div class="panel">
-  <h2>XY Reference Line</h2>
-  <canvas id="xy" width="700" height="70"></canvas>
-</div>
-
-<div class="panel">
-  <h2>Top View (TV)</h2>
-  <canvas id="tv" width="700" height="320"></canvas>
-</div>
-
-<div class="panel">
-  <h2>Line Legend</h2>
-  <div class="legend">
-    <span style="color:#203fbd">━━━━</span> Visible edge
-    <br>
-    <span style="color:#d12a2a">┄ ┄ ┄</span> Hidden edge (dashed)
-  </div>
-</div>
-
-<div class="panel">
-  <h2>Drawing Diagnostics</h2>
-  <div id="status">Preparing drawing engine...</div>
-</div>
+<div class="panel"><h2>Front View (FV)</h2>
+<canvas id="fv" width="700" height="300"></canvas></div>
+<div class="panel"><h2>XY Reference Line</h2>
+<canvas id="xy" width="700" height="60"></canvas></div>
+<div class="panel"><h2>Top View (TV)</h2>
+<canvas id="tv" width="700" height="300"></canvas></div>
+<div class="panel"><h2>Line styles</h2>
+<p><span style="color:#203fbd">━━━━</span> Visible/outline edge</p>
+<p><span style="color:#d12a2a">┄ ┄ ┄</span> Candidate hidden edge (dashed)</p></div>
+<div class="panel"><h2>Diagnostics</h2><div id="status">Ready</div></div>
 
 <script>
 "use strict";
+const $=id=>document.getElementById(id);
 
-const $ = id => document.getElementById(id);
+function buildSolid(type){
+  const vertices=[],edges=[],faces=[],edgeSet=new Set();
+  const n=type==="prism"?6:type==="pyramid"?4:48;
+  const r=25,h=60,bottom=[],top=[];
 
-/* ---------- GEOMETRY ENGINE ---------- */
-
-function makeSolid(type) {
-  const vertices = [];
-  const faces = [];
-  const edges = [];
-  const edgeKeys = new Set();
-
-  function addVertex(x, y, z) {
-    vertices.push({x, y, z});
-    return vertices.length - 1;
+  function vertex(x,y,z){vertices.push({x,y,z});return vertices.length-1}
+  function edge(a,b){
+    const key=Math.min(a,b)+":"+Math.max(a,b);
+    if(!edgeSet.has(key)){edgeSet.add(key);edges.push([a,b])}
+  }
+  function face(ids){
+    faces.push(ids);
+    for(let i=0;i<ids.length;i++)edge(ids[i],ids[(i+1)%ids.length]);
   }
 
-  function addEdge(a, b) {
-    const key = Math.min(a, b) + ":" + Math.max(a, b);
-    if (!edgeKeys.has(key)) {
-      edgeKeys.add(key);
-      edges.push([a, b]);
+  if(type==="prism"||type==="cylinder"){
+    for(let i=0;i<n;i++){
+      const a=2*Math.PI*i/n;
+      bottom.push(vertex(r*Math.cos(a),r*Math.sin(a),0));
+      top.push(vertex(r*Math.cos(a),r*Math.sin(a),h));
     }
+    face([...bottom].reverse());
+    face(top);
+    for(let i=0;i<n;i++){
+      const j=(i+1)%n;
+      face([bottom[i],bottom[j],top[j],top[i]]);
+    }
+  }else{
+    for(let i=0;i<n;i++){
+      const a=2*Math.PI*i/n;
+      bottom.push(vertex(r*Math.cos(a),r*Math.sin(a),0));
+    }
+    const apex=vertex(0,0,h);
+    face([...bottom].reverse());
+    for(let i=0;i<n;i++)face([bottom[i],bottom[(i+1)%n],apex]);
   }
-
-  function addFace(indices) {
-    faces.push(indices);
-    for (let i = 0; i < indices.length; i++) {
-      addEdge(indices[i], indices[(i + 1) % indices.length]);
-    }
-  }
-
-  const n = type === "prism" ? 6 :
-            type === "pyramid" ? 4 : 48;
-  const radius = 25;
-  const height = 60;
-  const bottom = [];
-  const top = [];
-
-  if (type === "prism" || type === "cylinder") {
-    for (let i = 0; i < n; i++) {
-      const a = 2 * Math.PI * i / n;
-      bottom.push(addVertex(
-        radius * Math.cos(a),
-        radius * Math.sin(a), 0
-      ));
-    }
-
-    for (let i = 0; i < n; i++) {
-      const a = 2 * Math.PI * i / n;
-      top.push(addVertex(
-        radius * Math.cos(a),
-        radius * Math.sin(a), height
-      ));
-    }
-
-    addFace([...bottom].reverse());
-    addFace(top);
-
-    for (let i = 0; i < n; i++) {
-      const j = (i + 1) % n;
-      addFace([bottom[i], bottom[j], top[j], top[i]]);
-    }
-  } else if (type === "pyramid" || type === "cone") {
-    const apex = type === "pyramid"
-      ? addVertex(0, 0, height)
-      : addVertex(0, 0, height);
-
-    for (let i = 0; i < n; i++) {
-      const a = 2 * Math.PI * i / n;
-      bottom.push(addVertex(
-        radius * Math.cos(a),
-        radius * Math.sin(a), 0
-      ));
-    }
-
-    addFace([...bottom].reverse());
-
-    for (let i = 0; i < n; i++) {
-      const j = (i + 1) % n;
-      addFace([bottom[i], bottom[j], apex]);
-    }
-  }
-
-  orientFacesOutward(vertices, faces);
-
-  return {type, vertices, faces, edges};
+  return {vertices,edges,faces};
 }
 
-/* Make face normals point away from the solid's centre. */
-
-function orientFacesOutward(vertices, faces) {
-  const centre = vertices.reduce(
-    (s, p) => ({
-      x: s.x + p.x / vertices.length,
-      y: s.y + p.y / vertices.length,
-      z: s.z + p.z / vertices.length
-    }), {x:0, y:0, z:0}
-  );
-
-  for (const face of faces) {
-    const a = vertices[face[0]];
-    const b = vertices[face[1]];
-    const c = vertices[face[2]];
-
-    const u = {x:b.x-a.x, y:b.y-a.y, z:b.z-a.z};
-    const v = {x:c.x-a.x, y:c.y-a.y, z:c.z-a.z};
-
-    const normal = {
-      x:u.y*v.z-u.z*v.y,
-      y:u.z*v.x-u.x*v.z,
-      z:u.x*v.y-u.y*v.x
-    };
-
-    const fc = face.reduce((s, i) => ({
-      x:s.x+vertices[i].x/face.length,
-      y:s.y+vertices[i].y/face.length,
-      z:s.z+vertices[i].z/face.length
-    }), {x:0,y:0,z:0});
-
-    const outward =
-      normal.x*(fc.x-centre.x) +
-      normal.y*(fc.y-centre.y) +
-      normal.z*(fc.z-centre.z);
-
-    if (outward < 0) face.reverse();
-  }
-}
-
-/* ---------- PROJECTION AND VISIBILITY ---------- */
-
-/*
-  FV: project X-Z; viewer is on the negative Y side.
-  TV: project X-Y; viewer is above the solid (+Z).
-*/
-
-function faceIsVisible(vertices, face, view) {
-  const a = vertices[face[0]];
-  const b = vertices[face[1]];
-  const c = vertices[face[2]];
-
-  const u = {x:b.x-a.x, y:b.y-a.y, z:b.z-a.z};
-  const v = {x:c.x-a.x, y:c.y-a.y, z:c.z-a.z};
-
-  const normal = {
-    x:u.y*v.z-u.z*v.y,
-    y:u.z*v.x-u.x*v.z,
-    z:u.x*v.y-u.y*v.x
-  };
-
-  const length = Math.hypot(normal.x, normal.y, normal.z);
-  if (length < 1e-9) return false;
-
-  const dot = view.x*normal.x +
-              view.y*normal.y +
-              view.z*normal.z;
-
-  return dot / length > 1e-7;
-}
-
-function classifyEdges(model, view) {
-  const visibleFaces = model.faces.map(face =>
-    faceIsVisible(model.vertices, face, view)
-  );
-
-  const adjacent = new Map();
-
-  model.faces.forEach((face, faceIndex) => {
-    for (let i = 0; i < face.length; i++) {
-      const a = face[i];
-      const b = face[(i+1) % face.length];
-      const key = Math.min(a,b) + ":" + Math.max(a,b);
-
-      if (!adjacent.has(key)) adjacent.set(key, []);
-      adjacent.get(key).push(visibleFaces[faceIndex]);
-    }
-  });
-
-  return model.edges.map(edge => {
-    const key = Math.min(edge[0],edge[1]) + ":" +
-                Math.max(edge[0],edge[1]);
-    const faces = adjacent.get(key) || [];
-
-    /*
-      An edge is treated as visible when at least one
-      adjacent face faces the viewer.
-    */
-    return {
-      edge,
-      visible: faces.some(Boolean)
-    };
-  });
-}
-
-function drawView(canvasId, model, horizontal, vertical, view) {
-  const canvas = $(canvasId);
-  const ctx = canvas.getContext("2d");
-  const W = canvas.width;
-  const H = canvas.height;
-
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, W, H);
-
-  const projected = model.vertices.map(p => ({
-    x:p[horizontal],
-    y:p[vertical]
-  }));
-
-  const xs = projected.map(p => p.x);
-  const ys = projected.map(p => p.y);
-  const minX = Math.min(...xs);
-  const maxX = Math.max(...xs);
-  const minY = Math.min(...ys);
-  const maxY = Math.max(...ys);
-
-  const rangeX = Math.max(maxX-minX, 1);
-  const rangeY = Math.max(maxY-minY, 1);
-  const scale = Math.min((W-100)/rangeX, (H-70)/rangeY);
-
-  const points = projected.map(p => ({
-    x:W/2+(p.x-(minX+maxX)/2)*scale,
-    y:H/2-(p.y-(minY+maxY)/2)*scale
-  }));
-
-  const classified = classifyEdges(model, view);
-
-  function drawLine(edge, visible) {
-    const [a,b] = edge;
-    const p = points[a];
-    const q = points[b];
-
-    ctx.beginPath();
-    ctx.moveTo(p.x,p.y);
-    ctx.lineTo(q.x,q.y);
-    ctx.lineWidth = visible ? 2 : 1.5;
-    ctx.strokeStyle = visible ? "#203fbd" : "#d12a2a";
-    ctx.setLineDash(visible ? [] : [7,5]);
-    ctx.stroke();
-  }
-
-  /* Hidden edges first, visible edges over them. */
-  classified.filter(e => !e.visible)
-    .forEach(e => drawLine(e.edge,false));
-
-  classified.filter(e => e.visible)
-    .forEach(e => drawLine(e.edge,true));
-
-  ctx.setLineDash([]);
-
+function faceNormal(v,ids){
+  const a=v[ids[0]],b=v[ids[1]],c=v[ids[2]];
+  const u={x:b.x-a.x,y:b.y-a.y,z:b.z-a.z};
+  const w={x:c.x-a.x,y:c.y-a.y,z:c.z-a.z};
   return {
-    edgeCount:classified.length,
-    visible:classified.filter(e=>e.visible).length,
-    hidden:classified.filter(e=>!e.visible).length
+    x:u.y*w.z-u.z*w.y,
+    y:u.z*w.x-u.x*w.z,
+    z:u.x*w.y-u.y*w.x
   };
 }
 
-function drawXY() {
-  const canvas = $("xy");
-  const ctx = canvas.getContext("2d");
-  const W = canvas.width;
-  const H = canvas.height;
-
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0,0,W,H);
-
-  ctx.strokeStyle = "#222222";
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(25,H/2);
-  ctx.lineTo(W-25,H/2);
-  ctx.stroke();
-
-  ctx.fillStyle = "#222222";
-  ctx.font = "bold 13px Arial";
-  ctx.fillText("X",10,20);
-  ctx.fillText("Y",W-20,20);
+function faceVisible(v,ids,view){
+  const n=faceNormal(v,ids);
+  return n.x*view.x+n.y*view.y+n.z*view.z>1e-7;
 }
 
-function draw() {
-  try {
-    const type = $("solid").value;
-    const model = makeSolid(type);
+function classify(model,view){
+  const adjacency=new Map();
+  model.faces.forEach((f,fi)=>{
+    const vis=faceVisible(model.vertices,f,view);
+    for(let i=0;i<f.length;i++){
+      const a=f[i],b=f[(i+1)%f.length];
+      const k=Math.min(a,b)+":"+Math.max(a,b);
+      if(!adjacency.has(k))adjacency.set(k,[]);
+      adjacency.get(k).push(vis);
+    }
+  });
+  return model.edges.map(e=>{
+    const k=Math.min(e[0],e[1])+":"+Math.max(e[0],e[1]);
+    const neighbours=adjacency.get(k)||[];
+    return {edge:e,visible:neighbours.some(Boolean)};
+  });
+}
 
-    const fv = drawView(
-      "fv", model, "x", "z",
-      {x:0,y:-1,z:0}
-    );
+function drawView(id,model,axisX,axisY,view){
+  const c=$(id),ctx=c.getContext("2d"),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle="white";ctx.fillRect(0,0,W,H);
+  const p=model.vertices.map(v=>({x:v[axisX],y:v[axisY]}));
+  const xs=p.map(v=>v.x),ys=p.map(v=>v.y);
+  const minX=Math.min(...xs),maxX=Math.max(...xs);
+  const minY=Math.min(...ys),maxY=Math.max(...ys);
+  const sx=Math.max(maxX-minX,1),sy=Math.max(maxY-minY,1);
+  const scale=Math.min((W-90)/sx,(H-60)/sy);
+  const points=p.map(v=>({
+    x:W/2+(v.x-(minX+maxX)/2)*scale,
+    y:H/2-(v.y-(minY+maxY)/2)*scale
+  }));
 
-    const tv = drawView(
-      "tv", model, "x", "y",
-      {x:0,y:0,z:1}
-    );
-
-    drawXY();
-
-    $("status").textContent =
-      "Solid: " + type +
-      " | Vertices: " + model.vertices.length +
-      " | Edges: " + model.edges.length +
-      " | Faces: " + model.faces.length +
-      " | FV: " + fv.visible + " visible, " +
-                   fv.hidden + " hidden edges" +
-      " | TV: " + tv.visible + " visible, " +
-                   tv.hidden + " hidden edges" +
-      " | Geometry generated successfully. " +
-      "Visibility is a basic face-normal estimate; " +
-      "projected overlaps and KTU-specific conventions " +
-      "still require further validation.";
-
-  } catch (error) {
-    $("status").textContent = "ERROR: " + error.message;
-    console.error(error);
+  const result=classify(model,view);
+  function line(e,visible){
+    const a=points[e[0]],b=points[e[1]];
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+    ctx.strokeStyle=visible?"#203fbd":"#d12a2a";
+    ctx.lineWidth=visible?2:1.5;
+    ctx.setLineDash(visible?[]:[7,5]);ctx.stroke();
   }
+  result.filter(e=>!e.visible).forEach(e=>line(e.edge,false));
+  result.filter(e=>e.visible).forEach(e=>line(e.edge,true));
+  ctx.setLineDash([]);
+  return {
+    edges:result.length,
+    visible:result.filter(e=>e.visible).length,
+    dashed:result.filter(e=>!e.visible).length
+  };
 }
 
-$("draw").addEventListener("click", draw);
-$("solid").addEventListener("change", draw);
+function drawXY(){
+  const c=$("xy"),ctx=c.getContext("2d"),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle="white";ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="#222";ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(25,H/2);ctx.lineTo(W-25,H/2);ctx.stroke();
+  ctx.fillStyle="#222";ctx.font="bold 13px Arial";
+  ctx.fillText("X",10,18);ctx.fillText("Y",W-20,18);
+}
+
+function draw(){
+  try{
+    const type=$("solid").value,model=buildSolid(type);
+    const fv=drawView("fv",model,"x","z",{x:0,y:-1,z:0});
+    const tv=drawView("tv",model,"x","y",{x:0,y:0,z:1});
+    drawXY();
+    $("status").textContent=
+      "Solid: "+type+
+      "\nVertices: "+model.vertices.length+
+      "\nEdges: "+model.edges.length+
+      "\nFaces: "+model.faces.length+
+      "\nFV edges: "+fv.edges+" total; "+fv.visible+" solid; "+fv.dashed+" dashed"+
+      "\nTV edges: "+tv.edges+" total; "+tv.visible+" solid; "+tv.dashed+" dashed"+
+      "\nNote: dashed classification uses face direction only. Exact occlusion and inclined positions are not implemented.";
+  }catch(e){$("status").textContent="Error: "+e.message;console.error(e)}
+}
+$("draw").addEventListener("click",draw);
+$("solid").addEventListener("change",draw);
 draw();
 </script>
 </body>
