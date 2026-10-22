@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DraftMate Engine Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 760px;
+      margin: 24px auto;
+      padding: 16px;
+      background: #101827;
+      color: #f3f6ff;
+    }
+    button {
+      padding: 12px 16px;
+      margin: 5px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: #1c2940;
+      padding: 14px;
+      border-radius: 8px;
+    }
+    .ok { color: #77e6a1; }
+    .error { color: #ff9b9b; }
+  </style>
+</head>
+<body>
+  <h1>DraftMate Engine Test</h1>
+  <p>This test does not modify the main website.</p>
+
+  <button onclick="runTest('prism')">Test Hexagonal Prism</button>
+  <button onclick="runTest('pyramid')">Test Square Pyramid</button>
+  <button onclick="runTest('cylinder')">Test Cylinder</button>
+  <button onclick="runTest('cone')">Test Cone</button>
+
+  <h2 id="status">Ready to test</h2>
+  <pre id="output">Choose a solid above.</pre>
+
+  <script src="solids-engine.js"></script>
+  <script src="projection-engine.js"></script>
+
+  <script>
+    function runTest(type) {
+      const status = document.getElementById("status");
+      const output = document.getElementById("output");
+
+      try {
+        const options = {
+          prism: { sides: 6, radius: 25, height: 60 },
+          pyramid: { sides: 4, radius: 25, height: 60 },
+          cylinder: { radius: 25, height: 60 },
+          cone: { radius: 25, height: 60 }
+        };
+
+        const solid = DraftMateSolids.createSolid(
+          type,
+          options[type]
+        );
+
+        const views = DraftMateProjection.createProjection(solid);
+
+        // Basic checks for finite projection coordinates.
+        const allPoints = views.front.points.concat(views.top.points);
+        const validCoordinates = allPoints.every(
+          p => Number.isFinite(p.x) && Number.isFinite(p.y)
+        );
+
+        if (!validCoordinates) {
+          throw new Error("Projection contains invalid coordinates.");
+        }
+
+        status.textContent = "PASS: " + type;
+        status.className = "ok";
+
+        output.textContent = JSON.stringify({
+          solid: solid.type,
+          vertices: solid.vertexCount,
+          edges: solid.edgeCount,
+          frontView: views.front.name,
+          frontViewBounds: views.front.bounds,
+          topView: views.top.name,
+          topViewBounds: views.top.bounds,
+          coordinatesValid: validCoordinates,
+          note: "Geometry and projection coordinates tested; hidden lines and inclination construction are not implemented yet."
+        }, null, 2);
+
+      } catch (error) {
+        status.textContent = "TEST FAILED";
+        status.className = "error";
+        output.textContent = error.message;
+      }
+    }
+  </script>
+</body>
+</html>
