@@ -1,80 +1,25 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DraftMate — 2D Engineering Drawing Test</title>
-
+<title>DraftMate 2D Drawing Lab</title>
 <style>
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    padding: 16px;
-    background: #0b1020;
-    color: #e7edff;
-    font-family: Arial, sans-serif;
-  }
-
-  h1 { font-size: 26px; }
-  h2 { font-size: 22px; }
-
-  p {
-    color: #aebbd5;
-    line-height: 1.5;
-  }
-
-  select, button {
-    padding: 12px;
-    margin: 5px 4px 8px 0;
-    border-radius: 8px;
-    border: 1px solid #465574;
-    font-size: 15px;
-  }
-
-  button {
-    background: #334a9a;
-    color: white;
-  }
-
-  select {
-    background: #18233e;
-    color: white;
-  }
-
-  .panel {
-    background: #141c30;
-    border: 1px solid #33415f;
-    border-radius: 12px;
-    padding: 12px;
-    margin: 16px 0;
-  }
-
-  canvas {
-    display: block;
-    width: 100%;
-    height: auto;
-    background: white;
-    border-radius: 4px;
-  }
-
-  #status {
-    padding: 12px;
-    border-radius: 8px;
-    background: #172b35;
-    overflow-wrap: anywhere;
-  }
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:#0b1020;color:#e7edff;font-family:Arial,sans-serif}
+h1{font-size:26px}
+p{line-height:1.5;color:#b8c5df}
+.panel{padding:12px;margin:16px 0;background:#141c30;border:1px solid #34415c;border-radius:12px}
+select,button{padding:12px;margin:5px 4px 8px 0;border-radius:8px;font-size:15px}
+select{background:#18233e;color:white}
+button{background:#334a9a;color:white;border:0}
+canvas{display:block;width:100%;height:auto;background:white;border-radius:4px}
+#status{padding:12px;background:#172b35;border-radius:8px;overflow-wrap:anywhere;white-space:pre-wrap}
 </style>
 </head>
-
 <body>
-<h1>DraftMate — 2D Drawing Test</h1>
-
-<p>
-  Experimental front and top projections from the DraftMate
-  geometry engine. This test page does not modify the main website.
-</p>
+<h1>DraftMate 2D Drawing Lab</h1>
+<p>Experimental FV, TV and XY reference line. The main website is unchanged.</p>
 
 <label for="solid">Choose a solid:</label>
 <select id="solid">
@@ -83,204 +28,188 @@
   <option value="cylinder">Cylinder</option>
   <option value="cone">Cone</option>
 </select>
-
 <button id="draw">Draw FV + TV</button>
 
 <div class="panel">
-  <h2>Front View (FV)</h2>
-  <canvas id="fv" width="700" height="300"></canvas>
+<h2>Front View (FV)</h2>
+<canvas id="fv" width="700" height="300"></canvas>
 </div>
 
 <div class="panel">
-  <h2>XY Reference Line</h2>
-  <canvas id="xy" width="700" height="65"></canvas>
+<h2>XY Reference Line</h2>
+<canvas id="xy" width="700" height="65"></canvas>
 </div>
 
 <div class="panel">
-  <h2>Top View (TV)</h2>
-  <canvas id="tv" width="700" height="300"></canvas>
+<h2>Top View (TV)</h2>
+<canvas id="tv" width="700" height="300"></canvas>
 </div>
 
-<p id="status">Loading engines...</p>
+<div class="panel">
+<h2>Drawing Diagnostics</h2>
+<p id="status">Loading geometry engine...</p>
+</div>
 
-<script src="solids-engine.js"></script>
-<script src="projection-engine.js"></script>
-
+<!-- Version query helps browsers fetch the latest engine files -->
+<script src="solids-engine.js?v=3"></script>
 <script>
-(function () {
-  "use strict";
+(function(){
+"use strict";
 
-  const status = document.getElementById("status");
+const status = document.getElementById("status");
 
-  function drawSegment(ctx, a, b) {
-    ctx.beginPath();
-    ctx.moveTo(a.x, a.y);
-    ctx.lineTo(b.x, b.y);
-    ctx.stroke();
+function drawXY(){
+  const c=document.getElementById("xy");
+  const ctx=c.getContext("2d");
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle="white";
+  ctx.fillRect(0,0,c.width,c.height);
+  ctx.strokeStyle="#333";
+  ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(25,c.height/2);
+  ctx.lineTo(c.width-25,c.height/2);
+  ctx.stroke();
+  ctx.fillStyle="#333";
+  ctx.font="bold 13px Arial";
+  ctx.fillText("X",10,18);
+  ctx.fillText("Y",c.width-20,18);
+}
+
+function project(canvasId,vertices,edges,hAxis,vAxis){
+  const c=document.getElementById(canvasId);
+  const ctx=c.getContext("2d");
+  const W=c.width,H=c.height;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,W,H);
+
+  const points=vertices.map(v=>({
+    x:Number(v[hAxis]),
+    y:Number(v[vAxis])
+  }));
+
+  if(!points.length || points.some(p=>
+    !Number.isFinite(p.x)||!Number.isFinite(p.y))){
+    throw new Error("Invalid "+canvasId+" coordinates. Check vertex data.");
   }
 
-  /*
-    Project the 3D model:
-    FV: horizontal X, vertical Z.
-    TV: horizontal X, vertical Y.
-  */
-  function drawProjection(canvasId, vertices, edges, horizontal, vertical) {
-    const canvas = document.getElementById(canvasId);
-    const ctx = canvas.getContext("2d");
-    const W = canvas.width;
-    const H = canvas.height;
+  const minX=Math.min(...points.map(p=>p.x));
+  const maxX=Math.max(...points.map(p=>p.x));
+  const minY=Math.min(...points.map(p=>p.y));
+  const maxY=Math.max(...points.map(p=>p.y));
 
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, W, H);
+  const rangeX=Math.max(maxX-minX,1);
+  const rangeY=Math.max(maxY-minY,1);
+  const scale=Math.min((W-100)/rangeX,(H-70)/rangeY);
+  const midX=(minX+maxX)/2;
+  const midY=(minY+maxY)/2;
 
-    if (!Array.isArray(vertices) || !Array.isArray(edges)) {
-      throw new Error("Model vertices or edges are missing.");
+  const screen=points.map(p=>({
+    x:W/2+(p.x-midX)*scale,
+    y:H/2-(p.y-midY)*scale
+  }));
+
+  let drawn=0;
+  let skipped=0;
+  ctx.strokeStyle="#263fba";
+  ctx.lineWidth=2;
+
+  edges.forEach(edge=>{
+    let a,b;
+
+    if(Array.isArray(edge)){
+      a=Number(edge[0]);
+      b=Number(edge[1]);
+    }else if(edge && typeof edge==="object"){
+      a=Number(edge.a ?? edge.from ?? edge.start);
+      b=Number(edge.b ?? edge.to ?? edge.end);
+    }else{
+      skipped++;
+      return;
     }
 
-    const projected = vertices.map(v => ({
-      x: Number(v[horizontal]),
-      y: Number(v[vertical])
-    }));
-
-    if (
-      projected.length === 0 ||
-      projected.some(p => !Number.isFinite(p.x) ||
-                          !Number.isFinite(p.y))
-    ) {
-      throw new Error("Invalid vertex coordinates.");
-    }
-
-    const minX = Math.min(...projected.map(p => p.x));
-    const maxX = Math.max(...projected.map(p => p.x));
-    const minY = Math.min(...projected.map(p => p.y));
-    const maxY = Math.max(...projected.map(p => p.y));
-
-    const rangeX = Math.max(maxX - minX, 1);
-    const rangeY = Math.max(maxY - minY, 1);
-    const scale = Math.min(
-      (W - 100) / rangeX,
-      (H - 70) / rangeY
-    );
-
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-
-    const screenPoints = projected.map(p => ({
-      x: W / 2 + (p.x - centerX) * scale,
-      y: H / 2 - (p.y - centerY) * scale
-    }));
-
-    ctx.strokeStyle = "#263fba";
-    ctx.lineWidth = 2;
-
-    edges.forEach(edge => {
-      let a, b;
-
-      if (Array.isArray(edge)) {
-        a = edge[0];
-        b = edge[1];
-      } else {
-        a = edge.a ?? edge.from ?? edge.start;
-        b = edge.b ?? edge.to ?? edge.end;
-      }
-
-      if (
-        Number.isInteger(a) &&
-        Number.isInteger(b) &&
-        screenPoints[a] &&
-        screenPoints[b]
-      ) {
-        drawSegment(ctx, screenPoints[a], screenPoints[b]);
-      }
-    });
-
-    ctx.fillStyle = "#263fba";
-    screenPoints.forEach(p => {
+    if(Number.isInteger(a)&&Number.isInteger(b)&&screen[a]&&screen[b]){
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.moveTo(screen[a].x,screen[a].y);
+      ctx.lineTo(screen[b].x,screen[b].y);
+      ctx.stroke();
+      drawn++;
+    }else{
+      skipped++;
+    }
+  });
+
+  // Draw small vertex markers
+  ctx.fillStyle="#263fba";
+  screen.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2.5,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  return {
+    points:points.length,
+    edgesDrawn:drawn,
+    edgesSkipped:skipped,
+    rangeX:rangeX,
+    rangeY:rangeY
+  };
+}
+
+function draw(){
+  try{
+    if(!window.DraftMateSolids ||
+       typeof window.DraftMateSolids.createSolid!=="function"){
+      throw new Error(
+        "Geometry engine did not load. Check solids-engine.js in the repository root."
+      );
+    }
+
+    const type=document.getElementById("solid").value;
+    const model=window.DraftMateSolids.createSolid(type,{
+      sides:type==="prism"?6:4,
+      radius:25,
+      height:60,
+      segments:32
     });
 
-    return screenPoints.length;
-  }
-
-  function drawXY() {
-    const canvas = document.getElementById("xy");
-    const ctx = canvas.getContext("2d");
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.strokeStyle = "#333333";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(25, canvas.height / 2);
-    ctx.lineTo(canvas.width - 25, canvas.height / 2);
-    ctx.stroke();
-
-    ctx.fillStyle = "#333333";
-    ctx.font = "bold 13px Arial";
-    ctx.fillText("X", 10, 20);
-    ctx.fillText("Y", canvas.width - 20, 20);
-  }
-
-  function draw() {
-    try {
-      if (
-        !window.DraftMateSolids ||
-        typeof window.DraftMateSolids.createSolid !== "function"
-      ) {
-        throw new Error(
-          "solids-engine.js did not load. Check its filename and location."
-        );
-      }
-
-      const type = document.getElementById("solid").value;
-
-      const model = window.DraftMateSolids.createSolid(type, {
-        sides: type === "prism" ? 6 : 4,
-        radius: 25,
-        height: 60,
-        segments: 32
-      });
-
-      if (!model || !model.vertices || !model.edges) {
-        throw new Error("The geometry engine returned an unexpected model.");
-      }
-
-      /*
-        FV projects X-Z.
-        TV projects X-Y.
-        Edges remain connected through their vertex indices.
-      */
-      const fvCount = drawProjection(
-        "fv", model.vertices, model.edges, "x", "z"
-      );
-
-      const tvCount = drawProjection(
-        "tv", model.vertices, model.edges, "x", "y"
-      );
-
-      drawXY();
-
-      status.textContent =
-        "Drawing generated. Solid: " + type +
-        ". Vertices: " + model.vertices.length +
-        ". Edges: " + model.edges.length +
-        ". FV points: " + fvCount +
-        ". TV points: " + tvCount +
-        ". This prototype does not yet classify hidden edges or construct inclined positions.";
-
-    } catch (error) {
-      status.textContent = "ERROR: " + error.message;
-      console.error(error);
+    if(!model||!Array.isArray(model.vertices)||!Array.isArray(model.edges)){
+      throw new Error("Unexpected model format: vertices or edges are missing.");
     }
-  }
 
-  document.getElementById("draw").addEventListener("click", draw);
-  draw();
+    // FV = X horizontally, Z vertically.
+    const fv=project("fv",model.vertices,model.edges,"x","z");
+
+    // TV = X horizontally, Y vertically.
+    const tv=project("tv",model.vertices,model.edges,"x","y");
+
+    drawXY();
+
+    status.textContent=
+      "Solid: "+type+
+      "\nVertex count: "+model.vertices.length+
+      "\nEdge count: "+model.edges.length+
+      "\nFV: "+fv.points+" points; "+fv.edgesDrawn+
+      " edges drawn; "+fv.edgesSkipped+" skipped"+
+      "\nFV coordinate ranges: X="+fv.rangeX+", Z="+fv.rangeY+
+      "\nTV: "+tv.points+" points; "+tv.edgesDrawn+
+      " edges drawn; "+tv.edgesSkipped+" skipped"+
+      "\nTV coordinate ranges: X="+tv.rangeX+", Y="+tv.rangeY+
+      "\nFirst vertex: "+JSON.stringify(model.vertices[0])+
+      "\nFirst edge: "+JSON.stringify(model.edges[0])+
+      "\nNote: these are basic orthographic projections, not yet full KTU construction drawings.";
+
+  }catch(err){
+    status.textContent="ERROR: "+err.message;
+    console.error(err);
+  }
+}
+
+document.getElementById("draw").addEventListener("click",draw);
+document.getElementById("solid").addEventListener("change",draw);
+draw();
 })();
 </script>
 </body>
