@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101827" />
+  <title>DraftMate — KTU Engineering Graphics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+:root{--ink:#172238;--muted:#68758b;--soft:#8b96a8;--line:#e5e9f0;--paper:#f5f7fb;--white:#fff;--navy:#101827;--blue:#4466eb;--blue-dark:#3351d5;--blue-soft:#eef2ff;--cyan:#27b6ce;--orange:#f2a64b;--green:#1c9c78;--shadow:0 8px 30px rgba(29,43,73,.045)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px}.app-shell{display:grid;grid-template-columns:254px minmax(0,1fr);min-height:100vh}.sidebar{background:var(--navy);color:#d9e0f0;padding:24px 15px 16px;display:flex;flex-direction:column;min-height:100vh;position:sticky;top:0;height:100vh;overflow-y:auto}.brand{display:flex;align-items:center;gap:11px;padding:0 8px 30px;color:#fff;text-decoration:none}.brand-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(145deg,#5979ff,#394ed6);box-shadow:0 6px 18px #23368c66}.brand-mark svg{width:27px;fill:none;stroke:white;stroke-width:1.5;stroke-linejoin:round}.brand strong{display:block;font:700 17px 'Space Grotesk',sans-serif;letter-spacing:-.3px}.brand small{display:block;margin-top:3px;color:#8490a8;font-size:10px;letter-spacing:.1px}.sidebar-label{padding:0 11px;margin:0 0 9px;color:#718099;font-size:9px;font-weight:700;letter-spacing:1.3px}.nav-item,.module-item{width:100%;border:0;cursor:pointer;display:flex;align-items:center;text-align:left;color:#9aa6bb;background:transparent;border-radius:9px;transition:background .15s,color .15s}.nav-item{height:41px;padding:0 11px;gap:11px;font-weight:600;margin:2px 0}.nav-item:hover,.module-item:hover{background:#ffffff0b;color:#fff}.nav-item.active{background:#273453;color:#fff;box-shadow:inset 3px 0 #6684ff}.nav-icon{width:18px;text-align:center;color:#91a5e7;font-size:17px}.nav-dot{margin-left:auto;width:5px;height:5px;background:#6c88ff;border-radius:50%}.topic-label{display:flex;align-items:center;justify-content:space-between;margin-top:28px}.topic-label span{font-size:8px;color:#687691;letter-spacing:.6px}.module-list{display:grid;gap:3px}.module-item{min-height:39px;padding:0 9px;gap:9px;font-size:11.5px}.module-item.selected{color:white;background:#1b2942}.module-number{font:600 10px 'Space Grotesk',sans-serif;color:#6f809f;width:20px}.module-item.selected .module-number{color:#8fa4ff}.module-state{margin-left:auto;font-size:10px;color:#65718a}.module-state.live{color:#5ee0b1;font-size:9px}.sidebar-bottom{margin-top:auto;padding-top:24px}.beta-card{border:1px solid #27344c;background:#182338;border-radius:10px;padding:12px 10px;display:flex;gap:9px;align-items:flex-start}.beta-icon{width:27px;height:27px;border-radius:8px;background:#29395c;color:#8da1ff;display:grid;place-items:center;font-size:16px;flex-shrink:0}.beta-card strong{font-size:10px;color:#e4eaf8}.beta-card p{font-size:9.5px;line-height:1.5;color:#8593aa;margin:4px 0 0}.user-chip{display:flex;align-items:center;gap:9px;padding:17px 2px 0;margin-top:15px;border-top:1px solid #252f42}.avatar{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#39496b;color:#e4eaff;font-weight:700;font-size:12px}.user-chip strong{font-size:10px;color:#e2e7f2;display:block}.user-chip small{display:block;color:#7f8ba3;font-size:9px;margin-top:4px}.more{margin-left:auto;letter-spacing:2px;color:#74829a}.main-content{min-width:0;padding:0 36px 24px;max-width:1780px;width:100%;margin:0 auto}.topbar{height:67px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e9edf4}.breadcrumbs{display:flex;gap:11px;align-items:center;font-size:11px;color:#8893a4}.breadcrumbs b{color:#c0c6d1;font-weight:400}.breadcrumbs strong{color:#35425a;font-weight:600}.topbar-actions{display:flex;align-items:center;gap:14px}.scheme-pill{font-size:10px;color:#66748b;border:1px solid #e1e6ef;background:#fff;border-radius:20px;padding:7px 11px;display:flex;align-items:center;gap:7px}.status-pip{width:6px;height:6px;display:inline-block;background:#20b486;border-radius:100%;box-shadow:0 0 0 3px #20b48619}.help-button{height:27px;width:27px;border:1px solid #dce2eb;background:#fff;border-radius:50%;color:#6d7890;font-weight:700;cursor:pointer}.page-heading{display:flex;justify-content:space-between;align-items:flex-end;margin:31px 0 21px;gap:20px}.eyebrow{display:flex;align-items:center;gap:8px;font-size:9px;color:#6979c7;letter-spacing:1.5px;font-weight:700}.eyebrow-line{height:1px;width:20px;background:#8193f5}.page-heading h1{font:600 clamp(25px,2.35vw,34px)/1.18 'Space Grotesk',sans-serif;letter-spacing:-1.1px;margin:11px 0 8px;color:#172238}.page-heading h1 span{color:#536de7}.page-heading p{font-size:12px;color:#79859a;margin:0}.heading-badge{display:flex;align-items:center;gap:10px;border:1px solid #e2e7f0;background:#fff;padding:10px 13px;border-radius:11px;white-space:nowrap}.heading-badge-icon{width:30px;height:30px;border-radius:8px;background:#eff2ff;color:#526ae5;display:grid;place-items:center;font-size:21px}.heading-badge strong{display:block;font-size:10.5px}.heading-badge small{display:block;color:#8792a5;font-size:9px;margin-top:4px}.question-card,.card{background:#fff;border:1px solid #e5eaf2;border-radius:13px;box-shadow:var(--shadow)}.question-card{padding:17px 19px 14px}.question-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.section-title{display:flex;align-items:center;gap:10px}.section-icon{width:31px;height:31px;display:grid;place-items:center;background:#eef2ff;color:#5369e3;border-radius:9px;font-size:16px}.section-title h2,.card-heading h2{font:600 14px 'Space Grotesk',sans-serif;margin:0;color:#1c2940}.section-title p,.card-heading p{font-size:10px;color:#8b95a7;margin:4px 0 0}.input-mode{font-size:8px;letter-spacing:1.2px;color:#8490a5;font-weight:700}.input-mode span{display:inline-grid;place-items:center;margin-left:4px;width:17px;height:17px;border:1px solid #e2e7ef;border-radius:4px;font-size:11px;color:#697690;letter-spacing:0}.question-card textarea{display:block;width:100%;min-height:61px;resize:vertical;border:1px solid #e0e6f0;background:#fbfcff;border-radius:8px;padding:12px 13px;color:#344159;font:500 11.5px/1.6 'DM Sans',sans-serif;outline:none;transition:border .2s,box-shadow .2s}.question-card textarea:focus{border-color:#8296ff;box-shadow:0 0 0 3px #617aff16}.question-footer{margin-top:11px;display:flex;align-items:center;justify-content:space-between;gap:15px}.hint{display:flex;align-items:center;gap:7px;color:#8893a6;font-size:9px}.hint-icon,.drawing-note>span:first-child{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;background:#f0f3f9;color:#8592a9;font:600 9px Georgia,serif;flex-shrink:0}.primary-button,.secondary-button,.export-button,.icon-button{display:inline-flex;align-items:center;justify-content:center;gap:11px;white-space:nowrap;cursor:pointer;border-radius:7px;font:600 10px 'DM Sans',sans-serif;transition:transform .15s,background .15s,border-color .15s}.primary-button{padding:11px 13px;background:var(--blue);color:white;border:1px solid var(--blue);box-shadow:0 4px 9px #4466eb20}.primary-button:hover{background:var(--blue-dark);transform:translateY(-1px)}.button-arrow{font-size:14px;line-height:10px}.secondary-button{padding:10px 12px;color:#58657c;background:#fff;border:1px solid #e1e6ef}.secondary-button:hover:not(:disabled){background:#f8faff;border-color:#cbd4e9}.secondary-button:disabled{opacity:.4;cursor:not-allowed}.parse-notice{display:none;margin-top:10px;border-radius:7px;padding:9px 11px;font-size:10px;line-height:1.5}.parse-notice.visible{display:block}.parse-notice.success{background:#effaf6;border:1px solid #d7f1e7;color:#21775e}.parse-notice.error{background:#fff6ed;border:1px solid #ffe4c7;color:#9d581c}.workspace-grid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(350px,.9fr);gap:16px;margin-top:17px}.card{min-width:0;overflow:hidden}.visual-card,.steps-card{padding:18px 18px 14px}.card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.card-kicker{font-size:8px;font-weight:700;letter-spacing:1.4px;color:#8390aa;margin-bottom:7px}.card-heading h2{font-size:15px}.card-heading p{font-size:10px;line-height:1.4}.live-label{display:flex;align-items:center;gap:7px;padding:6px 8px;background:#f2fbf8;color:#3c9579;border-radius:5px;font-size:7.5px;letter-spacing:.7px;font-weight:700;white-space:nowrap}.scene-wrap{height:335px;position:relative;border:1px solid #edf0f6;border-radius:10px;overflow:hidden;background:radial-gradient(ellipse at 48% 52%,#f8faff 0%,#f5f8fd 50%,#eff3f9 100%);margin-top:15px}.scene{position:absolute;inset:0}.scene canvas{display:block;width:100%;height:100%;outline:none}.scene-tag{position:absolute;z-index:2;display:flex;align-items:center;gap:7px;color:#6c7890;font-size:9px;pointer-events:none}.tag-hp{left:13px;top:13px}.tag-vp{left:13px;top:43px}.plane-chip{display:grid;place-items:center;min-width:23px;height:19px;border-radius:4px;font-size:8px;font-weight:700}.hp-chip{background:#fff0dc;color:#b8782b;border:1px solid #f8dfbc}.vp-chip{background:#e4f7fa;color:#268ba0;border:1px solid #cfedf3}.scene-overlay-bottom{position:absolute;z-index:2;bottom:11px;left:13px;right:13px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.solid-legend{display:flex;align-items:center;gap:6px;color:#64718a;font-size:9px;background:#ffffffc9;padding:6px 8px;border:1px solid #e9edf5;border-radius:5px}.solid-legend i{height:7px;width:7px;background:#526df0;border-radius:2px}.drag-hint{font-size:8px;color:#9ba5b6}.scene-loading{position:absolute;inset:0;z-index:5;background:#f5f8fd;display:flex;gap:9px;align-items:center;justify-content:center;color:#70809c;font-size:11px}.scene-loading.hidden{display:none}.spinner{width:15px;height:15px;border:2px solid #dae2ff;border-top-color:#536de7;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.scene-controls{margin-top:13px;display:flex;align-items:center;justify-content:space-between;gap:8px}.readout-label{display:block;color:#929cb0;font-size:7.5px;font-weight:700;letter-spacing:1.1px}.angle-readout strong{display:block;font:600 21px 'Space Grotesk',sans-serif;color:#536ce8;margin-top:2px}.control-buttons{display:flex;align-items:center;gap:7px}.icon-button{width:35px;height:35px;border:1px solid #e0e6f0;background:#fff;color:#77849b;font-size:20px}.icon-button:hover{background:#f7f8fc}.play-glyph{font-size:9px}.steps-card{display:flex;flex-direction:column}.step-count{font-size:8px;letter-spacing:.7px;color:#8895a9;border:1px solid #e6eaf2;border-radius:5px;padding:6px 7px;white-space:nowrap}.step-progress{height:3px;background:#edf0f7;border-radius:10px;overflow:hidden;margin:17px 0 8px}.step-progress span{display:block;height:100%;width:33.333%;background:#5873f0;border-radius:10px;transition:width .25s}.step-list{display:grid;gap:5px}.step-row{display:flex;width:100%;align-items:center;text-align:left;gap:10px;padding:10px 8px;border:1px solid transparent;border-radius:8px;background:#fff;cursor:pointer;color:#3d4960;min-height:57px;transition:background .15s,border .15s}.step-row:hover{background:#fafbff}.step-row.current{background:#f5f7ff;border-color:#dfe5ff}.step-index{display:grid;place-items:center;width:27px;height:27px;flex-shrink:0;border-radius:7px;background:#f1f3f8;color:#8792a6;font:600 10px 'Space Grotesk',sans-serif}.step-row.current .step-index{background:#e4e9ff;color:#4f69e7}.step-copy{min-width:0;flex:1}.step-copy strong{display:block;font-size:10px;font-weight:700;color:#3a465d}.step-copy small{display:block;font-size:9px;line-height:1.4;color:#8792a5;margin-top:4px}.step-check{color:#c4cbd8;font-size:10px}.step-row.current .step-check{color:#536de9}.explanation-box{display:flex;gap:10px;background:#f7f9fd;border:1px solid #edf1f8;border-radius:8px;padding:12px;margin-top:auto;margin-top:12px;min-height:81px}.explain-icon{display:grid;place-items:center;width:25px;height:25px;border-radius:7px;background:#e9edff;color:#5a70e7;font-size:13px;flex-shrink:0}.explain-label{font-size:7.5px;letter-spacing:1px;font-weight:700;color:#7484b6;margin-bottom:5px}.explanation-box p{font-size:9.5px;line-height:1.55;color:#6f7a8e;margin:0}.step-nav{display:flex;justify-content:space-between;gap:8px;margin-top:13px}.step-nav .primary-button,.step-nav .secondary-button{min-height:34px}.drawing-card{margin-top:17px;padding:18px 18px 13px}.drawing-heading{align-items:center}.drawing-key{display:flex;align-items:center;gap:13px;white-space:nowrap;color:#8792a4;font-size:8px}.drawing-key span{display:flex;align-items:center;gap:5px}.key-visible,.key-hidden{width:14px;height:2px;display:inline-block;background:#536ce5}.key-hidden{background:repeating-linear-gradient(90deg,#b9c2d3 0 3px,transparent 3px 5px)}.drawing-board-wrap{margin-top:15px;border:1px solid #e9edf4;border-radius:9px;background:#fff;overflow:hidden;position:relative;padding:8px 8px 0}.projection-svg{width:100%;height:auto;display:block;min-height:250px}.drawing-board-labels{position:absolute;inset:0;pointer-events:none;z-index:1}.view-label{position:absolute;left:14px;display:flex;align-items:baseline;gap:7px;color:#526be4;font:700 10px 'Space Grotesk',sans-serif;letter-spacing:.5px}.view-label small{color:#8d98ab;font:600 7px 'DM Sans',sans-serif;letter-spacing:1px}.fv-label{top:8%}.tv-label{top:57%}.xy-label{position:absolute;top:48.5%;left:14px;color:#9aa5b7;font:600 7px 'Space Grotesk',sans-serif;letter-spacing:1.1px}.drawing-footer{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:12px}.drawing-note{display:flex;align-items:flex-start;gap:7px;font-size:8.5px;line-height:1.5;color:#919bad;max-width:72%}.drawing-note>span:first-child{margin-top:1px}.export-button{font-size:9px;color:#5d6dd4;border:1px solid #dfe5ff;background:#f8f9ff;padding:9px 11px}.export-button:hover{background:#eef1ff}.app-footer{display:flex;justify-content:space-between;gap:12px;color:#9aa4b3;font-size:8px;margin-top:18px;padding:0 2px}.footer-sep{margin:0 6px;color:#cad0db}.toast{position:fixed;z-index:20;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#15213a;color:#fff;border-radius:8px;padding:11px 15px;font-size:11px;box-shadow:0 10px 35px #0e172a33;transition:all .22s;max-width:calc(100vw - 40px)}.toast.show{opacity:1;transform:translate(-50%,0)}.modal-backdrop{position:fixed;z-index:30;inset:0;background:#111a2d80;display:grid;place-items:center;padding:20px}.modal-backdrop[hidden]{display:none}.help-modal{max-width:420px;width:100%;background:#fff;border-radius:15px;padding:25px;position:relative;box-shadow:0 25px 80px #0d152755}.modal-close{position:absolute;right:15px;top:12px;border:0;background:transparent;color:#8994a6;font-size:24px;cursor:pointer}.modal-symbol{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#eff2ff;color:#556de6;font-size:22px}.help-modal h2{font:600 20px 'Space Grotesk',sans-serif;margin:16px 0 8px}.help-modal p,.help-modal li{color:#737f94;font-size:11px;line-height:1.7}.help-modal ul{padding-left:18px;margin:12px 0 19px}.modal-done{width:100%}.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* SVG drawing styles */
+.proj-edge{fill:none;stroke:#4e65d9;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}.proj-connector{fill:none;stroke:#aeb9cf;stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke}.xy-line{stroke:#7d8aa3;stroke-width:1.3;vector-effect:non-scaling-stroke}.projection-svg text{font-family:'DM Sans',sans-serif;fill:#8190a7;font-size:10px}.projection-svg .point-label{fill:#5068d9;font-size:9px;font-weight:700}.projection-svg .solid-fill{fill:#eef1ff;fill-opacity:.4;stroke:none}
+@media(min-width:1500px){.main-content{padding-left:48px;padding-right:48px}.scene-wrap{height:380px}.visual-card,.steps-card{padding:21px}.page-heading{margin-top:40px}}@media(max-width:1200px){.app-shell{grid-template-columns:220px minmax(0,1fr)}.main-content{padding-left:22px;padding-right:22px}.workspace-grid{grid-template-columns:minmax(0,1fr) minmax(310px,.85fr)}.scene-wrap{height:290px}.drawing-key{display:none}}@media(max-width:970px){.app-shell{grid-template-columns:68px minmax(0,1fr)}.sidebar{padding:19px 9px}.brand{padding:0 6px 30px}.brand>span:last-child,.sidebar-label,.nav-item:not(.active) span:not(.nav-icon),.nav-item span:not(.nav-icon),.module-item span:not(.module-number),.sidebar-bottom{display:none}.nav-item{justify-content:center;padding:0;height:43px}.nav-icon{font-size:19px}.module-list{margin-top:20px;gap:7px}.module-item{justify-content:center;height:37px;padding:0}.module-number{width:auto;font-size:10px}.nav-item.active{box-shadow:none}.workspace-grid{grid-template-columns:1fr}.scene-wrap{height:350px}.steps-card{min-height:430px}.sidebar .brand-mark{width:39px;height:39px}.brand{justify-content:center}.main-content{padding-left:18px;padding-right:18px}}@media(max-width:650px){.main-content{padding:0 11px 18px}.topbar{height:55px}.scheme-pill{font-size:8px;padding:6px 8px}.page-heading{margin:23px 0 16px;display:block}.page-heading h1{font-size:27px}.page-heading p{max-width:370px;line-height:1.6}.heading-badge{display:none}.question-card{padding:14px 12px}.question-top{align-items:flex-start}.input-mode{display:none}.question-footer{align-items:flex-start;flex-direction:column}.primary-button{justify-content:center}.question-footer>.primary-button{width:100%}.hint{line-height:1.5}.visual-card,.steps-card,.drawing-card{padding:14px 12px}.scene-wrap{height:290px}.card-heading h2{font-size:13px}.card-heading p{max-width:250px}.live-label{font-size:6px;padding:6px}.drag-hint{display:none}.drawing-heading{align-items:flex-start}.drawing-key{display:none}.drawing-board-wrap{padding:5px 2px 0}.projection-svg{min-height:175px}.view-label{left:8px}.xy-label{left:8px}.drawing-footer{align-items:flex-start;flex-direction:column}.drawing-note{max-width:none}.export-button{width:100%}.app-footer{flex-direction:column;line-height:1.5}.topbar-actions{gap:7px}.breadcrumbs{font-size:10px}.topbar-actions .scheme-pill{max-width:120px}.scene-controls{align-items:flex-end}.secondary-button{padding:10px}.step-nav .secondary-button,.step-nav .primary-button{flex:1}.step-nav{gap:7px}}
+
+  </style>
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+  </script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="DraftMate home">
+        <span class="brand-mark"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M6 27 18 5l12 22H6Z"/><path d="M12 23h12M18 5v22M6 27l12-7 12 7"/></svg></span>
+        <span><strong>DraftMate</strong><small>KTU · Engineering Graphics</small></span>
+      </a>
+      <div class="sidebar-label">WORKSPACE</div>
+      <button class="nav-item active" data-nav="solver"><span class="nav-icon">⌘</span><span>Question solver</span><span class="nav-dot"></span></button>
+      <button class="nav-item" data-nav="topics"><span class="nav-icon">▦</span><span>Topic library</span></button>
+      <div class="sidebar-label topic-label">KTU TOPICS <span>2024 SCHEME</span></div>
+      <div class="module-list">
+        <button class="module-item selected" data-topic="solids"><span class="module-number">01</span><span>Projections of solids</span><span class="module-state live">●</span></button>
+        <button class="module-item" data-topic="points"><span class="module-number">02</span><span>Projections of points</span><span class="module-state">↗</span></button>
+        <button class="module-item" data-topic="lines"><span class="module-number">03</span><span>Projections of lines</span><span class="module-state">↗</span></button>
+        <button class="module-item" data-topic="planes"><span class="module-number">04</span><span>Projections of planes</span><span class="module-state">↗</span></button>
+        <button class="module-item" data-topic="sections"><span class="module-number">05</span><span>Sections of solids</span><span class="module-state">↗</span></button>
+        <button class="module-item" data-topic="development"><span class="module-number">06</span><span>Development</span><span class="module-state">↗</span></button>
+        <button class="module-item" data-topic="isometric"><span class="module-number">07</span><span>Isometric & CAD</span><span class="module-state">↗</span></button>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="beta-card"><span class="beta-icon">✳</span><div><strong>Early prototype</strong><p>We’re building this one topic at a time.</p></div></div>
+        <div class="user-chip"><span class="avatar">A</span><span><strong>Engineering student</strong><small>KTU workspace</small></span><span class="more">···</span></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Workspace</span><b>/</b><strong>Question solver</strong></div>
+        <div class="topbar-actions"><span class="scheme-pill"><span class="status-pip"></span> KTU 2024 Scheme</span><button class="help-button" id="helpButton" aria-label="Help">?</button></div>
+      </header>
+
+      <section class="page-heading">
+        <div><div class="eyebrow"><span class="eyebrow-line"></span> ENGINEERING GRAPHICS · LEARN BY SEEING</div><h1>Make every projection <span>make sense.</span></h1><p>Type a question. Explore the 3D position. Follow the construction, step by step.</p></div>
+        <div class="heading-badge"><span class="heading-badge-icon">◈</span><span><strong>Visual solver</strong><small>Concept → construction → views</small></span></div>
+      </section>
+
+      <section class="question-card" aria-labelledby="questionLabel">
+        <div class="question-top"><div class="section-title"><span class="section-icon">✎</span><div><h2 id="questionLabel">Enter your engineering question</h2><p>Start with a supported solid-projection question.</p></div></div><span class="input-mode">TEXT INPUT <span>↵</span></span></div>
+        <label class="visually-hidden" for="questionInput">Engineering graphics question</label>
+        <textarea id="questionInput" rows="2" spellcheck="false">A regular hexagonal prism of side 25 mm and axis length 60 mm is initially placed with its base on HP. It is then inclined so its axis makes 30° with HP and remains parallel to VP.</textarea>
+        <div class="question-footer"><div class="hint"><span class="hint-icon">i</span><span>First prototype supports a hexagonal prism inclined to HP and parallel to VP.</span></div><button class="primary-button" id="solveButton"><span>Generate construction</span><span class="button-arrow">↗</span></button></div>
+        <div id="parseNotice" class="parse-notice" role="status" aria-live="polite"></div>
+      </section>
+
+      <div class="workspace-grid">
+        <section class="visual-card card" aria-labelledby="modelTitle">
+          <div class="card-heading"><div><div class="card-kicker">01 / SPATIAL VIEW</div><h2 id="modelTitle">Understand the position</h2><p>Orbit the model to inspect HP, VP and the solid.</p></div><span class="live-label"><span class="status-pip"></span> INTERACTIVE 3D</span></div>
+          <div class="scene-wrap" id="sceneWrap">
+            <div class="scene-tag tag-hp"><span class="plane-chip hp-chip">HP</span><span>Horizontal plane</span></div>
+            <div class="scene-tag tag-vp"><span class="plane-chip vp-chip">VP</span><span>Vertical plane</span></div>
+            <div id="scene3d" class="scene"></div>
+            <div class="scene-overlay-bottom"><span class="solid-legend"><i></i> Hexagonal prism</span><span class="drag-hint">⤢ Drag to orbit · Scroll to zoom</span></div>
+            <div id="sceneLoading" class="scene-loading"><span class="spinner"></span><span>Preparing 3D model…</span></div>
+          </div>
+          <div class="scene-controls"><div class="angle-readout"><span class="readout-label">AXIS INCLINATION TO HP</span><strong id="angleValue">30°</strong></div><div class="control-buttons"><button id="resetView" class="icon-button" title="Reset camera">⟲</button><button id="animateButton" class="secondary-button"><span class="play-glyph">▶</span><span>Animate tilt</span></button></div></div>
+        </section>
+
+        <section class="steps-card card" aria-labelledby="stepsTitle">
+          <div class="card-heading"><div><div class="card-kicker">02 / CONSTRUCTION GUIDE</div><h2 id="stepsTitle">Follow the method</h2><p id="stepSubtitle">From simple position to inclined position.</p></div><span class="step-count" id="stepCounter">STEP 1 OF 3</span></div>
+          <div class="step-progress" aria-hidden="true"><span id="progressFill"></span></div>
+          <div id="stepList" class="step-list">
+            <button class="step-row current" data-step="0"><span class="step-index">01</span><span class="step-copy"><strong>Draw the simple position</strong><small>Start with the base on HP.</small></span><span class="step-check">●</span></button>
+            <button class="step-row" data-step="1"><span class="step-index">02</span><span class="step-copy"><strong>Incline the axis</strong><small>Rotate the solid about a resting base edge.</small></span><span class="step-check">○</span></button>
+            <button class="step-row" data-step="2"><span class="step-index">03</span><span class="step-copy"><strong>Project the final views</strong><small>Read the final FV and TV from the solid.</small></span><span class="step-check">○</span></button>
+          </div>
+          <div class="explanation-box"><div class="explain-icon">✦</div><div><div class="explain-label">WHY THIS STEP?</div><p id="stepExplanation">The prism starts in a simple position: its base lies on HP and its axis is perpendicular to HP. This gives us a clear starting point.</p></div></div>
+          <div class="step-nav"><button id="previousStep" class="secondary-button" disabled>← Previous</button><button id="nextStep" class="primary-button">Next step <span class="button-arrow">→</span></button></div>
+        </section>
+      </div>
+
+      <section class="drawing-card card" aria-labelledby="drawingTitle">
+        <div class="card-heading drawing-heading"><div><div class="card-kicker">03 / ORTHOGRAPHIC PROJECTION</div><h2 id="drawingTitle">The drawing board</h2><p>Front view and top view share the same projection alignment.</p></div><div class="drawing-key"><span><i class="key-visible"></i> Projected edge</span><span><i class="key-hidden"></i> Construction reference</span></div></div>
+        <div class="drawing-board-wrap"><div class="drawing-board-labels"><span class="view-label fv-label">FV <small>FRONT VIEW</small></span><span class="xy-label">XY · REFERENCE LINE</span><span class="view-label tv-label">TV <small>TOP VIEW</small></span></div><svg id="projectionSvg" class="projection-svg" viewBox="0 0 760 400" role="img" aria-label="Generated front view and top view of a hexagonal prism"></svg></div>
+        <div class="drawing-footer"><span class="drawing-note"><span>i</span><span>Prototype drawing: projected edges are calculated from the model. Hidden-line conventions and more solid types will be added and validated in later versions.</span></span><button class="export-button" id="downloadSvg">↓ Export drawing (SVG)</button></div>
+      </section>
+
+      <footer class="app-footer"><span>DraftMate <span class="footer-sep">·</span> Built for KTU Engineering Graphics learning</span><span>Prototype v0.1 <span class="footer-sep">·</span> Geometry engine in progress</span></footer>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="helpModal" hidden><section class="help-modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><button class="modal-close" id="closeHelp" aria-label="Close help">×</button><div class="modal-symbol">✳</div><h2 id="helpTitle">How to try the prototype</h2><p>Use the example question or edit its dimensions and angle. Generate the construction, step through the method, and drag the 3D model to inspect it.</p><ul><li>Try a hexagonal prism with a side length and axis length in millimetres.</li><li>For this version, specify the axis angle to HP and say it is parallel to VP.</li><li>Other topics are listed in the sidebar as the roadmap; they are not solved yet.</li></ul><button class="primary-button modal-done" id="modalDone">Got it</button></section></div>
+
+  <script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const $ = (id) => document.getElementById(id);
+const questionInput = $('questionInput');
+const solveButton = $('solveButton');
+const parseNotice = $('parseNotice');
+const sceneHost = $('scene3d');
+const sceneLoading = $('sceneLoading');
+const projectionSvg = $('projectionSvg');
+const toast = $('toast');
+const stepButtons = [...document.querySelectorAll('.step-row')];
+
+const state = {
+  side: 25,
+  height: 60,
+  axisAngle: 30,
+  step: 0,
+  currentTilt: 0,
+  targetTilt: 0,
+  tween: null,
+  geometryGroup: null,
+  baseVertices: [],
+  worldVertices: [],
+  edges: [],
+  lastSvgMarkup: '',
+  lastDrawTilt: -999,
+};
+
+let toastTimer;
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2700);
+}
+
+function setNotice(message, type = 'success') {
+  parseNotice.textContent = message;
+  parseNotice.className = `parse-notice visible ${type}`;
+}
+
+function parseQuestion(raw) {
+  const text = raw.toLowerCase().replace(/[−–—]/g, '-');
+  if (!text.trim()) return { error: 'Type an Engineering Graphics question first.' };
+
+  if (!text.includes('hexagonal prism')) {
+    const known = ['point', 'line', 'plane', 'pyramid', 'cylinder', 'cone', 'section', 'development', 'isometric'];
+    const detected = known.find((term) => text.includes(term));
+    return {
+      error: detected
+        ? `This question appears to involve ${detected}${detected.endsWith('s') ? '' : 's'}, but this prototype currently solves a hexagonal-prism case. Those topic solvers are part of our roadmap.`
+        : 'I could not identify a supported solid. For this first version, try a hexagonal prism question.',
+    };
+  }
+
+  const sideMatch = text.match(/side(?:\s+length)?\s*(?:is\s*)?(\d+(?:\.\d+)?)\s*mm/i);
+  const axisMatch = text.match(/axis(?:\s+length)?\s*(?:is\s*)?(\d+(?:\.\d+)?)\s*mm/i)
+    || text.match(/(\d+(?:\.\d+)?)\s*mm\s*(?:long\s*)?(?:axis|axial\s+length)/i);
+  const angleMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:to|with)\s*(?:the\s*)?h\.?\s*p\.?/i)
+    || text.match(/inclined(?:\s+at(?:\s+an?\s+angle\s+of?)?)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)/i);
+  const hasParallelVP = /parallel\s+to\s+(?:the\s*)?v\.?\s*p\.?/.test(text)
+    || /parallel\s+to\s+vp\b/.test(text);
+  const side = sideMatch ? Number(sideMatch[1]) : 25;
+  const height = axisMatch ? Number(axisMatch[1]) : 60;
+  const axisAngle = angleMatch ? Number(angleMatch[1]) : 90;
+
+  if (!(side > 0 && side <= 500)) return { error: 'Please enter a valid prism side length between 0 and 500 mm.' };
+  if (!(height > 0 && height <= 1000)) return { error: 'Please enter a valid axis length between 0 and 1000 mm.' };
+  if (!(axisAngle > 0 && axisAngle <= 90)) return { error: 'For this first version, the axis angle to HP must be greater than 0° and no more than 90°.' };
+  if (axisAngle < 89.999 && !hasParallelVP) {
+    return { error: 'Please state that the axis is “parallel to VP”. The first construction solver currently handles an axis inclined to HP while parallel to VP.' };
+  }
+
+  return { side, height, axisAngle, hasParallelVP, hasExplicitAngle: Boolean(angleMatch) };
+}
+
+// ---------- Three.js scene ----------
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf5f8fd);
+scene.fog = new THREE.Fog(0xf5f8fd, 260, 500);
+const camera = new THREE.PerspectiveCamera(39, 1, 0.1, 800);
+camera.position.set(38, 68, 118);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.08;
+sceneHost.appendChild(renderer.domElement);
+renderer.domElement.setAttribute('aria-label', 'Interactive 3D model of a hexagonal prism between HP and VP');
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.075;
+controls.target.set(-12, 24, 0);
+controls.minDistance = 48;
+controls.maxDistance = 245;
+controls.maxPolarAngle = Math.PI * 0.49;
+controls.update();
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xc7d1e4, 2.0));
+const keyLight = new THREE.DirectionalLight(0xffffff, 2.4);
+keyLight.position.set(50, 110, 75);
+scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xb9c9ff, 1.1);
+fillLight.position.set(-70, 45, -60);
+scene.add(fillLight);
+
+const hpMaterial = new THREE.MeshBasicMaterial({ color: 0xf1ba72, transparent: true, opacity: 0.115, side: THREE.DoubleSide, depthWrite: false });
+const hp = new THREE.Mesh(new THREE.PlaneGeometry(190, 150), hpMaterial);
+hp.rotation.x = -Math.PI / 2;
+hp.position.set(-15, -0.08, 0);
+scene.add(hp);
+const hpGrid = new THREE.GridHelper(180, 36, 0xd7a86f, 0xd9e1ee);
+hpGrid.position.set(-15, 0.025, 0);
+for (const gridMaterial of (Array.isArray(hpGrid.material) ? hpGrid.material : [hpGrid.material])) {
+  gridMaterial.transparent = true;
+  gridMaterial.opacity = 0.26;
+}
+scene.add(hpGrid);
+
+const vpMaterial = new THREE.MeshBasicMaterial({ color: 0x6bc9d8, transparent: true, opacity: 0.09, side: THREE.DoubleSide, depthWrite: false });
+const vp = new THREE.Mesh(new THREE.PlaneGeometry(190, 100), vpMaterial);
+vp.position.set(-15, 37, -0.04);
+scene.add(vp);
+const vpFrame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(190, 100)), new THREE.LineBasicMaterial({ color: 0xb2dfe5, transparent: true, opacity: 0.8 }));
+vpFrame.position.copy(vp.position);
+scene.add(vpFrame);
+const axisGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-110, 0.06, 0), new THREE.Vector3(90, 0.06, 0)]);
+scene.add(new THREE.Line(axisGeometry, new THREE.LineBasicMaterial({ color: 0x9e8bc4, transparent: true, opacity: 0.95 })));
+
+function createPrism(side, height) {
+  if (state.geometryGroup) {
+    scene.remove(state.geometryGroup);
+    state.geometryGroup.traverse((obj) => {
+      if (obj.geometry) obj.geometry.dispose();
+      if (obj.material) {
+        if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose());
+        else obj.material.dispose();
+      }
+    });
+  }
+
+  const group = new THREE.Group();
+  const radius = side; // For a regular hexagon, side length equals circumradius.
+  const centerX = -(Math.sqrt(3) / 2) * radius;
+  const angles = [30, 90, 150, 210, 270, 330].map((deg) => deg * Math.PI / 180);
+  const base = angles.map((a) => new THREE.Vector3(centerX + radius * Math.cos(a), 0, radius * Math.sin(a)));
+  const top = base.map((v) => new THREE.Vector3(v.x, height, v.z));
+  const verts = [...base, ...top];
+  const pos = [];
+  const pushTriangle = (a, b, c) => pos.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6;
+    pushTriangle(base[i], base[j], top[j]);
+    pushTriangle(base[i], top[j], top[i]);
+    pushTriangle(new THREE.Vector3(centerX, 0, 0), base[j], base[i]);
+    pushTriangle(new THREE.Vector3(centerX, height, 0), top[i], top[j]);
+  }
+  const solidGeo = new THREE.BufferGeometry();
+  solidGeo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  solidGeo.computeVertexNormals();
+  const solidMat = new THREE.MeshStandardMaterial({ color: 0x7185f3, roughness: 0.42, metalness: 0.04, transparent: true, opacity: 0.83, side: THREE.DoubleSide });
+  const solid = new THREE.Mesh(solidGeo, solidMat);
+  group.add(solid);
+
+  const edgePoints = [];
+  const addEdge = (a, b) => edgePoints.push(a.x, a.y, a.z, b.x, b.y, b.z);
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6;
+    addEdge(base[i], base[j]);
+    addEdge(top[i], top[j]);
+    addEdge(base[i], top[i]);
+  }
+  const edgeGeo = new THREE.BufferGeometry();
+  edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePoints, 3));
+  group.add(new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ color: 0x354ac0, transparent: true, opacity: 0.98 })));
+
+  const contactGeo = new THREE.BufferGeometry().setFromPoints([base[0], base[5]]);
+  group.add(new THREE.Line(contactGeo, new THREE.LineBasicMaterial({ color: 0xe59a46, linewidth: 2 })));
+  scene.add(group);
+  state.geometryGroup = group;
+  state.baseVertices = verts.map((v) => v.clone());
+  state.edges = [];
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6;
+    state.edges.push([i, j], [i + 6, j + 6], [i, i + 6]);
+  }
+  group.rotation.z = -state.currentTilt;
+  updateProjection(state.currentTilt);
+}
+
+function transformVertex(vertex, tilt) {
+  // A negative rotation around the resting side keeps that base edge on HP.
+  const c = Math.cos(tilt), s = Math.sin(tilt);
+  return { x: vertex.x * c + vertex.y * s, y: -vertex.x * s + vertex.y * c, z: vertex.z };
+}
+
+function updateProjection(tilt, force = false) {
+  if (!state.baseVertices.length) return;
+  if (!force && Math.abs(tilt - state.lastDrawTilt) < 0.018) return;
+  state.lastDrawTilt = tilt;
+  const projected = state.baseVertices.map((v) => transformVertex(v, tilt));
+  state.worldVertices = projected;
+  const W = 760, H = 400, xyY = 199;
+  const minX = Math.min(...projected.map((p) => p.x));
+  const maxX = Math.max(...projected.map((p) => p.x));
+  const minZ = Math.min(...projected.map((p) => p.z));
+  const maxZ = Math.max(...projected.map((p) => p.z));
+  const minY = Math.min(...projected.map((p) => p.y));
+  const maxY = Math.max(...projected.map((p) => p.y));
+  const xRange = Math.max(maxX - minX, 1);
+  const yRange = Math.max(maxY - minY, 1);
+  const zRange = Math.max(maxZ - minZ, 1);
+  const scale = Math.min((W - 120) / xRange, 133 / yRange, 110 / zRange);
+  const centerX = (minX + maxX) / 2;
+  const sx = (x) => W / 2 + (x - centerX) * scale;
+  const fy = (y) => xyY - (y - minY) * scale;
+  const ty = (z) => xyY + (z - minZ) * scale;
+  const points = projected.map((p) => ({ fx: sx(p.x), fy: fy(p.y), tx: sx(p.x), ty: ty(p.z) }));
+  let markup = '';
+  markup += `<line class="xy-line" x1="35" y1="${xyY}" x2="725" y2="${xyY}"/>`;
+  // Projectors between corresponding points, kept in x alignment.
+  for (let i = 0; i < 6; i++) {
+    const p = points[i];
+    const q = points[i + 6];
+    markup += `<line class="proj-connector" x1="${p.fx.toFixed(2)}" y1="${p.fy.toFixed(2)}" x2="${p.tx.toFixed(2)}" y2="${p.ty.toFixed(2)}"/>`;
+    markup += `<line class="proj-connector" x1="${q.fx.toFixed(2)}" y1="${q.fy.toFixed(2)}" x2="${q.tx.toFixed(2)}" y2="${q.ty.toFixed(2)}"/>`;
+  }
+  for (const [a, b] of state.edges) {
+    const p = points[a], q = points[b];
+    markup += `<line class="proj-edge" x1="${p.fx.toFixed(2)}" y1="${p.fy.toFixed(2)}" x2="${q.fx.toFixed(2)}" y2="${q.fy.toFixed(2)}"/>`;
+    markup += `<line class="proj-edge" x1="${p.tx.toFixed(2)}" y1="${p.ty.toFixed(2)}" x2="${q.tx.toFixed(2)}" y2="${q.ty.toFixed(2)}"/>`;
+  }
+  // Small construction markers and one reference vertex label in each view.
+  const fLabelPoint = points[0];
+  const tLabelPoint = points[0];
+  markup += `<circle cx="${fLabelPoint.fx.toFixed(2)}" cy="${fLabelPoint.fy.toFixed(2)}" r="2.7" fill="#536ce5"/><text class="point-label" x="${(fLabelPoint.fx + 6).toFixed(2)}" y="${(fLabelPoint.fy - 6).toFixed(2)}">A′</text>`;
+  markup += `<circle cx="${tLabelPoint.tx.toFixed(2)}" cy="${tLabelPoint.ty.toFixed(2)}" r="2.7" fill="#536ce5"/><text class="point-label" x="${(tLabelPoint.tx + 6).toFixed(2)}" y="${(tLabelPoint.ty - 6).toFixed(2)}">A</text>`;
+  // Quiet view labels are also present inside SVG exports where overlay HTML is absent.
+  markup += `<text x="50" y="24" style="font-size:9px;letter-spacing:1px;font-weight:700">FRONT VIEW</text>`;
+  markup += `<text x="50" y="${(xyY + 28).toFixed(2)}" style="font-size:9px;letter-spacing:1px;font-weight:700">TOP VIEW</text>`;
+  projectionSvg.innerHTML = markup;
+  state.lastSvgMarkup = markup;
+}
+
+function updateStepUI() {
+  const descriptions = [
+    {
+      title: 'Simple position',
+      detail: 'Start with the base on HP.',
+      why: `Begin with the hexagonal base on HP and the axis perpendicular to HP. This simple position provides the starting projections before the solid is inclined.`,
+    },
+    {
+      title: 'Incline the axis',
+      detail: `Rotate until the axis is ${state.axisAngle}° to HP.`,
+      why: `Rotate the solid about a base edge that stays on HP. The axis reaches ${state.axisAngle}° to HP while remaining parallel to VP; the pivot edge stays in contact with HP.`,
+    },
+    {
+      title: 'Project final views',
+      detail: 'Read the final FV and TV.',
+      why: `Use the final position to project corresponding points onto VP (front view) and HP (top view). The same x-coordinates align through the XY reference line.`,
+    },
+  ];
+  const current = descriptions[state.step];
+  stepButtons.forEach((button, index) => {
+    button.classList.toggle('current', index === state.step);
+    const check = button.querySelector('.step-check');
+    check.textContent = index < state.step ? '✓' : index === state.step ? '●' : '○';
+    const strong = button.querySelector('strong');
+    const small = button.querySelector('small');
+    strong.textContent = descriptions[index].title === 'Simple position' ? 'Draw the simple position' : descriptions[index].title === 'Incline the axis' ? 'Incline the axis' : 'Project the final views';
+    small.textContent = descriptions[index].detail;
+  });
+  $('stepCounter').textContent = `STEP ${state.step + 1} OF 3`;
+  $('progressFill').style.width = `${((state.step + 1) / 3) * 100}%`;
+  $('stepExplanation').textContent = current.why;
+  $('stepSubtitle').textContent = state.step === 0 ? 'Establish the initial position.' : state.step === 1 ? 'Rotate the model while keeping its resting edge on HP.' : 'Read the front and top views from the final position.';
+  $('previousStep').disabled = state.step === 0;
+  $('nextStep').innerHTML = state.step === 2 ? 'Back to start <span class="button-arrow">↺</span>' : 'Next step <span class="button-arrow">→</span>';
+  $('angleValue').textContent = `${Math.round(90 - state.currentTilt * 180 / Math.PI)}°`;
+}
+
+function moveToStep(index, shouldAnimate = true) {
+  state.step = Math.max(0, Math.min(2, index));
+  updateStepUI();
+  const target = state.step === 0 ? 0 : (90 - state.axisAngle) * Math.PI / 180;
+  if (shouldAnimate && Math.abs(state.currentTilt - target) > 0.004) {
+    state.tween = { from: state.currentTilt, to: target, start: performance.now(), duration: 1150 };
+  } else {
+    state.currentTilt = target;
+    state.targetTilt = target;
+    state.tween = null;
+    if (state.geometryGroup) state.geometryGroup.rotation.z = -target;
+    updateProjection(target, true);
+    updateStepUI();
+  }
+}
+
+function generateConstruction() {
+  const parsed = parseQuestion(questionInput.value);
+  if (parsed.error) {
+    setNotice(parsed.error, 'error');
+    showToast('Question not supported by this prototype yet.');
+    return;
+  }
+  state.side = parsed.side;
+  state.height = parsed.height;
+  state.axisAngle = parsed.axisAngle;
+  state.step = 0;
+  state.currentTilt = 0;
+  state.targetTilt = 0;
+  state.tween = null;
+  $('angleValue').textContent = '90°';
+  $('modelTitle').textContent = `Hexagonal prism · ${state.side} mm side`;
+  $('drawingTitle').textContent = `FV & TV · axis ${state.axisAngle}° to HP`;
+  const orientationNote = state.axisAngle >= 89.999
+    ? `Identified a hexagonal prism (${state.side} mm side, ${state.height} mm axis). No inclined angle was found, so the model starts in the simple position with its axis perpendicular to HP.`
+    : `Identified a hexagonal prism (${state.side} mm side, ${state.height} mm axis), axis ${state.axisAngle}° to HP and parallel to VP. Review the generated construction stages below.`;
+  setNotice(orientationNote, 'success');
+  createPrism(state.side, state.height);
+  moveToStep(0, false);
+  controls.target.set(-12, state.height * 0.4, 0);
+  camera.position.set(38, Math.max(48, state.height * 1.12), Math.max(90, state.height * 1.8));
+  controls.update();
+  $('animateButton').innerHTML = '<span class="play-glyph">▶</span><span>Animate tilt</span>';
+  showToast('Construction generated. Start with Step 1.');
+}
+
+// Resizing the render canvas while preserving the current orbit camera.
+function resizeRenderer() {
+  const width = Math.max(1, sceneHost.clientWidth);
+  const height = Math.max(1, sceneHost.clientHeight);
+  renderer.setSize(width, height, false);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+}
+const resizeObserver = new ResizeObserver(resizeRenderer);
+resizeObserver.observe(sceneHost);
+window.addEventListener('resize', resizeRenderer);
+resizeRenderer();
+
+let lastTime = 0;
+function renderLoop(now) {
+  requestAnimationFrame(renderLoop);
+  if (state.tween) {
+    const elapsed = now - state.tween.start;
+    const t = Math.min(1, elapsed / state.tween.duration);
+    const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    state.currentTilt = state.tween.from + (state.tween.to - state.tween.from) * eased;
+    if (state.geometryGroup) state.geometryGroup.rotation.z = -state.currentTilt;
+    updateProjection(state.currentTilt);
+    updateStepUI();
+    if (t >= 1) {
+      state.currentTilt = state.tween.to;
+      if (state.geometryGroup) state.geometryGroup.rotation.z = -state.currentTilt;
+      state.tween = null;
+      updateProjection(state.currentTilt, true);
+      updateStepUI();
+    }
+  }
+  controls.update();
+  renderer.render(scene, camera);
+  if (!lastTime) {
+    sceneLoading.classList.add('hidden');
+    lastTime = now;
+  }
+}
+requestAnimationFrame(renderLoop);
+
+solveButton.addEventListener('click', generateConstruction);
+questionInput.addEventListener('keydown', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') generateConstruction();
+});
+stepButtons.forEach((button) => button.addEventListener('click', () => moveToStep(Number(button.dataset.step))));
+$('previousStep').addEventListener('click', () => moveToStep(state.step - 1));
+$('nextStep').addEventListener('click', () => moveToStep(state.step === 2 ? 0 : state.step + 1));
+$('animateButton').addEventListener('click', () => {
+  if (state.step === 0 || Math.abs(state.currentTilt) < 0.01) {
+    state.step = 1;
+    updateStepUI();
+    moveToStep(1, true);
+    $('animateButton').innerHTML = '<span class="play-glyph">▶</span><span>Animating…</span>';
+    setTimeout(() => { if (!state.tween) $('animateButton').innerHTML = '<span class="play-glyph">↺</span><span>Reset upright</span>'; }, 1200);
+  } else {
+    state.step = 0;
+    updateStepUI();
+    moveToStep(0, true);
+    $('animateButton').innerHTML = '<span class="play-glyph">▶</span><span>Animate tilt</span>';
+  }
+});
+$('resetView').addEventListener('click', () => {
+  controls.target.set(-12, state.height * .4, 0);
+  camera.position.set(38, Math.max(48, state.height * 1.12), Math.max(90, state.height * 1.8));
+  controls.update();
+  showToast('3D camera reset.');
+});
+$('downloadSvg').addEventListener('click', () => {
+  const clone = projectionSvg.cloneNode(true);
+  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  clone.setAttribute('width', '760');
+  clone.setAttribute('height', '400');
+  const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+  style.textContent = '.proj-edge{fill:none;stroke:#4e65d9;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.proj-connector{fill:none;stroke:#aeb9cf;stroke-width:1;stroke-dasharray:4 4}.xy-line{stroke:#7d8aa3;stroke-width:1.3}.projection-svg text{font-family:Arial,sans-serif;fill:#8190a7;font-size:10px}.point-label{fill:#5068d9!important;font-size:9px;font-weight:bold}';
+  clone.insertBefore(style, clone.firstChild);
+  const blob = new Blob([new XMLSerializer().serializeToString(clone)], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = 'draftmate-projection.svg';
+  anchor.click();
+  URL.revokeObjectURL(url);
+  showToast('SVG drawing exported.');
+});
+
+// Topic navigation deliberately tells students when a module isn't implemented yet.
+document.querySelectorAll('.module-item').forEach((button) => button.addEventListener('click', () => {
+  document.querySelectorAll('.module-item').forEach((b) => b.classList.remove('selected'));
+  button.classList.add('selected');
+  if (button.dataset.topic !== 'solids') {
+    showToast(`${button.querySelector('span:nth-child(2)').textContent} is on our roadmap; the first solver is focused on a hexagonal prism.`);
+    document.querySelectorAll('.module-item').forEach((b) => b.classList.toggle('selected', b.dataset.topic === 'solids'));
+  } else {
+    showToast('Projection of solids is the first active module.');
+  }
+}));
+document.querySelector('[data-nav="topics"]').addEventListener('click', () => showToast('Topic library will open as each solver module is added.'));
+document.querySelector('[data-nav="solver"]').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+$('helpButton').addEventListener('click', () => { $('helpModal').hidden = false; });
+$('closeHelp').addEventListener('click', () => { $('helpModal').hidden = true; });
+$('modalDone').addEventListener('click', () => { $('helpModal').hidden = true; });
+$('helpModal').addEventListener('click', (event) => { if (event.target === $('helpModal')) $('helpModal').hidden = true; });
+
+// Generate the example immediately so the first page load is a usable demo.
+generateConstruction();
+
+  </script>
+</body>
+</html>
