@@ -4,54 +4,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DraftMate — 2D Drawing Test</title>
+<title>DraftMate — 2D Engineering Drawing Test</title>
+
 <style>
+  * { box-sizing: border-box; }
+
   body {
     margin: 0;
-    padding: 18px;
-    background: #f3f6fc;
-    color: #18243b;
+    padding: 16px;
+    background: #0b1020;
+    color: #e7edff;
     font-family: Arial, sans-serif;
   }
-  h1 { font-size: 25px; }
-  .note { color: #68758b; line-height: 1.5; }
+
+  h1 { font-size: 26px; }
+  h2 { font-size: 22px; }
+
+  p {
+    color: #aebbd5;
+    line-height: 1.5;
+  }
+
+  select, button {
+    padding: 12px;
+    margin: 5px 4px 8px 0;
+    border-radius: 8px;
+    border: 1px solid #465574;
+    font-size: 15px;
+  }
+
+  button {
+    background: #334a9a;
+    color: white;
+  }
+
+  select {
+    background: #18233e;
+    color: white;
+  }
+
   .panel {
-    background: white;
-    border: 1px solid #dce3ef;
+    background: #141c30;
+    border: 1px solid #33415f;
     border-radius: 12px;
     padding: 12px;
     margin: 16px 0;
-    overflow: hidden;
   }
+
   canvas {
+    display: block;
     width: 100%;
     height: auto;
-    display: block;
     background: white;
+    border-radius: 4px;
   }
-  button, select {
-    padding: 11px;
-    margin: 5px 5px 5px 0;
-    border: 1px solid #cbd5e5;
-    border-radius: 8px;
-    background: white;
-    font-size: 15px;
-  }
+
   #status {
     padding: 12px;
-    background: #e8f8ef;
     border-radius: 8px;
+    background: #172b35;
     overflow-wrap: anywhere;
   }
 </style>
 </head>
-<body>
 
-<h1>DraftMate 2D Drawing Test</h1>
-<p class="note">
-  Experimental projection drawings generated from the
-  DraftMate geometry engine. This page does not change
-  the main website.
+<body>
+<h1>DraftMate — 2D Drawing Test</h1>
+
+<p>
+  Experimental front and top projections from the DraftMate
+  geometry engine. This test page does not modify the main website.
 </p>
 
 <label for="solid">Choose a solid:</label>
@@ -61,6 +83,7 @@
   <option value="cylinder">Cylinder</option>
   <option value="cone">Cone</option>
 </select>
+
 <button id="draw">Draw FV + TV</button>
 
 <div class="panel">
@@ -70,9 +93,6 @@
 
 <div class="panel">
   <h2>XY Reference Line</h2>
-  <p class="note">
-    XY separates the front-view and top-view regions.
-  </p>
   <canvas id="xy" width="700" height="65"></canvas>
 </div>
 
@@ -81,23 +101,30 @@
   <canvas id="tv" width="700" height="300"></canvas>
 </div>
 
-<p id="status">Loading geometry engine...</p>
+<p id="status">Loading engines...</p>
 
 <script src="solids-engine.js"></script>
 <script src="projection-engine.js"></script>
 
 <script>
 (function () {
+  "use strict";
+
   const status = document.getElementById("status");
 
-  function drawLine(ctx, a, b) {
+  function drawSegment(ctx, a, b) {
     ctx.beginPath();
     ctx.moveTo(a.x, a.y);
     ctx.lineTo(b.x, b.y);
     ctx.stroke();
   }
 
-  function render(canvasId, vertices, edges, axisA, axisB) {
+  /*
+    Project the 3D model:
+    FV: horizontal X, vertical Z.
+    TV: horizontal X, vertical Y.
+  */
+  function drawProjection(canvasId, vertices, edges, horizontal, vertical) {
     const canvas = document.getElementById(canvasId);
     const ctx = canvas.getContext("2d");
     const W = canvas.width;
@@ -107,24 +134,27 @@
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, W, H);
 
-    const values = vertices.map(v => ({
-      x: Number(v.x),
-      y: Number(v[axisA]),
-      z: Number(v[axisB])
-    }));
-
-    if (!values.length ||
-        values.some(p =>
-          !Number.isFinite(p.x) ||
-          !Number.isFinite(p.y) ||
-          !Number.isFinite(p.z))) {
-      throw new Error("Vertex coordinates are missing or invalid.");
+    if (!Array.isArray(vertices) || !Array.isArray(edges)) {
+      throw new Error("Model vertices or edges are missing.");
     }
 
-    const minX = Math.min(...values.map(p => p.x));
-    const maxX = Math.max(...values.map(p => p.x));
-    const minY = Math.min(...values.map(p => p.y));
-    const maxY = Math.max(...values.map(p => p.y));
+    const projected = vertices.map(v => ({
+      x: Number(v[horizontal]),
+      y: Number(v[vertical])
+    }));
+
+    if (
+      projected.length === 0 ||
+      projected.some(p => !Number.isFinite(p.x) ||
+                          !Number.isFinite(p.y))
+    ) {
+      throw new Error("Invalid vertex coordinates.");
+    }
+
+    const minX = Math.min(...projected.map(p => p.x));
+    const maxX = Math.max(...projected.map(p => p.x));
+    const minY = Math.min(...projected.map(p => p.y));
+    const maxY = Math.max(...projected.map(p => p.y));
 
     const rangeX = Math.max(maxX - minX, 1);
     const rangeY = Math.max(maxY - minY, 1);
@@ -133,53 +163,77 @@
       (H - 70) / rangeY
     );
 
-    const cx = (minX + maxX) / 2;
-    const cy = (minY + maxY) / 2;
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
 
-    const points = values.map(p => ({
-      x: W / 2 + (p.x - cx) * scale,
-      y: H / 2 - (p.y - cy) * scale
+    const screenPoints = projected.map(p => ({
+      x: W / 2 + (p.x - centerX) * scale,
+      y: H / 2 - (p.y - centerY) * scale
     }));
 
-    ctx.strokeStyle = "#4058c8";
+    ctx.strokeStyle = "#263fba";
     ctx.lineWidth = 2;
-    ctx.lineCap = "round";
 
     edges.forEach(edge => {
-      const a = Array.isArray(edge) ? edge[0] :
-        (edge.a ?? edge.from ?? edge.start);
-      const b = Array.isArray(edge) ? edge[1] :
-        (edge.b ?? edge.to ?? edge.end);
+      let a, b;
 
-      if (Number.isInteger(a) && Number.isInteger(b) &&
-          points[a] && points[b]) {
-        drawLine(ctx, points[a], points[b]);
-      } else if (typeof a === "string" &&
-                 typeof b === "string") {
-        const ia = vertices.findIndex(v => v.id === a);
-        const ib = vertices.findIndex(v => v.id === b);
-        if (ia >= 0 && ib >= 0) {
-          drawLine(ctx, points[ia], points[ib]);
-        }
+      if (Array.isArray(edge)) {
+        a = edge[0];
+        b = edge[1];
+      } else {
+        a = edge.a ?? edge.from ?? edge.start;
+        b = edge.b ?? edge.to ?? edge.end;
+      }
+
+      if (
+        Number.isInteger(a) &&
+        Number.isInteger(b) &&
+        screenPoints[a] &&
+        screenPoints[b]
+      ) {
+        drawSegment(ctx, screenPoints[a], screenPoints[b]);
       }
     });
 
-    ctx.fillStyle = "#4058c8";
-    points.forEach(p => {
+    ctx.fillStyle = "#263fba";
+    screenPoints.forEach(p => {
       ctx.beginPath();
       ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
       ctx.fill();
     });
 
-    return points.length;
+    return screenPoints.length;
+  }
+
+  function drawXY() {
+    const canvas = document.getElementById("xy");
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = "#333333";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(25, canvas.height / 2);
+    ctx.lineTo(canvas.width - 25, canvas.height / 2);
+    ctx.stroke();
+
+    ctx.fillStyle = "#333333";
+    ctx.font = "bold 13px Arial";
+    ctx.fillText("X", 10, 20);
+    ctx.fillText("Y", canvas.width - 20, 20);
   }
 
   function draw() {
     try {
-      if (!window.DraftMateSolids ||
-          !window.DraftMateProjection) {
+      if (
+        !window.DraftMateSolids ||
+        typeof window.DraftMateSolids.createSolid !== "function"
+      ) {
         throw new Error(
-          "Could not load an engine file. Check filenames and script paths."
+          "solids-engine.js did not load. Check its filename and location."
         );
       }
 
@@ -192,52 +246,32 @@
         segments: 32
       });
 
-      if (!model || !Array.isArray(model.vertices) ||
-          !Array.isArray(model.edges)) {
-        throw new Error(
-          "Unexpected model format. We need to match the engine's vertex and edge structure."
-        );
+      if (!model || !model.vertices || !model.edges) {
+        throw new Error("The geometry engine returned an unexpected model.");
       }
 
-      // Verify that the projection engine also accepts this model.
-      const projection =
-        window.DraftMateProjection.createProjection(model);
-
-      if (!projection) {
-        throw new Error("Projection engine returned no result.");
-      }
-
-      // FV uses X and Z. TV uses X and Y.
-      const fvCount = render(
+      /*
+        FV projects X-Z.
+        TV projects X-Y.
+        Edges remain connected through their vertex indices.
+      */
+      const fvCount = drawProjection(
         "fv", model.vertices, model.edges, "x", "z"
       );
 
-      const tvCount = render(
+      const tvCount = drawProjection(
         "tv", model.vertices, model.edges, "x", "y"
       );
 
-      const xy = document.getElementById("xy");
-      const ctx = xy.getContext("2d");
-      ctx.clearRect(0, 0, xy.width, xy.height);
-      ctx.strokeStyle = "#7d8aa3";
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([]);
-      ctx.beginPath();
-      ctx.moveTo(25, 32);
-      ctx.lineTo(xy.width - 25, 32);
-      ctx.stroke();
-      ctx.fillStyle = "#65738b";
-      ctx.font = "bold 13px Arial";
-      ctx.fillText("X", 12, 24);
-      ctx.fillText("Y", xy.width - 20, 24);
+      drawXY();
 
       status.textContent =
-        "PASS: Drawing generated. Vertices: " +
-        model.vertices.length +
+        "Drawing generated. Solid: " + type +
+        ". Vertices: " + model.vertices.length +
         ". Edges: " + model.edges.length +
         ". FV points: " + fvCount +
         ". TV points: " + tvCount +
-        ". Hidden-line classification and engineering inclinations are not implemented yet.";
+        ". This prototype does not yet classify hidden edges or construct inclined positions.";
 
     } catch (error) {
       status.textContent = "ERROR: " + error.message;
@@ -249,6 +283,5 @@
   draw();
 })();
 </script>
-
 </body>
 </html>
