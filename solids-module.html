@@ -17,6 +17,7 @@ label{font-size:13px;color:#c8d5eb}
 input,select,button{width:100%;padding:10px;margin-top:6px;border-radius:7px;font-size:15px}
 input,select{background:#101522;color:white;border:1px solid #52617d}
 button{background:#78baff;color:#101522;font-weight:bold;border:0;cursor:pointer}
+button:focus-visible{outline:2px solid white;outline-offset:2px}
 .steps{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .steps button{flex:1;min-width:100px}
 .views{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
@@ -82,13 +83,12 @@ svg{width:100%;height:auto;display:block}
 </div>
 
 <p class="note">
-Projection prototype: FV is above XY and TV is below XY.
-The model uses a common drawing scale for both views. Exact resting
-conditions, hidden edges and traditional KTU construction steps are
-not yet fully implemented.
+This is a projection prototype. FV is displayed above XY and TV below XY.
+The model uses a common drawing scale. Traditional KTU construction steps,
+exact resting conditions and hidden-edge visibility are not fully implemented.
 </p>
 <button id="generate">Generate projections</button>
-<p id="status" role="status"></p>
+<p id="status" role="status" aria-live="polite"></p>
 </section>
 
 <section class="panel">
@@ -103,21 +103,21 @@ not yet fully implemented.
 <div class="views">
 <div class="view">
 <h3>3D View</h3>
-<svg id="iso" viewBox="0 0 340 250"></svg>
+<svg id="iso" viewBox="0 0 340 250" role="img" aria-label="3D solid view"></svg>
 </div>
 <div class="view">
 <h3>Front View (FV)</h3>
-<svg id="fv" viewBox="0 0 340 250"></svg>
+<svg id="fv" viewBox="0 0 340 250" role="img" aria-label="Front projection"></svg>
 </div>
 <div class="view">
 <h3>Top View (TV)</h3>
-<svg id="tv" viewBox="0 0 340 250"></svg>
+<svg id="tv" viewBox="0 0 340 250" role="img" aria-label="Top projection"></svg>
 </div>
 </div>
 
 <p class="note">
-Blue lines show projected edges. Circular solids are approximated
-using 48 segments. Hidden-line visibility is not yet implemented.
+Blue lines show projected edges. Cylinders and cones are approximated using
+48 segments. Hidden-line visibility is not yet implemented.
 </p>
 </section>
 </main>
@@ -175,14 +175,12 @@ function makeSolid(shape,sides,base,height){
   const r=round?base/2:base/(2*Math.sin(Math.PI/sides));
   const vertices=[],edges=[];
 
-  // Base vertices
   for(let i=0;i<n;i++){
     const t=2*Math.PI*i/n;
     vertices.push([r*Math.cos(t),r*Math.sin(t),0]);
   }
 
   if(shape==="prism"||shape==="cylinder"){
-    // Upper base vertices
     for(let i=0;i<n;i++){
       const t=2*Math.PI*i/n;
       vertices.push([r*Math.cos(t),r*Math.sin(t),height]);
@@ -206,33 +204,69 @@ function makeSolid(shape,sides,base,height){
   return {vertices,edges};
 }
 
+/*
+  FIX:
+  If both requested angles are zero, every stage preserves the
+  original orientation. Non-zero inclination is still a simplified
+  orientation model and requires further engineering validation.
+*/
 function orientSolid(solid,hp,vp,sequence,selectedStage){
   const rad=Math.PI/180;
 
-  if(selectedStage===0) return solid;
+  // Simple position: original orientation.
+  if(selectedStage===0){
+    return solid;
+  }
 
+  // No inclination requested: do not rotate at either later stage.
+  if(Math.abs(hp)<1e-9 && Math.abs(vp)<1e-9){
+    return solid;
+  }
+
+  // First inclination: preliminary rotation about the selected axis.
   if(selectedStage===1){
+    if(sequence==="direct"){
+      return solid;
+    }
+
     const angle=(sequence==="vp"?vp:hp)*rad;
+
+    if(Math.abs(angle)<1e-9){
+      return solid;
+    }
+
     const axis=sequence==="vp"?[1,0,0]:[0,1,0];
     return rotateSolid(solid,angle,axis);
   }
 
+  // Final position: simplified target-axis direction.
   const y=Math.sin(vp*rad);
   const z=Math.sin(hp*rad);
   const x2=1-y*y-z*z;
 
   if(x2 < -1e-7){
-    throw Error("These angles are incompatible with this axis-direction model.");
+    throw Error(
+      "These angles are incompatible with the current axis-direction model. Try angles whose sum is 90° or less."
+    );
   }
 
-  const direction=unit([Math.sqrt(Math.max(0,x2)),y,z]);
+  const direction=unit([
+    Math.sqrt(Math.max(0,x2)),
+    y,
+    z
+  ]);
+
   const original=[0,0,1];
   const axis=cross(original,direction);
+
   const angle=Math.acos(
     Math.max(-1,Math.min(1,dot(original,direction)))
   );
 
-  if(Math.hypot(...axis)<1e-8) return solid;
+  if(Math.hypot(...axis)<1e-8){
+    return solid;
+  }
+
   return rotateSolid(solid,angle,unit(axis));
 }
 
@@ -255,11 +289,6 @@ function drawXY(svg,xy){
   }).textContent="XY";
 }
 
-/*
-  Common scale and common horizontal mapping.
-  FV base is placed on XY in simple position.
-  TV is placed below XY for the standard first-angle layout.
-*/
 function drawOrthographicPair(solid){
   const fv=$("fv"),tv=$("tv");
   fv.replaceChildren();
@@ -286,7 +315,6 @@ function drawOrthographicPair(solid){
     (H-XY-15)/spanY
   );
 
-  // The same X coordinate is used by both views.
   const originX=W/2-((minX+maxX)/2)*scale;
 
   function drawOne(svg,mode){
@@ -299,7 +327,6 @@ function drawOrthographicPair(solid){
         return [screenX,XY-(p[2]-minZ)*scale];
       }
 
-      // Shift the whole top view below XY.
       return [screenX,XY+8+(p[1]-minY)*scale];
     });
 
@@ -381,9 +408,9 @@ function generate(){
     drawOrthographicPair(solid);
 
     const descriptions=[
-      "Simple position: the axis starts vertical and the base starts at z = 0.",
-      "First inclination: preliminary rotation of the model.",
-      "Final position: both orthographic views share one scale and horizontal alignment."
+      "Simple position: the solid starts in its original orientation.",
+      "First inclination: preliminary rotation based on the selected sequence.",
+      "Final position: simplified orientation using the requested angles."
     ];
 
     $("stepText").textContent=descriptions[stage];
