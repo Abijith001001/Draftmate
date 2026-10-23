@@ -279,60 +279,100 @@ function project(point, mode) {
   ];
 }
 
+
 function drawView(id, solid, mode) {
   const svg = $(id);
   svg.replaceChildren();
 
-  const points = solid.vertices.map(p => project(p,mode));
-  const xs = points.map(p=>p[0]);
-  const ys = points.map(p=>p[1]);
+  if (!solid || !solid.vertices.length) return;
+
+  const points = solid.vertices.map(p => project(p, mode));
+  const xs = points.map(p => p[0]);
+  const ys = points.map(p => p[1]);
 
   const minX = Math.min(...xs);
   const maxX = Math.max(...xs);
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
 
-  const width = Math.max(maxX-minX,1e-6);
-  const height = Math.max(maxY-minY,1e-6);
-  const scale = Math.min(270/width,185/height);
+  const width = Math.max(maxX - minX, 0.001);
+  const height = Math.max(maxY - minY, 0.001);
 
-  const map = p => [
-    170-(minX+maxX)/2*scale+p[0]*scale,
-    125+(minY+maxY)/2*scale-p[1]*scale
-  ];
-
-  if (mode !== "iso") {
-    svgElement(svg,"line",{
-      x1:10,y1:125,x2:330,y2:125,
-      stroke:"#d18b32",
-      "stroke-dasharray":"5 4",
-      "stroke-width":1
-    });
+  // Orthographic views use the XY reference line as their baseline.
+  // FV sits above XY; TV sits below XY.
+  let scale;
+  if (mode === "iso") {
+    scale = Math.min(270 / width, 185 / height);
+  } else {
+    scale = Math.min(270 / width, 100 / height);
   }
 
-  // Draw all projected edges, including edges that overlap in projection.
-  for (const [i,j] of solid.edges) {
+  const centerX = (minX + maxX) / 2;
+  const xy = 125;
+
+  const map = p => {
+    const screenX = 170 + (p[0] - centerX) * scale;
+
+    let screenY;
+    if (mode === "fv") {
+      // Move the lowest projected point just above XY.
+      screenY = xy - (p[1] - minY) * scale - 3;
+    } else if (mode === "tv") {
+      // Move the highest projected point just below XY.
+      screenY = xy + (maxY - p[1]) * scale + 3;
+    } else {
+      screenY = 125 - (p[1] - (minY + maxY) / 2) * scale;
+    }
+
+    return [screenX, screenY];
+  };
+
+  if (mode !== "iso") {
+    svgElement(svg, "line", {
+      x1: 10,
+      y1: xy,
+      x2: 330,
+      y2: xy,
+      stroke: "#d18b32",
+      "stroke-width": 1.4
+    });
+
+    svgElement(svg, "text", {
+      x: 12,
+      y: xy - 6,
+      fill: "#9a651b",
+      "font-size": 10
+    }).textContent = "XY";
+  }
+
+  // Draw every projected edge.
+  for (const [i, j] of solid.edges) {
     const p = map(points[i]);
     const q = map(points[j]);
 
-    svgElement(svg,"line",{
-      x1:p[0],y1:p[1],
-      x2:q[0],y2:q[1],
-      stroke:"#1769d2",
-      "stroke-width":1.6,
-      "stroke-linecap":"round"
+    svgElement(svg, "line", {
+      x1: p[0],
+      y1: p[1],
+      x2: q[0],
+      y2: q[1],
+      stroke: "#1769d2",
+      "stroke-width": 1.6,
+      "stroke-linecap": "round"
     });
   }
 
-  // Vertex dots help reveal collapsed/overlapping projections.
+  // Small markers help us check projected vertex positions.
   for (const point of points) {
     const p = map(point);
-    svgElement(svg,"circle",{
-      cx:p[0],cy:p[1],r:1.6,fill:"#1769d2"
+
+    svgElement(svg, "circle", {
+      cx: p[0],
+      cy: p[1],
+      r: 1.5,
+      fill: "#1769d2"
     });
   }
 }
-
 function generate() {
   try {
     const shape = $("shape").value;
