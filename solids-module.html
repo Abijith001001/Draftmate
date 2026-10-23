@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DraftMate Solids Solver</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101522;color:#edf2ff;font-family:Arial,sans-serif}
+header{padding:20px;background:#192640}
+h1{margin:0 0 8px;font-size:25px}
+main{max-width:1100px;margin:auto;padding:15px}
+.panel{background:#192238;border:1px solid #35445f;border-radius:12px;padding:15px;margin-bottom:15px}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+label{font-size:13px;color:#c8d5eb}
+input,select,button{width:100%;padding:10px;margin-top:6px;border-radius:7px;font-size:15px}
+input,select{background:#101522;color:white;border:1px solid #52617d}
+button{background:#78baff;color:#101522;font-weight:bold;border:0;cursor:pointer}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.steps button{flex:1;min-width:100px}
+.views{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
+.view{background:white;color:#18243a;border-radius:9px;padding:10px;min-width:0}
+.view h3{margin:4px 0 10px;font-size:16px}
+svg{width:100%;height:auto;display:block}
+.note{font-size:13px;line-height:1.5;color:#c6d2e5}
+#status{color:#ffdc8b;line-height:1.5}
+.active{outline:2px solid #78baff}
+</style>
+</head>
+<body>
+<header>
+  <h1>DraftMate — Solids Projection Solver</h1>
+  <div>3D model · Front View · Top View · Inclination stages</div>
+</header>
+<main>
+<section class="panel">
+  <h2>1. Question settings</h2>
+  <div class="controls">
+    <label>Solid
+      <select id="shape">
+        <option value="prism">Regular prism</option>
+        <option value="pyramid">Regular pyramid</option>
+        <option value="cylinder">Cylinder</option>
+        <option value="cone">Cone</option>
+      </select>
+    </label>
+    <label>Base sides
+      <select id="sides">
+        <option value="3">Triangle</option>
+        <option value="4">Square</option>
+        <option value="5">Pentagon</option>
+        <option value="6" selected>Hexagon</option>
+        <option value="8">Octagon</option>
+        <option value="12">12 sides</option>
+        <option value="32">Circle approximation</option>
+      </select>
+    </label>
+    <label>Base side / diameter (mm)
+      <input id="base" type="number" min="1" value="25">
+    </label>
+    <label>Axis length / height (mm)
+      <input id="height" type="number" min="1" value="60">
+    </label>
+    <label>Axis angle to HP (°)
+      <input id="hp" type="number" min="0" max="90" value="30">
+    </label>
+    <label>Axis angle to VP (°)
+      <input id="vp" type="number" min="0" max="90" value="0">
+    </label>
+    <label>Construction sequence
+      <select id="sequence">
+        <option value="hp">Incline to HP first, then VP</option>
+        <option value="vp">Incline to VP first, then HP</option>
+        <option value="direct">Direct final orientation</option>
+      </select>
+    </label>
+  </div>
+  <p class="note">
+    Enter angles measured between the solid's axis and each reference
+    plane. For a face or edge resting on a plane, the construction
+    reference must also be specified in a future question parser.
+  </p>
+  <button id="generate">Generate solution</button>
+  <p id="status"></p>
+</section>
+
+<section class="panel">
+  <h2>2. Construction stages</h2>
+  <div class="steps">
+    <button data-stage="0">Simple position</button>
+    <button data-stage="1">First inclination</button>
+    <button data-stage="2">Final position</button>
+  </div>
+  <p id="stepText" class="note"></p>
+  <div class="views">
+    <div class="view">
+      <h3>3D view</h3>
+      <svg id="iso" viewBox="0 0 340 250"></svg>
+    </div>
+    <div class="view">
+      <h3>Front View (FV)</h3>
+      <svg id="fv" viewBox="0 0 340 250"></svg>
+    </div>
+    <div class="view">
+      <h3>Top View (TV)</h3>
+      <svg id="tv" viewBox="0 0 340 250"></svg>
+    </div>
+  </div>
+  <p class="note">
+    Blue lines are projected edges. This prototype does not yet
+    calculate exact hidden edges or automatically identify every
+    KTU construction condition.
+  </p>
+</section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+let currentStage = 2;
+let currentData = null;
+
+function element(parent, tag, attrs={}) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+  parent.appendChild(e);
+  return e;
+}
+
+function add(a,b){return a.map((v,i)=>v+b[i]);}
+function sub(a,b){return a.map((v,i)=>v-b[i]);}
+function mul(a,k){return a.map(v=>v*k);}
+function dot(a,b){return a.reduce((s,v,i)=>s+v*b[i],0);}
+function cross(a,b){
+  return [
+    a[1]*b[2]-a[2]*b[1],
+    a[2]*b[0]-a[0]*b[2],
+    a[0]*b[1]-a[1]*b[0]
+  ];
+}
+function unit(a){
+  const n=Math.hypot(...a);
+  if(n<1e-9) throw Error("Invalid solid orientation.");
+  return mul(a,1/n);
+}
+
+function rotateAround(v,axis,angle){
+  const c=Math.cos(angle),s=Math.sin(angle);
+  return add(add(mul(v,c),mul(cross(axis,v),s)),
+             mul(axis,dot(axis,v)*(1-c)));
+}
+
+// Build a solid initially with its axis along Z.
+function makeSolid(shape,n,b,h){
+  const circular=shape==="cylinder"||shape==="cone";
+  const count=circular?48:n;
+  const r=circular?b/2:b/(2*Math.sin(Math.PI*n));
+  const vertices=[];
+  const edges=[];
+  for(let i=0;i<count;i++){
+    const t=2*Math.PI*i/count;
+    vertices.push([r*Math.cos(t),r*Math.sin(t),0]);
+  }
+  if(shape==="prism"||shape==="cylinder"){
+    for(let i=0;i<count;i++){
+      const j=(i+1)%count;
+      edges.push([i,j]);
+      edges.push([i+count, j+count]);
+      edges.push([i,i+count]);
+      vertices.push([vertices[i][0],vertices[i][1],h]);
+    }
+  }else{
+    const tip=vertices.length;
+    vertices.push([0,0,h]);
+    for(let i=0;i<count;i++){
+      edges.push([i,(i+1)%count]);
+      edges.push([i,tip]);
+    }
+  }
+  return {vertices,edges};
+}
+
+function rotateSolid(s,angle,axis){
+  return {
+    vertices:s.vertices.map(p=>rotateAround(p,axis,angle)),
+    edges:s.edges
+  };
+}
+
+function orientedSolid(base,alpha,beta,sequence){
+  const rad=Math.PI/180;
+  if(sequence==="direct"){
+    const a=alpha*rad, b=beta*rad;
+    const z=Math.sin(a), y=Math.sin(b);
+    const x2=1-y*y-z*z;
+    if(x2 < -1e-7)
+      throw Error("The two angles are incompatible for this orientation.");
+    const direction=unit([Math.sqrt(Math.max(0,x2)),y,z]);
+    const oldAxis=[0,0,1];
+    const axis=cross(oldAxis,direction);
+    const d=Math.acos(Math.max(-1,Math.min(1,dot(oldAxis,direction))));
+    if(Math.hypot(...axis)<1e-8) return base;
+    return rotateSolid(base,d,unit(axis));
+  }
+
+  // First stage: tilt away from vertical while keeping the axis
+  // parallel to the other reference plane.
+  if(sequence==="hp"){
+    const first=rotateSolid(base,alpha*rad,[0,1,0]);
+    if(currentStage===1) return first;
+  }else{
+    const first=rotateSolid(base,beta*rad,[1,0,0]);
+    if(currentStage===1) return first;
+  }
+
+  // Final stage: solve an axis direction from the two plane angles.
+  const a=alpha*rad,b=beta*rad;
+  const x2=1-Math.sin(a)**2-Math.sin(b)**2;
+  if(x2 < -1e-7)
+    throw Error("These axis angles are not compatible. Check the question.");
+  const direction=unit([
+    Math.sqrt(Math.max(0,x2)),
+    Math.sin(b),
+    Math.sin(a)
+  ]);
+  const axis=cross([0,0,1],direction);
+  const angle=Math.acos(Math.max(-1,Math.min(1,direction[2])));
+  if(Math.hypot(...axis)<1e-8) return base;
+  return rotateSolid(base,angle,unit(axis));
+}
+
+function project(p,mode){
+  if(mode==="fv") return [p[0],p[2]];
+  if(mode==="tv") return [p[0],p[1]];
+  return [
+    (p[0]-p[1])*0.866,
+    (p[0]+p[1])*0.5-p[2]
+  ];
+}
+
+function draw(id,solid,mode){
+  const svg=$(id);
+  svg.replaceChildren();
+  const pts=solid.vertices.map(p=>project(p,mode));
+  let minX=Math.min(...pts.map(p=>p[0]));
+  let maxX=Math.max(...pts.map(p=>p[0]));
+  let minY=Math.min(...pts.map(p=>p[1]));
+  let maxY=Math.max(...pts.map(p=>p[1]));
+  const sx=maxX-minX||1, sy=maxY-minY||1;
+  const f=Math.min(270/sx,185/sy);
+  const map=p=>[
+    170+(p[0]-(minX+maxX)/2)*f,
+    125-(p[1]-(minY+maxY)/2)*f
+  ];
+
+  if(mode!=="iso"){
+    element(svg,"line",{x1:10,y1:125,x2:330,y2:125,
+      stroke:"#888","stroke-dasharray":"5 4"});
+    element(svg,"text",{x:12,y:117,fill:"#777","font-size":10})
+      .textContent="XY";
+  }
+  for(const [i,j] of solid.edges){
+    const a=map(pts[i]),b=map(pts[j]);
+    element(svg,"line",{
+      x1:a[0],y1:a[1],x2:b[0],y2:b[1],
+      stroke:"#1769d2","stroke-width":1.6
+    });
+  }
+}
+
+function generate(){
+  try{
+    const shape=$("shape").value;
+    const n=Number($("sides").value);
+    const b=Number($("base").value);
+    const h=Number($("height").value);
+    const a=Number($("hp").value);
+    const v=Number($("vp").value);
+    const seq=$("sequence").value;
+    if(!(b>0&&h>0&&a>=0&&a<=90&&v>=0&&v<=90))
+      throw Error("Enter positive dimensions and angles from 0° to 90°.");
+    const base=makeSolid(shape,n,b,h);
+    const selected=currentStage===0?base:orientedSolid(base,a,v,seq);
+    currentData=selected;
+    draw("iso",selected,"iso");
+    draw("fv",selected,"fv");
+    draw("tv",selected,"tv");
+    const names=[
+      "Simple position: the axis is initially vertical.",
+      seq==="hp"
+        ?"First inclination: axis tilted relative to HP, with the first-stage assumption that it stays parallel to VP."
+        :"First inclination: axis tilted relative to VP, with the first-stage assumption that it stays parallel to HP.",
+      "Final orientation: the axis is oriented using the requested HP and VP angles."
+    ];
+    $("stepText").textContent=names[currentStage];
+    $("status").textContent=
+      "Generated "+shape+" · "+selected.vertices.length+
+      " vertices · "+selected.edges.length+" edges. Check the drawing against your EG construction.";
+    document.querySelectorAll("[data-stage]").forEach(btn=>{
+      btn.classList.toggle("active",Number(btn.dataset.stage)===currentStage);
+    });
+  }catch(e){
+    $("status").textContent=e.message;
+  }
+}
+
+$("generate").addEventListener("click",generate);
+document.querySelectorAll("[data-stage]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    currentStage=Number(btn.dataset.stage);
+    generate();
+  });
+});
+$("shape").addEventListener("change",()=>{
+  const round=["cylinder","cone"].includes($("shape").value);
+  $("sides").disabled=round;
+});
+generate();
+</script>
+</body>
+</html>
