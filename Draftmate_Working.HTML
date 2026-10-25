@@ -1,0 +1,2703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DraftMate | KTU Engineering Graphics</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<style>
+:root {
+  --navy: #101827;
+  --ink: #172238;
+  --muted: #77849a;
+  --blue: #4466eb;
+  --blue-light: #eef2ff;
+  --paper: #f5f7fb;
+  --line: #e5e9f0;
+  --green: #168568;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+}
+
+button, textarea { font: inherit; }
+button { cursor: pointer; }
+
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 225px minmax(0, 1fr);
+}
+
+aside {
+  padding: 24px 15px;
+  background: var(--navy);
+  color: #dce4f6;
+}
+
+.brand {
+  margin-bottom: 34px;
+  color: white;
+  font: 700 24px "Space Grotesk", sans-serif;
+}
+
+.brand small {
+  display: block;
+  margin-top: 5px;
+  color: #99a6c1;
+  font: 11px "DM Sans", sans-serif;
+}
+
+.side-label {
+  margin: 23px 0 10px;
+  color: #8290aa;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.side-item {
+  display: block;
+  width: 100%;
+  margin: 4px 0;
+  padding: 11px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #aebbd2;
+  text-align: left;
+}
+
+.side-item.active {
+  background: #273453;
+  color: white;
+}
+
+.side-note {
+  margin-top: 30px;
+  padding: 12px;
+  border: 1px solid #293750;
+  border-radius: 9px;
+  color: #a9b5cb;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+main {
+  min-width: 0;
+  width: 100%;
+  max-width: 1550px;
+  padding: 0 28px 24px;
+  margin: 0 auto;
+}
+
+header {
+  min-height: 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.scheme {
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: white;
+}
+
+.heading { margin: 28px 0 20px; }
+
+.eyebrow {
+  color: #6578d8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+h1 {
+  margin: 10px 0 8px;
+  font: 700 clamp(25px, 3vw, 36px) "Space Grotesk", sans-serif;
+  letter-spacing: -1px;
+}
+
+h1 span { color: var(--blue); }
+
+.subtitle {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.card {
+  min-width: 0;
+  padding: 17px;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 7px 25px #26365408;
+}
+
+.card h2 {
+  margin: 0;
+  font: 600 15px "Space Grotesk", sans-serif;
+}
+
+.small-note {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 100px;
+  margin-top: 15px;
+  padding: 12px;
+  resize: vertical;
+  border: 1px solid #dce3ef;
+  border-radius: 8px;
+  background: #fbfcff;
+  color: #344159;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+textarea:focus {
+  outline: 2px solid #dbe3ff;
+  border-color: #8498ff;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.button {
+  padding: 10px 13px;
+  border: 1px solid #dce3ef;
+  border-radius: 7px;
+  background: white;
+  color: #53617a;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.button.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: white;
+}
+
+.button.primary:hover { background: #3351d5; }
+
+.status {
+  display: none;
+  padding: 10px 12px;
+  margin-top: 12px;
+  border-radius: 7px;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.status.show { display: block; }
+.status.success { background: #effaf6; color: #21775e; }
+.status.error { background: #fff4e9; color: #99551c; }
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(290px, .9fr);
+  gap: 16px;
+}
+
+.scene-wrap {
+  position: relative;
+  height: 350px;
+  margin-top: 15px;
+  overflow: hidden;
+  border: 1px solid #e7edf6;
+  border-radius: 9px;
+  background: #f5f8fd;
+}
+
+#scene3d {
+  position: absolute;
+  inset: 0;
+}
+
+#scene3d canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.scene-label {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  left: 12px;
+  color: #67758d;
+  font-size: 10px;
+  line-height: 2;
+  pointer-events: none;
+}
+
+.bottom-label {
+  position: absolute;
+  z-index: 2;
+  bottom: 11px;
+  left: 12px;
+  color: #63718b;
+  font-size: 10px;
+  pointer-events: none;
+}
+
+.angle {
+  color: var(--blue);
+  font: 700 20px "Space Grotesk", sans-serif;
+}
+
+.readout-label {
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.steps {
+  display: grid;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 9px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  text-align: left;
+}
+
+.step.current {
+  border-color: #dbe3ff;
+  background: #f2f5ff;
+}
+
+.step-num {
+  display: grid;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 7px;
+  background: #edf0f6;
+  color: #65728a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.step.current .step-num {
+  background: #dfe6ff;
+  color: #3e59d5;
+}
+
+.step strong {
+  display: block;
+  font-size: 11px;
+}
+
+.step small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.progress {
+  height: 4px;
+  margin-top: 14px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #edf0f7;
+}
+
+#progressFill {
+  width: 25%;
+  height: 100%;
+  background: var(--blue);
+  transition: width .25s;
+}
+
+.explanation {
+  min-height: 105px;
+  padding: 12px;
+  margin-top: 13px;
+  border: 1px solid #edf0f7;
+  border-radius: 8px;
+  background: #f8faff;
+}
+
+.explanation strong {
+  color: #6174c7;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.explanation p {
+  margin-bottom: 0;
+  color: #63718a;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.drawing-card { margin-top: 16px; }
+
+.drawing-wrap {
+  margin-top: 16px;
+  overflow: hidden;
+  border: 1px solid #e7ecf4;
+  border-radius: 8px;
+  background: white;
+}
+
+#projectionSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 240px;
+}
+
+.edge {
+  fill: none;
+  stroke: #4e65d9;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.hidden-edge {
+  fill: none;
+  stroke: #7c8799;
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.projector {
+  fill: none;
+  stroke: #aeb9cf;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.axis-line {
+  fill: none;
+  stroke: #52617b;
+  stroke-width: 1.1;
+  stroke-dasharray: 8 3 1 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.xy {
+  stroke: #7d8aa3;
+  stroke-width: 1.3;
+  vector-effect: non-scaling-stroke;
+}
+
+.projection-text {
+  fill: #8190a7;
+  font: 10px "DM Sans", sans-serif;
+}
+
+.point-text {
+  fill: #5068d9;
+  font: 700 9px "DM Sans", sans-serif;
+}
+
+footer {
+  padding: 16px 2px 0;
+  color: #9aa4b3;
+  font-size: 9px;
+  line-height: 1.7;
+}
+
+@media (max-width: 950px) {
+  .app { grid-template-columns: 65px minmax(0, 1fr); }
+  aside { padding: 18px 7px; }
+  .brand { font-size: 0; }
+  .brand small, .side-label, .side-item span, .side-note { display: none; }
+  .side-item { text-align: center; }
+  .workspace { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  main { padding: 0 10px 20px; }
+  .scene-wrap { height: 290px; }
+  .card { padding: 13px; }
+  header { font-size: 9px; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      DraftMate
+      <small>KTU · Engineering Graphics</small>
+    </div>
+
+    <div class="side-label">WORKSPACE</div>
+    <button class="side-item active" type="button">⌘ <span>Question solver</span></button>
+    <button class="side-item" id="topicButton" type="button">▦ <span>Topic library</span></button>
+
+    <div class="side-label">SOLIDS MODULE</div>
+    <button class="side-item active" type="button">01 <span>Projections of solids</span></button>
+
+    <div class="side-note">
+      <strong>DraftMate · Solids</strong><br>
+      Learn the construction process through 3D geometry, projections and animated stages.
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <div>Workspace / Question solver</div>
+      <div class="scheme">● KTU · Engineering Graphics</div>
+    </header>
+
+    <section class="heading">
+      <div class="eyebrow">ENGINEERING GRAPHICS · LEARN BY SEEING</div>
+      <h1>Make every projection <span>make sense.</span></h1>
+      <div class="subtitle">
+        Type a question, explore the solid in 3D and follow the construction stages.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Enter your engineering question</h2>
+      <div class="small-note">
+        Describe a prism, pyramid, cylinder or cone, its dimensions,
+        and its base/axis position. Use HP/VP or spell out the plane names.
+      </div>
+
+      <textarea id="questionInput" spellcheck="false">A regular hexagonal prism of side 25 mm and axis length 60 mm is initially placed with its base on HP. Its axis is inclined at 30 degrees to HP and parallel to VP.</textarea>
+
+      <div class="row">
+        <div class="small-note">Angles and resting conditions must be geometrically compatible.</div>
+        <button class="button primary" id="solveButton" type="button">
+          Generate construction ↗
+        </button>
+      </div>
+
+      <div id="parseNotice" class="status" role="status" aria-live="polite"></div>
+    </section>
+
+    <div class="workspace">
+      <section class="card">
+        <h2 id="modelTitle">3D model · Hexagonal prism</h2>
+        <div class="small-note">Drag to orbit. Scroll to zoom.</div>
+
+        <div class="scene-wrap">
+          <div class="scene-label">
+            <strong>HP</strong> · Horizontal plane<br>
+            <strong>VP</strong> · Vertical plane
+          </div>
+          <div id="scene3d"></div>
+          <div class="bottom-label">Interactive 3D model</div>
+        </div>
+
+        <div class="row">
+          <div>
+            <div class="readout-label">AXIS ORIENTATION</div>
+            <div class="angle" id="angleValue">90° to HP</div>
+            <div class="small-note" id="vpReadout">Parallel to VP</div>
+          </div>
+
+          <div class="row" style="margin-top:0">
+            <button class="button" id="resetView" type="button">Reset view</button>
+            <button class="button" id="animateButton" type="button">Animate next stage ▶</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Construction guide</h2>
+        <div class="small-note" id="stepSubtitle">Start with the simple position.</div>
+        <div class="progress"><div id="progressFill"></div></div>
+
+        <div class="steps">
+          <button class="step current" data-step="0" type="button">
+            <span class="step-num">01</span>
+            <span>
+              <strong>Simple position</strong>
+              <small>Establish the initial FV and TV.</small>
+            </span>
+          </button>
+
+          <button class="step" data-step="1" type="button">
+            <span class="step-num">02</span>
+            <span>
+              <strong>First inclination</strong>
+              <small>Apply the first angular condition.</small>
+            </span>
+          </button>
+
+          <button class="step" data-step="2" type="button">
+            <span class="step-num">03</span>
+            <span>
+              <strong>Second inclination</strong>
+              <small>Apply the second condition when required.</small>
+            </span>
+          </button>
+
+          <button class="step" data-step="3" type="button">
+            <span class="step-num">04</span>
+            <span>
+              <strong>Final setup and views</strong>
+              <small>Inspect the final position, FV and TV.</small>
+            </span>
+          </button>
+        </div>
+
+        <div class="explanation">
+          <strong>WHY THIS STEP?</strong>
+          <p id="stepExplanation">
+            Begin with the solid in its simple position.
+          </p>
+        </div>
+
+        <div class="row">
+          <button class="button" id="previousStep" type="button" disabled>← Previous</button>
+          <button class="button primary" id="nextStep" type="button">Next step →</button>
+        </div>
+      </section>
+    </div>
+
+    <section class="card drawing-card">
+      <h2 id="drawingTitle">Orthographic projection · FV and TV</h2>
+      <div class="small-note">
+        The front view and top view are generated from the 3D geometry.
+      </div>
+
+      <div class="drawing-wrap">
+        <svg id="projectionSvg"
+             viewBox="0 0 760 400"
+             role="img"
+             aria-label="Calculated front view and top view">
+        </svg>
+      </div>
+
+      <div class="row">
+        <div class="small-note">
+          Engineering drawings must be validated against standard construction
+          methods. Hidden lines and some special resting conditions need further testing.
+        </div>
+        <button class="button" id="downloadSvg" type="button">Export drawing (SVG) ↓</button>
+      </div>
+    </section>
+
+    <footer>
+      DraftMate · KTU Engineering Graphics learning prototype.
+      Geometry features will be tested systematically as the solver expands.
+    </footer>
+  </main>
+</div>
+
+<script type="module">
+  import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const $ = id => document.getElementById(id);
+
+const input = $('questionInput');
+const notice = $('parseNotice');
+const projectionSvg = $('projectionSvg');
+const sceneHost = $('scene3d');
+const stepButtons = [...document.querySelectorAll('[data-step]')];
+
+const state = {
+  solidType: 'prism',
+  solidLabel: 'Hexagonal prism',
+  baseShape: 'hexagon',
+  sides: 6,
+
+  side: 25,
+  width: 25,
+  height: 60,
+  radius: 25,
+
+  axisAngle: 30,
+  vpAngle: 0,
+  topViewAngle: null,
+  planAngleSource: null,
+  frontViewAngle: null,
+  baseEdgeAngleVP: null,
+  planAngleSign: 1,
+  apexAwayFromVP: false,
+  apexTowardVP: false,
+  apexTowardRight: false,
+  restingFaceOnHP: false,
+  faceEdgeAngleVP: null,
+  suspendedFromCorner: false,
+  suspensionPlanAngle: null,
+  hasSecondInclination: false,
+  basePlane: 'HP',
+  baseContact: 'edge',
+  baseInclinationHP: null,
+  baseInclinationVP: null,
+  assumedParallelVP: false,
+
+  step: 0,
+  currentTilt: 0,
+  targetTilt: 0,
+  currentAzimuth: 0,
+  targetAzimuth: 0,
+
+  tween: null,
+  geometryGroup: null,
+  baseVertices: [],
+  edges: [],
+  surfaceTriangles: [],
+
+  lastDrawTilt: -999,
+  lastDrawAzimuth: -999,
+  lastProjectionUpdate: 0
+};
+
+function showNotice(message, type = 'success') {
+  notice.textContent = message;
+  notice.className = `status show ${type}`;
+}
+
+function radians(degrees) {
+  return degrees * Math.PI / 180;
+}
+
+/* -------------------------------------------------------
+   QUESTION PARSER
+
+   Supported categories:
+   - Triangular, square, rectangular, pentagonal and
+     hexagonal prisms
+   - Triangular, square, pentagonal and hexagonal pyramids
+   - Cylinders and cones
+
+   Question wording still needs validation against actual
+   KTU questions. Unrecognised conditions should be clarified.
+------------------------------------------------------- */
+
+function parseQuestion(raw) {
+  const text = raw.toLowerCase()
+    .replace(/[−–—]/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!text) {
+    return { error: 'Please enter an Engineering Graphics question.' };
+  }
+
+  let solidType;
+  let baseShape;
+  let sides;
+  let solidLabel;
+  const isCube = /\bcube\b/.test(text);
+
+  if (/\b(?:cylinder|right circular cylinder)\b/.test(text)) {
+    solidType = 'cylinder';
+    baseShape = 'circle';
+    sides = 32;
+    solidLabel = 'Cylinder';
+  } else if (/\b(?:cone|right circular cone)\b/.test(text)) {
+    solidType = 'cone';
+    baseShape = 'circle';
+    sides = 32;
+    solidLabel = 'Cone';
+  } else if (/\b(?:pyramid|tetrahedron)\b/.test(text)) {
+    solidType = 'pyramid';
+
+    if (/\btetrahedron\b|triangular\s+pyramid/.test(text)) {
+      sides = 3;
+      baseShape = 'triangle';
+    } else if (/square\s+pyramid/.test(text)) {
+      sides = 4;
+      baseShape = 'square';
+    } else if (/pentagonal\s+pyramid/.test(text)) {
+      sides = 5;
+      baseShape = 'pentagon';
+    } else if (/hexagonal\s+pyramid/.test(text)) {
+      sides = 6;
+      baseShape = 'hexagon';
+    } else if (/heptagonal\s+pyramid/.test(text)) {
+      sides = 7;
+      baseShape = 'heptagon';
+    } else if (/octagonal\s+pyramid/.test(text)) {
+      sides = 8;
+      baseShape = 'octagon';
+    } else {
+      return {
+        error: 'Specify a triangular, square, pentagonal, hexagonal, heptagonal or octagonal pyramid.'
+      };
+    }
+
+    solidLabel = `${baseShape[0].toUpperCase()}${baseShape.slice(1)} pyramid`;
+  } else if (/\b(?:prism|cuboid|cube)\b/.test(text)) {
+    solidType = 'prism';
+
+    if (isCube) {
+      sides = 4;
+      baseShape = 'square';
+      solidLabel = 'Cube';
+    } else if (/\b(?:cuboid|rectangular\s+prism)\b/.test(text)) {
+      sides = 4;
+      baseShape = 'rectangle';
+    } else if (/triangular\s+prism/.test(text)) {
+      sides = 3;
+      baseShape = 'triangle';
+    } else if (/square\s+prism/.test(text)) {
+      sides = 4;
+      baseShape = 'square';
+    } else if (/pentagonal\s+prism/.test(text)) {
+      sides = 5;
+      baseShape = 'pentagon';
+    } else if (/hexagonal\s+prism/.test(text)) {
+      sides = 6;
+      baseShape = 'hexagon';
+    } else if (/heptagonal\s+prism/.test(text)) {
+      sides = 7;
+      baseShape = 'heptagon';
+    } else if (/octagonal\s+prism/.test(text)) {
+      sides = 8;
+      baseShape = 'octagon';
+    } else {
+      return {
+        error: 'Specify a triangular, rectangular, square, pentagonal, hexagonal, heptagonal or octagonal prism.'
+      };
+    }
+
+    if (!isCube) {
+      solidLabel = `${baseShape[0].toUpperCase()}${baseShape.slice(1)} prism`;
+    }
+  } else {
+    return {
+      error: 'Identify a supported prism, pyramid, cylinder or cone in your question.'
+    };
+  }
+
+  const sideMatch = text.match(
+    /(?:side(?:\s+length)?|base(?:\s+side)?|base\s+edge)\s*(?:of\s*|is\s*)?(\d+(?:\.\d+)?)\s*mm/i
+  );
+
+  const axisMatch = text.match(
+    /(?:axis\s+length|height|altitude)\s*(?:of\s*|is\s*)?(\d+(?:\.\d+)?)\s*mm/i
+  ) || text.match(
+    /(\d+(?:\.\d+)?)\s*mm\s*(?:long\s*)?(?:axis|axial\s+length)/i
+  ) || text.match(
+    /\baxis\s+(?:length\s*)?(?:of\s*|is\s*)?(\d+(?:\.\d+)?)\s*mm/i
+  ) || text.match(
+    /\baxis\s+(?:length\s*)?(?:of\s*|is\s*)?(\d+(?:\.\d+)?)\s*mm/i
+  );
+
+  const lengthMatch = text.match(
+    /\blength\s*(?:of\s*|is\s*)?(\d+(?:\.\d+)?)\s*mm/i
+  );
+
+  const widthMatch = text.match(
+    /\bwidth\s*(?:of\s*|is\s*)?(\d+(?:\.\d+)?)\s*mm/i
+  );
+
+  const radiusMatch = text.match(
+    /\bradius\s*(?:of\s*|is\s*)?(\d+(?:\.\d+)?)\s*mm/i
+  );
+
+  const diameterMatch = text.match(
+    /\bdiameter\s*(?:of\s*|is\s*)?(\d+(?:\.\d+)?)\s*mm/i
+  );
+
+  const trailingDiameterMatch = text.match(
+    /(\d+(?:\.\d+)?)\s*mm\s*diameter\b/i
+  );
+
+  const hpMatch = text.match(
+    /(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:to|with)\s*(?:the\s+)?h\.?\s*p\.?/i
+  );
+
+  const vpMatch = text.match(
+    /(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:to|with)\s*(?:the\s+)?v\.?\s*p\.?/i
+  );
+
+  const genericInclination = text.match(
+    /inclined(?:\s+at(?:\s+an?\s+angle\s+of?)?)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)/i
+  );
+
+  const topViewAxisAngle = text.match(
+    /\btop\s+view\b[^.;,]{0,25}?(?:\baxis\b[^.;,]{0,20}?)?(?:inclined|makes?)(?:\s+at)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:with|to)\s*(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane|x\s*-?\s*y)\b/i
+  );
+
+  const apexAwayFromVP = /\bapex\b[^.;,]{0,55}\baway\s+from\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
+  const apexTowardVP = /\bapex\b[^.;,]{0,55}\btowards?\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
+  const apexTowardRight = /\bapex\b[^.;,]{0,55}\btowards?\s+(?:the\s+)?right(?:\s+side)?\b/i.test(text);
+
+  const frontViewAxisAngle = text.match(
+    /\bfront\s+view\b(?:\s+(?:of\s+)?(?:the\s+)?axis\b)?[^.;,]{0,35}?(?:inclined|makes?)(?:\s+at)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:with|to)\s*(?:the\s+)?(?:x\s*-?\s*y|h\.?\s*p\.?|horizontal\s+plane)\b/i
+  );
+
+  const triangularFaceOnHP = /\btriangular\s+faces?\b.{0,45}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
+  const faceEdgeVPMatch = text.match(
+    /\bedge\b[^.;,]{0,80}?(?:inclined|makes?)(?:\s+at)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:with|to)\s*(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i
+  );
+
+  const baseHpInclination = text.match(
+    /\bbase(?:\s+plane)?\s+(?:is\s+)?inclined(?:\s+at(?:\s+an?\s+angle\s+of?)?)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:to|with)\s*(?:the\s+)?h\.?\s*p\.?/i
+  );
+
+  const baseVpInclination = text.match(
+    /\bbase(?:\s+plane)?\s+(?:is\s+)?inclined(?:\s+at(?:\s+an?\s+angle\s+of?)?)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:to|with)\s*(?:the\s+)?v\.?\s*p\.?/i
+  );
+
+  const axisHpInclination = text.match(
+    /\baxis\b[^.;,]{0,35}?(?:inclined|at)[^.;,]{0,25}?(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:to|with)\s*(?:the\s+)?h\.?\s*p\.?/i
+  );
+
+  const axisVpInclination = text.match(
+    /\baxis\b[^.;,]{0,35}?(?:inclined|tilted|at)[^.;,]{0,25}?(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:to|with)\s*(?:the\s+)?v\.?\s*p\.?/i
+  );
+
+  const baseEdgeVpAngle = text.match(
+    /\b(?:base\s+)?edges?\b[^.;,]{0,70}?(?:inclined|making|makes?)(?:\s+at)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:to|with)\s*(?:the\s+)?v\.?\s*p\.?/i
+  );
+
+  const frontViewContainsAxisAngle = Boolean(
+    frontViewAxisAngle && axisHpInclination &&
+    axisHpInclination.index >= frontViewAxisAngle.index &&
+    axisHpInclination.index < frontViewAxisAngle.index + frontViewAxisAngle[0].length
+  );
+
+  const parallelVP = /\bparallel\s+to\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
+  const perpendicularHP = /\bperpendicular\s+to\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
+  const perpendicularVP = /\bperpendicular\s+to\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
+  const bodyDiagonalPerpendicularVP = /\bbody\s+diagonals?\b.{0,50}\bperpendicular\s+to\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
+  const solidDiagonalPerpendicularVP = /\bsolid\s+diagonals?\b.{0,50}\bperpendicular\s+to\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
+  const edgeOrientationSpecified = /\bedges?\b.{0,45}(?:parallel|perpendicular|inclined|making|makes?)\b.{0,30}(?:h\.?\s*p\.?|v\.?\s*p\.?|horizontal|vertical)\b/i.test(text);
+  const cornerOnHP = /\bcorners?\b.{0,35}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
+  const freelySuspendedCorner = /\b(?:freely\s+)?suspended\b.{0,60}\b(?:base\s+)?corners?\b/i.test(text);
+  const generatorOnHP = /\bgenerator\b.{0,24}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
+  const generatorOnVP = /\bgenerator\b.{0,24}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
+  const pointOnHP = /\bpoint\b.{0,30}\bbase\b.{0,30}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text) || /\bbase\s+point\b.{0,25}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
+  const pointOnVP = /\bpoint\b.{0,30}\bbase\b.{0,30}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text) || /\bbase\s+point\b.{0,25}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
+  const baseContact = /\bbase\s+corners?\b|\bcorners?\s+of\s+(?:(?:its|the)\s+)?base\b/i.test(text) || freelySuspendedCorner
+    ? 'corner'
+    : generatorOnHP || generatorOnVP
+      ? 'generator'
+    : pointOnHP || pointOnVP
+      ? 'point'
+    : /\bbase\s+edges?\b|\bedges?\s+of\s+(?:(?:its|the)\s+)?base\b/i.test(text)
+      ? 'edge'
+      : baseHpInclination || baseVpInclination ? 'edge' : 'face';
+
+  if (baseShape === 'circle' && baseContact === 'corner') {
+    return { error: 'Circular solids have no base corner; specify the base rim or a generator instead.' };
+  }
+  if (baseContact === 'generator' && solidType !== 'cone') {
+    return { error: 'Generator-on-plane placement is currently supported for cones only.' };
+  }
+  if (triangularFaceOnHP && solidType !== 'pyramid') {
+    return { error: 'A triangular lateral face resting on HP is supported for pyramids only.' };
+  }
+  if (triangularFaceOnHP && !faceEdgeVPMatch) {
+    return { error: 'Specify the angle of an edge of the resting triangular face to VP.' };
+  }
+
+  const baseInVP = /\bbase\b.{0,45}\b(?:on|in|rests?\s+on|lies?\s+on|placed\s+on|kept\s+on)\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b|\b(?:on|in)\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b.{0,30}\bbase\b/i.test(text) || generatorOnVP || pointOnVP;
+  const baseInHP = /\bbase\b.{0,45}\b(?:on|in|rests?\s+on|lies?\s+on|placed\s+on|kept\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b|\b(?:on|in)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b.{0,30}\bbase\b/i.test(text) || generatorOnHP || pointOnHP;
+
+  if (baseInVP && baseInHP) {
+    return { error: 'Specify the base on either HP or VP, not both.' };
+  }
+
+  const side = sideMatch ? Number(sideMatch[1]) : 25;
+  const height = axisMatch
+    ? Number(axisMatch[1])
+    : lengthMatch ? Number(lengthMatch[1]) : isCube ? side : 60;
+  const radius = radiusMatch
+    ? Number(radiusMatch[1])
+    : diameterMatch ? Number(diameterMatch[1]) / 2
+    : trailingDiameterMatch ? Number(trailingDiameterMatch[1]) / 2
+    : side;
+  const width = widthMatch ? Number(widthMatch[1]) : side;
+
+  const suspensionAxisAngle = freelySuspendedCorner && baseShape !== 'circle'
+    ? Math.atan2(
+      height * (solidType === 'pyramid' ? 0.25 : 0.5),
+      baseShape === 'rectangle'
+        ? Math.hypot(side, width) / 2
+        : side / (2 * Math.sin(Math.PI / sides))
+    ) * 180 / Math.PI
+    : null;
+
+  if (
+    isCube &&
+    (bodyDiagonalPerpendicularVP || solidDiagonalPerpendicularVP) &&
+    !edgeOrientationSpecified
+  ) {
+    return {
+      error: 'A cube solid diagonal perpendicular to VP does not uniquely fix its rotation. Specify an edge or face orientation, such as an edge angle to HP or VP.'
+    };
+  }
+  const faceRestingAxisAngle = triangularFaceOnHP
+    ? Math.atan(side / (2 * Math.tan(Math.PI / sides)) / height) * 180 / Math.PI
+    : null;
+
+  const axisAngleFromText = axisHpInclination && !frontViewContainsAxisAngle
+    ? Number(axisHpInclination[1])
+    : hpMatch && !baseHpInclination && !frontViewAxisAngle
+      ? Number(hpMatch[1])
+      : genericInclination && !baseHpInclination && !baseVpInclination &&
+        !topViewAxisAngle && !frontViewAxisAngle && !faceEdgeVPMatch && !axisVpInclination
+        ? Number(genericInclination[1])
+        : null;
+
+  const axisAngleFromBase = baseHpInclination
+    ? 90 - Number(baseHpInclination[1])
+    : null;
+
+  if (
+    axisAngleFromText !== null && axisAngleFromBase !== null &&
+    Math.abs(axisAngleFromText - axisAngleFromBase) > 0.001
+  ) {
+    return { error: 'The axis angle must be complementary to the base-plane angle for a right solid.' };
+  }
+
+  const generatorAxisAngle = baseContact === 'generator' && solidType === 'cone'
+    ? Math.atan2(radius, height) * 180 / Math.PI
+    : null;
+
+  let axisAngle = axisAngleFromText ?? axisAngleFromBase ?? generatorAxisAngle ?? faceRestingAxisAngle ?? suspensionAxisAngle;
+  let planAngle = topViewAxisAngle ? Number(topViewAxisAngle[1]) : null;
+  let planAngleSource = topViewAxisAngle ? 'top' : null;
+
+  if (baseEdgeVpAngle && baseContact === 'edge' && baseInHP && !axisVpInclination) {
+    planAngle = Number(baseEdgeVpAngle[1]);
+    planAngleSource = 'base-edge';
+  }
+
+  if (frontViewAxisAngle) {
+    const frontAngle = Number(frontViewAxisAngle[1]);
+    const hasAxisAngle = axisAngle !== null || perpendicularHP || perpendicularVP;
+
+    if (axisAngle === null && perpendicularHP) axisAngle = 90;
+    if (axisAngle === null && perpendicularVP) axisAngle = 0;
+
+    if (planAngle !== null) {
+      if (axisAngle === null) {
+        axisAngle = Math.atan(
+          Math.tan(radians(frontAngle)) * Math.cos(radians(planAngle))
+        ) * 180 / Math.PI;
+      } else {
+        const expectedFrontAngle = Math.atan2(
+          Math.tan(radians(axisAngle)),
+          Math.cos(radians(planAngle))
+        ) * 180 / Math.PI;
+
+        if (Math.abs(expectedFrontAngle - frontAngle) > 0.25) {
+          return { error: 'The front-view and top-view axis angles do not match the specified axis inclination.' };
+        }
+      }
+    } else if (axisAngle !== null && hasAxisAngle) {
+      const ratio = Math.tan(radians(axisAngle)) / Math.tan(radians(frontAngle));
+
+      if (!Number.isFinite(ratio) || ratio < -1e-7 || ratio > 1.000001) {
+        return { error: 'The front-view angle is incompatible with the specified axis inclination.' };
+      }
+
+      planAngle = Math.acos(Math.max(-1, Math.min(1, ratio))) * 180 / Math.PI;
+      planAngleSource = 'front';
+    } else if (axisVpInclination) {
+      const frontTangent = Math.tan(radians(frontAngle));
+      const vpRadians = radians(Number(axisVpInclination[1]));
+
+      if (Math.abs(frontTangent) < 1e-8) {
+        return { error: 'A zero-degree front-view angle is ambiguous with this VP inclination.' };
+      }
+
+      const tanAxisSquared = Math.cos(vpRadians) ** 2 /
+        (Math.sin(vpRadians) ** 2 + 1 / frontTangent ** 2);
+      axisAngle = Math.atan(Math.sqrt(tanAxisSquared)) * 180 / Math.PI;
+
+      const planRatio = Math.tan(radians(axisAngle)) / frontTangent;
+
+      if (planRatio < -1e-7 || planRatio > 1.000001) {
+        return { error: 'The front-view and VP axis angles are geometrically incompatible.' };
+      }
+
+      planAngle = (baseInVP ? Math.asin : Math.acos)(
+        Math.max(0, Math.min(1, planRatio))
+      ) * 180 / Math.PI;
+      planAngleSource = 'front';
+    } else {
+      return {
+        error: 'A front-view axis angle alone does not determine the 3D axis. Specify its top-view angle or true inclination to HP.'
+      };
+    }
+  }
+
+  axisAngle ??= perpendicularHP ? 90 : perpendicularVP ? 0 : 90;
+
+  if (faceRestingAxisAngle !== null) axisAngle = faceRestingAxisAngle;
+
+  if (planAngle !== null && axisAngle === 90 && generatorAxisAngle === null && suspensionAxisAngle === null && axisAngleFromText === null && axisAngleFromBase === null && !frontViewAxisAngle) {
+    return { error: 'Specify the axis inclination to HP when giving only its top-view angle.' };
+  }
+
+  let vpAngle;
+
+  if (triangularFaceOnHP && faceEdgeVPMatch) {
+    const edgeAngle = radians(Number(faceEdgeVPMatch[1]));
+    vpAngle = Math.asin(Math.min(1, Math.abs(Math.cos(radians(axisAngle)) * Math.cos(edgeAngle)))) * 180 / Math.PI;
+  } else if (baseEdgeVpAngle && baseContact === 'edge' && baseInHP && !axisVpInclination) {
+    vpAngle = Math.asin(
+      Math.cos(radians(axisAngle)) * Math.sin(radians(Number(baseEdgeVpAngle[1])))
+    ) * 180 / Math.PI;
+  } else if (planAngle !== null && axisVpInclination && planAngleSource === 'front') {
+    vpAngle = Number(axisVpInclination[1]);
+  } else if (planAngle !== null) {
+    vpAngle = 0;
+  } else if (axisVpInclination) {
+    vpAngle = Number(axisVpInclination[1]);
+  } else if (vpMatch && !baseVpInclination) {
+    vpAngle = Number(vpMatch[1]);
+  } else if (baseVpInclination) {
+    vpAngle = 90 - Number(baseVpInclination[1]);
+  } else if (baseHpInclination) {
+    vpAngle = 0;
+  } else if (perpendicularVP) {
+    vpAngle = 90;
+  } else if (parallelVP) {
+    vpAngle = 0;
+  } else if (axisAngle >= 89.999) {
+    vpAngle = 0;
+  } else {
+    return {
+      error: 'Specify the angle to VP or state that the axis is parallel to VP.'
+    };
+  }
+
+  if (freelySuspendedCorner && suspensionAxisAngle !== null && planAngle === null) {
+    const planRatio = Math.sin(radians(vpAngle)) /
+      Math.max(Math.cos(radians(axisAngle)), 1e-8);
+
+    if (planRatio > 1.000001) {
+      return { error: 'The requested VP inclination is incompatible with the freely suspended position.' };
+    }
+
+    planAngle = Math.asin(Math.max(0, Math.min(1, planRatio))) * 180 / Math.PI;
+    planAngleSource = 'suspension-vp';
+  }
+
+  if (baseVpInclination && !baseHpInclination && axisAngleFromText === null) {
+    return {
+      error: 'Specify the base-plane inclination to HP as well when its inclination to VP is given.'
+    };
+  }
+
+  if (!(side > 0 && side <= 500)) {
+    return { error: 'Side length must be greater than 0 and at most 500 mm.' };
+  }
+
+  if (!(height > 0 && height <= 1000)) {
+    return { error: 'Axis length or height must be greater than 0 and at most 1000 mm.' };
+  }
+
+  if (!(width > 0 && width <= 500)) {
+    return { error: 'Width must be greater than 0 and at most 500 mm.' };
+  }
+
+  if (!(radius > 0 && radius <= 500)) {
+    return { error: 'Radius must be greater than 0 and at most 500 mm.' };
+  }
+
+  if (!(axisAngle >= 0 && axisAngle <= 90)) {
+    return { error: 'Inclination to HP must be between 0° and 90°.' };
+  }
+
+  if (!(vpAngle >= 0 && vpAngle <= 90)) {
+    return { error: 'Inclination to VP must be between 0° and 90°.' };
+  }
+
+  const alpha = radians(axisAngle);
+  const beta = radians(vpAngle);
+
+  if (planAngle === null && Math.sin(alpha) ** 2 + Math.sin(beta) ** 2 > 1.000001) {
+    return {
+      error: 'The two inclination angles are geometrically incompatible. Check the question.'
+    };
+  }
+
+  if (vpAngle > 0.001 && !vpMatch && !axisVpInclination && !baseVpInclination && !perpendicularVP) {
+    return { error: 'A second inclination must be explicitly specified.' };
+  }
+
+  return {
+    solidType,
+    solidLabel,
+    baseShape,
+    sides,
+    side,
+    width,
+    height,
+    radius,
+    axisAngle,
+    vpAngle,
+    topViewAngle: planAngle,
+    planAngleSource,
+    planAngleSign: apexAwayFromVP ? -1 : 1,
+    apexAwayFromVP,
+    apexTowardVP,
+    apexTowardRight,
+    frontViewAngle: frontViewAxisAngle ? Number(frontViewAxisAngle[1]) : null,
+    baseEdgeAngleVP: baseEdgeVpAngle ? Number(baseEdgeVpAngle[1]) : null,
+    restingFaceOnHP: triangularFaceOnHP,
+    faceEdgeAngleVP: faceEdgeVPMatch ? Number(faceEdgeVPMatch[1]) : null,
+    suspendedFromCorner: freelySuspendedCorner,
+    suspensionPlanAngle: freelySuspendedCorner ? planAngle : null,
+    basePlane: baseInVP ? 'VP' : 'HP',
+    baseContact,
+    baseInclinationHP: baseHpInclination ? Number(baseHpInclination[1]) : null,
+    baseInclinationVP: baseVpInclination ? Number(baseVpInclination[1]) : null,
+    assumedParallelVP: Boolean(
+      baseHpInclination && !vpMatch && !axisVpInclination &&
+      !parallelVP && !perpendicularVP && !baseVpInclination && planAngle === null
+    ),
+    hasSecondInclination: vpAngle > 0.001 || planAngle !== null
+  };
+}
+
+/* -------------------------------------------------------
+   THREE.JS SCENE
+------------------------------------------------------- */
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf5f8fd);
+
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 2500);
+camera.position.set(70, 100, 155);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+sceneHost.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.07;
+controls.minDistance = 35;
+controls.maxDistance = 1000;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xc9d2e3, 2));
+
+const keyLight = new THREE.DirectionalLight(0xffffff, 2);
+keyLight.position.set(75, 125, 95);
+scene.add(keyLight);
+
+const fillLight = new THREE.DirectionalLight(0xc5d3ff, 1);
+fillLight.position.set(-75, 50, -80);
+scene.add(fillLight);
+
+// Horizontal plane: HP at y = 0.
+const hp = new THREE.Mesh(
+  new THREE.PlaneGeometry(500, 500),
+  new THREE.MeshBasicMaterial({
+    color: 0xf1ba72,
+    transparent: true,
+    opacity: 0.12,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  })
+);
+
+hp.rotation.x = -Math.PI / 2;
+hp.position.y = -0.05;
+scene.add(hp);
+
+const hpGrid = new THREE.GridHelper(500, 50, 0xd7a86f, 0xd9e1ee);
+hpGrid.position.y = 0.01;
+
+for (const material of Array.isArray(hpGrid.material)
+  ? hpGrid.material : [hpGrid.material]) {
+  material.transparent = true;
+  material.opacity = 0.24;
+}
+
+scene.add(hpGrid);
+
+// Vertical plane: VP at z = 0.
+const vp = new THREE.Mesh(
+  new THREE.PlaneGeometry(500, 300),
+  new THREE.MeshBasicMaterial({
+    color: 0x6bc9d8,
+    transparent: true,
+    opacity: 0.08,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  })
+);
+
+vp.position.y = 100;
+scene.add(vp);
+
+/* -------------------------------------------------------
+   REUSABLE SOLID GENERATOR
+
+   Local coordinates:
+   - base lies on y = 0
+   - axis points in positive y
+   - selected first base edge lies at x = 0
+
+   That edge is used as the pivot during the first inclination.
+------------------------------------------------------- */
+
+function buildBaseVertices() {
+  const n = state.sides;
+  const points = [];
+
+  if (state.baseShape === 'rectangle') {
+    const L = state.side;
+    const W = state.width;
+
+    return [
+      new THREE.Vector3(0, 0, -W / 2),
+      new THREE.Vector3(0, 0, W / 2),
+      new THREE.Vector3(-L, 0, W / 2),
+      new THREE.Vector3(-L, 0, -W / 2)
+    ];
+  }
+
+  if (state.baseShape === 'circle') {
+    const radius = state.radius;
+
+    for (let i = 0; i < n; i++) {
+      const angle = 2 * Math.PI * i / n;
+
+      points.push(new THREE.Vector3(
+        radius * Math.cos(angle) - radius,
+        0,
+        radius * Math.sin(angle)
+      ));
+    }
+
+    return points;
+  }
+
+  // For a regular polygon, the circumradius follows from the side length.
+  const radius = state.side / (2 * Math.sin(Math.PI / n));
+  const shiftX = radius * Math.cos(Math.PI / n);
+
+  for (let i = 0; i < n; i++) {
+    const angle = -Math.PI / n + (2 * Math.PI * i / n);
+
+    points.push(new THREE.Vector3(
+      radius * Math.cos(angle) - shiftX,
+      0,
+      radius * Math.sin(angle)
+    ));
+  }
+
+  return points;
+}
+
+function createSolid() {
+  if (state.geometryGroup) {
+    scene.remove(state.geometryGroup);
+
+    state.geometryGroup.traverse(object => {
+      if (object.geometry) object.geometry.dispose();
+
+      if (object.material) {
+        if (Array.isArray(object.material)) {
+          object.material.forEach(material => material.dispose());
+        } else {
+          object.material.dispose();
+        }
+      }
+    });
+  }
+
+  const group = new THREE.Group();
+  const base = buildBaseVertices();
+  const n = base.length;
+
+  const top = base.map(point =>
+    new THREE.Vector3(point.x, state.height, point.z)
+  );
+
+  let vertices = [];
+  let edges = [];
+  let triangles = [];
+
+  const pushTriangle = (a, b, c) => {
+    triangles.push(
+      a.x, a.y, a.z,
+      b.x, b.y, b.z,
+      c.x, c.y, c.z
+    );
+  };
+
+  const addEdge = (a, b) => edges.push([a, b]);
+
+  if (state.solidType === 'prism') {
+    vertices = [...base, ...top];
+
+    for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n;
+
+      addEdge(i, j);
+      addEdge(i + n, j + n);
+      addEdge(i, i + n);
+
+      pushTriangle(base[i], base[j], top[j]);
+      pushTriangle(base[i], top[j], top[i]);
+    }
+
+    const centerBase = base.reduce(
+      (sum, point) => sum.add(point.clone()),
+      new THREE.Vector3()
+    ).multiplyScalar(1 / n);
+
+    const centerTop = centerBase.clone();
+    centerTop.y = state.height;
+
+    for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n;
+
+      pushTriangle(centerBase, base[j], base[i]);
+      pushTriangle(centerTop, top[i], top[j]);
+    }
+  } else if (state.solidType === 'pyramid') {
+    const apexIndex = n;
+
+    const apex = new THREE.Vector3(
+      base.reduce((sum, point) => sum + point.x, 0) / n,
+      state.height,
+      base.reduce((sum, point) => sum + point.z, 0) / n
+    );
+
+    vertices = [...base, apex];
+
+    const center = base.reduce(
+      (sum, point) => sum.add(point.clone()),
+      new THREE.Vector3()
+    ).multiplyScalar(1 / n);
+
+    for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n;
+
+      addEdge(i, j);
+      addEdge(i, apexIndex);
+
+      pushTriangle(base[i], base[j], apex);
+      pushTriangle(center, base[j], base[i]);
+    }
+  } else {
+    // Circle-based solids use sampled circular vertices.
+    // 32 samples provide smoother visual circles and projections.
+    const centerBase = new THREE.Vector3(-state.radius, 0, 0);
+    const centerTop = new THREE.Vector3(-state.radius, state.height, 0);
+    const coneApex = new THREE.Vector3(-state.radius, state.height, 0);
+
+    vertices = state.solidType === 'cone'
+      ? [...base, coneApex]
+      : [...base, ...top];
+
+    for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n;
+
+      addEdge(i, j);
+
+      if (state.solidType === 'cylinder') {
+        addEdge(i + n, j + n);
+
+        pushTriangle(base[i], base[j], top[j]);
+        pushTriangle(base[i], top[j], top[i]);
+
+        if (i % 4 === 0) addEdge(i, i + n);
+      } else {
+        pushTriangle(base[i], base[j], coneApex);
+      }
+
+      pushTriangle(centerBase, base[j], base[i]);
+
+      if (state.solidType === 'cylinder') {
+        pushTriangle(centerTop, top[i], top[j]);
+      }
+    }
+
+    if (state.solidType === 'cone') {
+      const apexIndex = n;
+
+      for (let i = 0; i < n; i += 4) {
+        addEdge(i, apexIndex);
+      }
+    }
+  }
+
+  const faceGeometry = new THREE.BufferGeometry();
+
+  faceGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(triangles, 3)
+  );
+
+  faceGeometry.computeVertexNormals();
+
+  group.add(new THREE.Mesh(
+    faceGeometry,
+    new THREE.MeshStandardMaterial({
+      color: 0x7185f3,
+      roughness: 0.45,
+      metalness: 0.02,
+      transparent: true,
+      opacity: 0.83,
+      side: THREE.DoubleSide
+    })
+  ));
+
+  // Use the edge table for the visible model and projection drawing.
+  // Duplicate edge pairs are removed.
+  const uniqueEdges = new Map();
+
+  for (const [a, b] of edges) {
+    const key = [Math.min(a, b), Math.max(a, b)].join(':');
+    uniqueEdges.set(key, [a, b]);
+  }
+
+  const edgePairs = [...uniqueEdges.values()];
+  const edgePositions = [];
+
+  for (const [a, b] of edgePairs) {
+    const p = vertices[a];
+    const q = vertices[b];
+
+    edgePositions.push(
+      p.x, p.y, p.z,
+      q.x, q.y, q.z
+    );
+  }
+
+  const edgeGeometry = new THREE.BufferGeometry();
+
+  edgeGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(edgePositions, 3)
+  );
+
+  group.add(new THREE.LineSegments(
+    edgeGeometry,
+    new THREE.LineBasicMaterial({ color: 0x354ac0 })
+  ));
+
+  // Highlight the selected pivot edge.
+  const pivotGeometry = new THREE.BufferGeometry().setFromPoints([
+    base[0], base[1]
+  ]);
+
+  group.add(new THREE.Line(
+    pivotGeometry,
+    new THREE.LineBasicMaterial({ color: 0xe59a46 })
+  ));
+
+  scene.add(group);
+
+  state.geometryGroup = group;
+  state.baseVertices = vertices.map(point => point.clone());
+  state.edges = edgePairs;
+  state.surfaceTriangles = [];
+
+  for (let i = 0; i < triangles.length; i += 9) {
+    state.surfaceTriangles.push([
+      new THREE.Vector3(triangles[i], triangles[i + 1], triangles[i + 2]),
+      new THREE.Vector3(triangles[i + 3], triangles[i + 4], triangles[i + 5]),
+      new THREE.Vector3(triangles[i + 6], triangles[i + 7], triangles[i + 8])
+    ]);
+  }
+
+  applyModelOrientation();
+  updateProjection(state.currentTilt, true);
+}
+
+/* -------------------------------------------------------
+   SHARED TRANSFORMATION ENGINE
+------------------------------------------------------- */
+
+function getModelPose(tilt, azimuth) {
+  const hpAngle = state.basePlane === 'VP'
+    ? tilt
+    : Math.PI / 2 - tilt;
+
+  const horizontalComponent = Math.cos(hpAngle);
+  const verticalComponent = Math.sin(hpAngle);
+  const axis = state.basePlane === 'VP'
+    ? new THREE.Vector3(
+      horizontalComponent * Math.sin(azimuth),
+      verticalComponent,
+      horizontalComponent * Math.cos(azimuth)
+    )
+    : new THREE.Vector3(
+      horizontalComponent * Math.cos(azimuth),
+      verticalComponent,
+      -horizontalComponent * Math.sin(azimuth)
+    );
+
+  const quaternion = new THREE.Quaternion().setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0),
+    axis
+  );
+
+  const normal = state.basePlane === 'VP'
+    ? new THREE.Vector3(0, 0, 1)
+    : new THREE.Vector3(0, 1, 0);
+
+  if (state.suspendedFromCorner && state.step > 0) {
+    const baseVertices = state.baseVertices.slice(0, state.sides);
+    const baseCenter = baseVertices.reduce(
+      (sum, vertex) => sum.add(vertex.clone()),
+      new THREE.Vector3()
+    ).multiplyScalar(1 / baseVertices.length);
+    const centerOfMass = baseCenter.clone();
+    centerOfMass.y = state.height * (state.solidType === 'pyramid' ? 0.25 : 0.5);
+    const suspensionPoint = baseVertices[0];
+    const gravityDirection = centerOfMass.sub(suspensionPoint).normalize();
+    const suspensionQuaternion = new THREE.Quaternion().setFromUnitVectors(
+      gravityDirection,
+      new THREE.Vector3(0, -1, 0)
+    );
+    const axisDirection = new THREE.Vector3(0, 1, 0)
+      .applyQuaternion(suspensionQuaternion);
+    const targetPlanAngle = state.step >= 2 ? state.currentAzimuth : 0;
+    const currentPlanAngle = Math.atan2(axisDirection.z, axisDirection.x);
+    const planRotation = new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(0, 1, 0),
+      targetPlanAngle + currentPlanAngle
+    );
+    const quaternion = planRotation.multiply(suspensionQuaternion);
+    const worldSuspensionPoint = suspensionPoint.clone()
+      .applyQuaternion(quaternion);
+
+    return {
+      quaternion,
+      position: new THREE.Vector3(0, -worldSuspensionPoint.y, 0)
+    };
+  }
+
+  if (state.restingFaceOnHP && state.step > 0) {
+    const baseA = state.baseVertices[0];
+    const baseB = state.baseVertices[1];
+    const apex = state.baseVertices[state.sides];
+    const faceCenter = baseA.clone().add(baseB).add(apex).multiplyScalar(1 / 3);
+    const interior = state.baseVertices.reduce(
+      (sum, vertex) => sum.add(vertex),
+      new THREE.Vector3()
+    ).add(apex).multiplyScalar(1 / (state.baseVertices.length + 1));
+    let faceNormal = baseB.clone().sub(baseA)
+      .cross(apex.clone().sub(baseA))
+      .normalize();
+
+    if (faceNormal.dot(interior.sub(faceCenter)) > 0) faceNormal.negate();
+
+    const faceQuaternion = new THREE.Quaternion().setFromUnitVectors(
+      faceNormal,
+      new THREE.Vector3(0, -1, 0)
+    );
+    const edgeDirection = baseB.clone().sub(baseA)
+      .applyQuaternion(faceQuaternion);
+    const targetAngle = state.step >= 2
+      ? radians(state.faceEdgeAngleVP)
+      : 0;
+    const yaw = new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(0, 1, 0),
+      targetAngle - Math.atan2(edgeDirection.x, edgeDirection.z)
+    );
+    const faceRestQuaternion = yaw.multiply(faceQuaternion);
+    const lowestY = Math.min(...state.baseVertices.map(vertex =>
+      vertex.clone().applyQuaternion(faceRestQuaternion).y
+    ));
+
+    return {
+      quaternion: faceRestQuaternion,
+      position: new THREE.Vector3(0, -lowestY, 0)
+    };
+  }
+
+  if (state.step > 0 && state.baseContact === 'point') {
+    const contactPoint = state.baseVertices[0].clone()
+      .applyQuaternion(quaternion);
+    const axialComponent = contactPoint.dot(axis);
+    const currentRadial = contactPoint.clone()
+      .addScaledVector(axis, -axialComponent);
+    const targetRadial = normal.clone()
+      .addScaledVector(axis, -normal.dot(axis))
+      .negate();
+
+    if (currentRadial.lengthSq() > 1e-10 && targetRadial.lengthSq() > 1e-10) {
+      currentRadial.normalize();
+      targetRadial.normalize();
+
+      const rollAngle = Math.atan2(
+        axis.dot(currentRadial.clone().cross(targetRadial)),
+        currentRadial.dot(targetRadial)
+      );
+
+      quaternion.premultiply(
+        new THREE.Quaternion().setFromAxisAngle(axis, rollAngle)
+      );
+    }
+  } else if (state.step > 0 && state.baseContact === 'generator') {
+    const apex = state.baseVertices[state.sides];
+    const basePoint = state.baseVertices[0];
+    const localGenerator = apex.clone().sub(basePoint).normalize();
+    const currentGenerator = localGenerator.clone().applyQuaternion(quaternion);
+    const axialComponent = currentGenerator.dot(axis);
+    const radialLength = Math.sqrt(Math.max(0, 1 - axialComponent ** 2));
+    const tangent = axis.clone().cross(normal);
+
+    if (tangent.lengthSq() > 1e-10 && radialLength > 1e-10) {
+      tangent.normalize().multiplyScalar(radialLength);
+
+      const currentRadial = currentGenerator.clone()
+        .addScaledVector(axis, -axialComponent);
+      const targets = [tangent, tangent.clone().negate()].map(direction =>
+        axis.clone().multiplyScalar(axialComponent).add(direction)
+      );
+
+      const candidates = targets.map(target => {
+        const targetRadial = target.clone()
+          .addScaledVector(axis, -target.dot(axis));
+        const rollAngle = Math.atan2(
+          axis.dot(currentRadial.clone().cross(targetRadial)),
+          currentRadial.dot(targetRadial)
+        );
+
+        return new THREE.Quaternion()
+          .setFromAxisAngle(axis, rollAngle)
+          .multiply(quaternion);
+      });
+
+      const supportScore = candidate => {
+        const contactLevel = [basePoint, apex].reduce((sum, vertex) =>
+          sum + vertex.clone().applyQuaternion(candidate).dot(normal), 0
+        ) / 2;
+        const lowestLevel = Math.min(...state.baseVertices.map(vertex =>
+          vertex.clone().applyQuaternion(candidate).dot(normal)
+        ));
+
+        return Math.abs(contactLevel - lowestLevel);
+      };
+
+      quaternion.copy(
+        supportScore(candidates[1]) < supportScore(candidates[0])
+          ? candidates[1]
+          : candidates[0]
+      );
+    }
+  } else if (state.step > 0 && state.baseContact !== 'corner') {
+    const edgeDirection = state.baseVertices[1].clone()
+      .sub(state.baseVertices[0])
+      .applyQuaternion(quaternion)
+      .normalize();
+
+    const targetDirection = axis.clone().cross(normal);
+
+    if (targetDirection.lengthSq() > 1e-10) {
+      targetDirection.normalize();
+
+      const rollAngle = Math.atan2(
+        axis.dot(edgeDirection.clone().cross(targetDirection)),
+        edgeDirection.dot(targetDirection)
+      );
+
+      const candidates = [rollAngle, rollAngle + Math.PI].map(angle =>
+        new THREE.Quaternion()
+          .setFromAxisAngle(axis, angle)
+          .multiply(quaternion)
+      );
+
+      const supportScore = candidate => {
+        const edgeLevel = [0, 1].reduce((sum, index) =>
+          sum + state.baseVertices[index].clone()
+            .applyQuaternion(candidate).dot(normal), 0
+        ) / 2;
+
+        const lowestLevel = Math.min(...state.baseVertices.map(vertex =>
+          vertex.clone().applyQuaternion(candidate).dot(normal)
+        ));
+
+        return Math.abs(edgeLevel - lowestLevel);
+      };
+
+      if (supportScore(candidates[1]) < supportScore(candidates[0])) {
+        quaternion.copy(candidates[1]);
+      } else {
+        quaternion.copy(candidates[0]);
+      }
+    }
+  } else if (state.step > 0 && state.baseContact === 'corner') {
+    const baseCorners = state.baseVertices.slice(0, state.sides);
+    const localAxis = new THREE.Vector3(0, 1, 0);
+    const supportCorner = baseCorners.reduce((farthest, vertex) => {
+      const radial = vertex.clone().addScaledVector(localAxis, -vertex.dot(localAxis));
+      const farthestRadial = farthest.clone()
+        .addScaledVector(localAxis, -farthest.dot(localAxis));
+      return radial.lengthSq() > farthestRadial.lengthSq()
+        ? vertex
+        : farthest;
+    }, baseCorners[0]);
+
+    const transformedCorner = supportCorner.clone().applyQuaternion(quaternion);
+    const currentDirection = transformedCorner.clone()
+      .addScaledVector(axis, -transformedCorner.dot(axis));
+
+    const targetDirection = normal.clone()
+      .addScaledVector(axis, -normal.dot(axis))
+      .negate();
+
+    if (currentDirection.lengthSq() > 1e-10 && targetDirection.lengthSq() > 1e-10) {
+      currentDirection.normalize();
+      targetDirection.normalize();
+
+      const rollAngle = Math.atan2(
+        axis.dot(currentDirection.clone().cross(targetDirection)),
+        currentDirection.dot(targetDirection)
+      );
+
+      quaternion.premultiply(
+        new THREE.Quaternion().setFromAxisAngle(axis, rollAngle)
+      );
+    }
+  }
+
+  const lowestLevel = Math.min(...state.baseVertices.map(vertex =>
+    vertex.clone().applyQuaternion(quaternion).dot(normal)
+  ));
+
+  return {
+    quaternion,
+    position: normal.multiplyScalar(-lowestLevel)
+  };
+}
+
+function transformVertex(vertex, tilt, azimuth) {
+  const pose = getModelPose(tilt, azimuth);
+  return vertex.clone()
+    .applyQuaternion(pose.quaternion)
+    .add(pose.position);
+}
+
+function applyModelOrientation() {
+  if (!state.geometryGroup) return;
+
+  const pose = getModelPose(state.currentTilt, state.currentAzimuth);
+  state.geometryGroup.quaternion.copy(pose.quaternion);
+  state.geometryGroup.position.copy(pose.position);
+}
+
+function projectForView(point, view) {
+  return view === 'front'
+    ? { x: point.x, y: point.y, depth: point.z }
+    : { x: point.x, y: point.z, depth: point.y };
+}
+
+function prepareProjectionTriangles(triangles, view, bounds) {
+  const size = 12;
+  const rangeX = Math.max(bounds.maxX - bounds.minX, 1e-8);
+  const rangeY = Math.max(bounds.maxY - bounds.minY, 1e-8);
+  const bins = Array.from({ length: size * size }, () => []);
+  const getCellX = value => Math.max(0, Math.min(
+    size - 1,
+    Math.floor((value - bounds.minX) / rangeX * size)
+  ));
+  const getCellY = value => Math.max(0, Math.min(
+    size - 1,
+    Math.floor((value - bounds.minY) / rangeY * size)
+  ));
+
+  for (const triangle of triangles) {
+    const [a, b, c] = triangle.map(point => projectForView(point, view));
+    const denominator =
+      (b.y - c.y) * (a.x - c.x) +
+      (c.x - b.x) * (a.y - c.y);
+
+    if (Math.abs(denominator) < 1e-10) continue;
+
+    const projectedTriangle = {
+      a,
+      b,
+      c,
+      inverseDenominator: 1 / denominator,
+      minX: Math.min(a.x, b.x, c.x),
+      maxX: Math.max(a.x, b.x, c.x),
+      minY: Math.min(a.y, b.y, c.y),
+      maxY: Math.max(a.y, b.y, c.y)
+    };
+
+    for (let y = getCellY(projectedTriangle.minY); y <= getCellY(projectedTriangle.maxY); y++) {
+      for (let x = getCellX(projectedTriangle.minX); x <= getCellX(projectedTriangle.maxX); x++) {
+        bins[y * size + x].push(projectedTriangle);
+      }
+    }
+  }
+
+  return { bins, bounds, size, rangeX, rangeY, getCellX, getCellY };
+}
+
+function isOccluded(point, projection, tolerance) {
+  if (
+    point.x < projection.bounds.minX - tolerance ||
+    point.x > projection.bounds.maxX + tolerance ||
+    point.y < projection.bounds.minY - tolerance ||
+    point.y > projection.bounds.maxY + tolerance
+  ) {
+    return false;
+  }
+
+  const cellX = projection.getCellX(point.x);
+  const cellY = projection.getCellY(point.y);
+  const candidates = projection.bins[cellY * projection.size + cellX];
+
+  for (const triangle of candidates) {
+    const { a, b, c } = triangle;
+
+    if (
+      point.x < triangle.minX - tolerance ||
+      point.x > triangle.maxX + tolerance ||
+      point.y < triangle.minY - tolerance ||
+      point.y > triangle.maxY + tolerance
+    ) {
+      continue;
+    }
+
+    const weightA = (
+      (b.y - c.y) * (point.x - c.x) +
+      (c.x - b.x) * (point.y - c.y)
+    ) * triangle.inverseDenominator;
+
+    const weightB = (
+      (c.y - a.y) * (point.x - c.x) +
+      (a.x - c.x) * (point.y - c.y)
+    ) * triangle.inverseDenominator;
+
+    const weightC = 1 - weightA - weightB;
+
+    if (weightA < -1e-7 || weightB < -1e-7 || weightC < -1e-7) {
+      continue;
+    }
+
+    const surfaceDepth =
+      weightA * a.depth + weightB * b.depth + weightC * c.depth;
+
+    if (surfaceDepth > point.depth + tolerance) return true;
+  }
+
+  return false;
+}
+
+function classifyEdgeRuns(start, end, triangles, view, tolerance) {
+  const samples = 24;
+  const runs = [];
+  let runStart = 0;
+  let runHidden = null;
+
+  for (let index = 0; index < samples; index++) {
+    const t = (index + 0.5) / samples;
+    const point = projectForView(start.clone().lerp(end, t), view);
+    const hidden = isOccluded(point, triangles, tolerance);
+
+    if (runHidden === null) {
+      runHidden = hidden;
+    } else if (hidden !== runHidden) {
+      runs.push({ start: runStart, end: index / samples, hidden: runHidden });
+      runStart = index / samples;
+      runHidden = hidden;
+    }
+  }
+
+  if (runHidden !== null) {
+    runs.push({ start: runStart, end: 1, hidden: runHidden });
+  }
+
+  return runs;
+}
+
+/* -------------------------------------------------------
+   ORTHOGRAPHIC PROJECTION ENGINE
+
+   FV is calculated from x and y.
+   TV is calculated from x and z.
+------------------------------------------------------- */
+
+function updateProjection(tilt = state.currentTilt, force = false) {
+  if (!state.baseVertices.length) return;
+
+  if (
+    !force &&
+    Math.abs(tilt - state.lastDrawTilt) < 0.006 &&
+    Math.abs(state.currentAzimuth - state.lastDrawAzimuth) < 0.006
+  ) {
+    return;
+  }
+
+  const now = performance.now();
+
+  if (!force && now - state.lastProjectionUpdate < 80) return;
+
+  state.lastDrawTilt = tilt;
+  state.lastDrawAzimuth = state.currentAzimuth;
+  state.lastProjectionUpdate = now;
+
+  const pose = getModelPose(tilt, state.currentAzimuth);
+  const transform = point => point.clone()
+    .applyQuaternion(pose.quaternion)
+    .add(pose.position);
+  const points3D = state.baseVertices.map(transform);
+  const triangles3D = state.surfaceTriangles.map(triangle =>
+    triangle.map(transform)
+  );
+
+  const W = 760;
+  const H = 400;
+  const xyY = 180;
+
+  const minX = Math.min(...points3D.map(p => p.x));
+  const maxX = Math.max(...points3D.map(p => p.x));
+  const minY = Math.min(...points3D.map(p => p.y));
+  const maxY = Math.max(...points3D.map(p => p.y));
+  const minZ = Math.min(...points3D.map(p => p.z));
+  const maxZ = Math.max(...points3D.map(p => p.z));
+
+  const xRange = Math.max(1, maxX - minX);
+  const yRange = Math.max(1, maxY - minY);
+  const zRange = Math.max(1, maxZ - minZ);
+  const depthTolerance = Math.max(xRange, yRange, zRange, 1) * 1e-5;
+
+  const scale = Math.min(
+    (W - 120) / xRange,
+    140 / yRange,
+    170 / zRange
+  );
+
+  const centerX = (minX + maxX) / 2;
+
+  const sx = x => W / 2 + (x - centerX) * scale;
+  const fy = y => xyY - (y - minY) * scale;
+  const ty = z => xyY + (z - minZ) * scale;
+
+  const projected = points3D.map(point => ({
+    fx: sx(point.x),
+    fy: fy(point.y),
+    tx: sx(point.x),
+    ty: ty(point.z)
+  }));
+
+  let markup = `
+    <line class="xy" x1="30" y1="${xyY}" x2="730" y2="${xyY}"/>
+    <text class="projection-text" x="35" y="${xyY - 8}">XY</text>
+    <text class="projection-text" x="60" y="22">FRONT VIEW (FV)</text>
+    <text class="projection-text" x="60" y="${xyY + 23}">TOP VIEW (TV)</text>
+  `;
+
+  const projectorIndices = state.baseShape === 'circle'
+    ? [0, 1, 2, 3].flatMap(index => {
+      const baseIndex = index * state.sides / 4;
+      return state.solidType === 'cylinder'
+        ? [baseIndex, baseIndex + state.sides]
+        : [baseIndex];
+    }).concat(state.solidType === 'cone' ? [state.sides] : [])
+    : projected.map((point, index) => index);
+
+  // Project corresponding construction points without cluttering round-solid views.
+  for (const index of projectorIndices) {
+    const point = projected[index];
+
+    if (!point) continue;
+
+    markup += `
+      <line class="projector"
+        x1="${point.fx.toFixed(2)}"
+        y1="${point.fy.toFixed(2)}"
+        x2="${point.tx.toFixed(2)}"
+        y2="${point.ty.toFixed(2)}"/>
+    `;
+  }
+
+  if (state.baseShape === 'circle') {
+    const axisBase = transform(new THREE.Vector3(-state.radius, 0, 0));
+    const axisTop = transform(new THREE.Vector3(-state.radius, state.height, 0));
+    const frontBase = projectForView(axisBase, 'front');
+    const frontTop = projectForView(axisTop, 'front');
+    const topBase = projectForView(axisBase, 'top');
+    const topTop = projectForView(axisTop, 'top');
+
+    markup += `
+      <line class="axis-line"
+        x1="${sx(frontBase.x).toFixed(2)}" y1="${fy(frontBase.y).toFixed(2)}"
+        x2="${sx(frontTop.x).toFixed(2)}" y2="${fy(frontTop.y).toFixed(2)}"/>
+      <line class="axis-line"
+        x1="${sx(topBase.x).toFixed(2)}" y1="${ty(topBase.y).toFixed(2)}"
+        x2="${sx(topTop.x).toFixed(2)}" y2="${ty(topTop.y).toFixed(2)}"/>
+    `;
+  }
+
+  const projectedTriangles = {
+    front: prepareProjectionTriangles(triangles3D, 'front', {
+      minX, maxX, minY, maxY
+    }),
+    top: prepareProjectionTriangles(triangles3D, 'top', {
+      minX, maxX, minY: minZ, maxY: maxZ
+    })
+  };
+  let hiddenMarkup = '';
+  let visibleMarkup = '';
+
+  // Split each edge where a nearer face hides it in either view.
+  for (const [a, b] of state.edges) {
+    const start = points3D[a];
+    const end = points3D[b];
+
+    if (!start || !end) continue;
+
+    for (const view of ['front', 'top']) {
+      const triangles = projectedTriangles[view];
+
+      for (const run of classifyEdgeRuns(
+        start, end, triangles, view, depthTolerance
+      )) {
+        const from = projectForView(start.clone().lerp(end, run.start), view);
+        const to = projectForView(start.clone().lerp(end, run.end), view);
+        const x1 = sx(from.x).toFixed(2);
+        const x2 = sx(to.x).toFixed(2);
+        const y1 = (view === 'front' ? fy(from.y) : ty(from.y)).toFixed(2);
+        const y2 = (view === 'front' ? fy(to.y) : ty(to.y)).toFixed(2);
+        const line = `<line class="${run.hidden ? 'hidden-edge' : 'edge'}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+
+        if (run.hidden) {
+          hiddenMarkup += line;
+        } else {
+          visibleMarkup += line;
+        }
+      }
+    }
+  }
+
+  projectionSvg.innerHTML = markup + hiddenMarkup + visibleMarkup;
+}/* =========================================================
+   PART 3 — CONSTRUCTION STAGES, QUESTION GENERATION,
+   ANIMATION, CONTROLS AND DRAWING EXPORT
+========================================================= */
+
+/*
+  Construction stages:
+  0 = Simple position
+  1 = First inclination to HP
+  2 = Second inclination to VP, if required
+  3 = Final setup and views
+*/
+
+function getTargetForStep(step) {
+  // Stage 1 is the initial simple position.
+  // Stage 2 inclines the axis to the required HP angle.
+  const tilt = step === 0
+    ? 0
+    : radians(state.basePlane === 'VP'
+      ? state.axisAngle
+      : 90 - state.axisAngle);
+
+  // During the first inclination, keep the axis parallel to VP.
+  // Apply the second rotation from Stage 3 onward if the question
+  // explicitly specifies an inclination to VP.
+  let azimuth = 0;
+
+  if (step >= 2 && state.hasSecondInclination) {
+    if (state.topViewAngle !== null) {
+      azimuth = radians(state.topViewAngle) * state.planAngleSign;
+    } else {
+      const alpha = radians(state.axisAngle);
+      const beta = radians(state.vpAngle);
+
+      const denominator = Math.max(Math.cos(alpha), 1e-8);
+      const ratio = Math.sin(beta) / denominator;
+
+      const clampedRatio = Math.max(-1, Math.min(1, ratio));
+      azimuth = state.basePlane === 'VP'
+        ? Math.acos(clampedRatio)
+        : Math.asin(clampedRatio);
+    }
+  }
+
+  return { tilt, azimuth };
+}
+
+function updateConstructionUI() {
+  const displayAxisAngle = Math.round(state.axisAngle * 100) / 100;
+  const descriptions = [
+    {
+      title: 'Simple position',
+      detail: 'Establish the initial front and top views.',
+      explanation: state.suspendedFromCorner
+        ? 'Start with the solid in its simple position before applying the suspension condition.'
+        : 'Begin with the solid in its simple position. Establish its base, axis and initial projections before applying an inclination.'
+    },
+    {
+      title: state.suspendedFromCorner
+        ? 'Free suspension'
+        : state.restingFaceOnHP ? 'Rest triangular face on HP' : 'First inclination',
+      detail: state.suspendedFromCorner
+        ? 'Hang from the base corner with the center of gravity below the pivot.'
+        : state.restingFaceOnHP
+        ? `Place one triangular face on HP; axis inclination is ${displayAxisAngle}°.`
+        : `Incline the axis to ${displayAxisAngle}° with HP.`,
+      explanation: state.suspendedFromCorner
+        ? 'Rotate the solid until its center of gravity is vertically below the suspension corner.'
+        : state.restingFaceOnHP
+        ? 'Rotate the selected lateral triangular face into HP. The derived axis inclination follows from the pyramid dimensions.'
+        : `Rotate the solid to make its axis ${displayAxisAngle}° with HP. This is the intermediate position used before applying a second orientation condition.`
+    },
+    {
+      title: state.suspendedFromCorner
+        ? 'Set top-view orientation'
+        : state.restingFaceOnHP
+        ? 'Orient the resting face edge'
+        : state.planAngleSource === 'base-edge'
+        ? 'Orient the base edge'
+        : state.topViewAngle !== null
+        ? state.planAngleSource === 'front'
+          ? 'Plan orientation from front view'
+          : 'Plan-view orientation'
+        : state.hasSecondInclination
+        ? 'Second inclination'
+        : 'Check the VP condition',
+
+      detail: state.suspendedFromCorner
+        ? `Set the top-view axis angle to ${state.suspensionPlanAngle}° with XY.`
+        : state.restingFaceOnHP
+        ? `Set the face's base edge to ${state.faceEdgeAngleVP}° with VP.`
+        : state.planAngleSource === 'base-edge'
+        ? `Set the base edge angle to ${state.baseEdgeAngleVP}° with VP.`
+        : state.topViewAngle !== null
+        ? state.planAngleSource === 'front'
+          ? `Use the derived ${Math.round(state.topViewAngle * 100) / 100}° plan rotation.`
+          : `Set the top view of the axis to ${state.topViewAngle}° with VP.`
+        : state.hasSecondInclination
+        ? `Apply the ${state.vpAngle}° condition to VP.`
+        : 'No second inclination is specified.',
+
+      explanation: state.suspendedFromCorner
+        ? `Rotate the suspended solid about the vertical so the top-view axis angle is ${state.suspensionPlanAngle}° with XY.`
+        : state.restingFaceOnHP
+        ? `Rotate the pyramid about the HP normal so the selected triangular face's base edge is ${state.faceEdgeAngleVP}° to VP.`
+        : state.planAngleSource === 'base-edge'
+        ? `Rotate the solid about the HP normal so its resting base edge is ${state.baseEdgeAngleVP}° to VP.`
+        : state.topViewAngle !== null
+        ? state.planAngleSource === 'front'
+          ? `Derive the plan rotation from the stated ${state.frontViewAngle}° front-view angle and ${Math.round(state.axisAngle * 100) / 100}° true inclination to HP.`
+          : `Rotate the plan of the axis to ${state.topViewAngle}° relative to the VP reference while retaining the specified support condition.`
+        : state.hasSecondInclination
+        ? `Apply the second rotation to satisfy the ${state.vpAngle}° inclination to VP while retaining the required inclination to HP.`
+        : 'The axis is parallel to VP, so no additional inclination is needed. The final orientation is the same as the first inclined position.'
+    },
+    {
+      title: 'Final setup and views',
+      detail: 'Inspect the final position and drawing.',
+      explanation:
+        'Use the final orientation to inspect the 3D solid and generated front and top views. The drawing engine is a prototype and its construction conventions must be verified against a standard solution.'
+    }
+  ];
+
+  const description = descriptions[state.step];
+
+  stepButtons.forEach((button, index) => {
+    button.classList.toggle('current', index === state.step);
+
+    button.querySelector('.step-num').textContent =
+      String(index + 1).padStart(2, '0');
+
+    button.querySelector('strong').textContent =
+      descriptions[index].title;
+
+    button.querySelector('small').textContent =
+      descriptions[index].detail;
+  });
+
+  $('progressFill').style.width =
+    `${((state.step + 1) / descriptions.length) * 100}%`;
+
+  $('stepSubtitle').textContent =
+    `Stage ${state.step + 1} of ${descriptions.length} · ${description.title}`;
+
+  $('stepExplanation').textContent = description.explanation;
+
+  $('previousStep').disabled = state.step === 0;
+
+  $('nextStep').textContent = state.step === 3
+    ? 'Restart construction ↺'
+    : 'Next step →';
+
+  const pose = getModelPose(state.currentTilt, state.currentAzimuth);
+  const actualAxis = new THREE.Vector3(0, 1, 0)
+    .applyQuaternion(pose.quaternion)
+    .normalize();
+  const currentHpAngle = Math.asin(
+    Math.max(0, Math.min(1, Math.abs(actualAxis.y)))
+  ) * 180 / Math.PI;
+  const actualVpAngle = Math.asin(
+    Math.max(0, Math.min(1, Math.abs(actualAxis.z)))
+  ) * 180 / Math.PI;
+
+  $('angleValue').textContent =
+    `${Math.round(currentHpAngle * 10) / 10}° to HP`;
+
+  $('vpReadout').textContent =
+    `Current inclination to VP: ${Math.round(actualVpAngle * 10) / 10}°`;
+
+  $('drawingTitle').textContent = state.step === 3
+    ? 'Final drawing · Front view and top view'
+    : `Construction drawing · Stage ${state.step + 1}`;
+}
+
+function moveToStep(index, animate = true) {
+  // Stop an animation already in progress before starting a new one.
+  state.tween = null;
+
+  state.step = Math.max(0, Math.min(3, index));
+
+  const target = getTargetForStep(state.step);
+
+  state.targetTilt = target.tilt;
+  state.targetAzimuth = target.azimuth;
+
+  updateConstructionUI();
+
+  const movementRequired =
+    Math.abs(state.currentTilt - target.tilt) > 0.003 ||
+    Math.abs(state.currentAzimuth - target.azimuth) > 0.003;
+
+  if (animate && movementRequired) {
+    state.tween = {
+      fromTilt: state.currentTilt,
+      toTilt: target.tilt,
+
+      fromAzimuth: state.currentAzimuth,
+      toAzimuth: target.azimuth,
+
+      start: performance.now(),
+      duration: 1100
+    };
+  } else {
+    state.currentTilt = target.tilt;
+    state.currentAzimuth = target.azimuth;
+
+    state.tween = null;
+
+    applyModelOrientation();
+    updateProjection(state.currentTilt, true);
+    updateConstructionUI();
+  }
+}
+
+function generateConstruction() {
+  const parsed = parseQuestion(input.value);
+
+  if (parsed.error) {
+    showNotice(parsed.error, 'error');
+    return;
+  }
+
+  // Save the interpreted question parameters.
+  state.solidType = parsed.solidType;
+  state.solidLabel = parsed.solidLabel;
+  state.baseShape = parsed.baseShape;
+  state.sides = parsed.sides;
+
+  state.side = parsed.side;
+  state.width = parsed.width;
+  state.height = parsed.height;
+  state.radius = parsed.radius;
+
+  state.axisAngle = parsed.axisAngle;
+  state.vpAngle = parsed.vpAngle;
+  state.topViewAngle = parsed.topViewAngle;
+  state.planAngleSource = parsed.planAngleSource;
+  state.planAngleSign = parsed.planAngleSign;
+  state.apexAwayFromVP = parsed.apexAwayFromVP;
+  state.apexTowardVP = parsed.apexTowardVP;
+  state.apexTowardRight = parsed.apexTowardRight;
+  state.frontViewAngle = parsed.frontViewAngle;
+  state.baseEdgeAngleVP = parsed.baseEdgeAngleVP;
+  state.restingFaceOnHP = parsed.restingFaceOnHP;
+  state.faceEdgeAngleVP = parsed.faceEdgeAngleVP;
+  state.suspendedFromCorner = parsed.suspendedFromCorner;
+  state.suspensionPlanAngle = parsed.suspensionPlanAngle;
+  state.hasSecondInclination = parsed.hasSecondInclination;
+  state.basePlane = parsed.basePlane;
+  state.baseContact = parsed.baseContact;
+  state.baseInclinationHP = parsed.baseInclinationHP;
+  state.baseInclinationVP = parsed.baseInclinationVP;
+  state.assumedParallelVP = parsed.assumedParallelVP;
+
+  // Always reset to the initial construction position.
+  state.step = 0;
+
+  state.currentTilt = 0;
+  state.targetTilt = 0;
+
+  state.currentAzimuth = 0;
+  state.targetAzimuth = 0;
+
+  state.tween = null;
+
+  state.lastDrawTilt = -999;
+  state.lastDrawAzimuth = -999;
+
+  $('modelTitle').textContent =
+    `${state.solidLabel} · Axis/height ${state.height} mm`;
+
+  const dimensionsMessage = state.baseShape === 'circle'
+    ? `radius ${state.radius} mm, ${state.height} mm axis/height`
+    : state.baseShape === 'rectangle'
+      ? `base ${state.side} x ${state.width} mm, ${state.height} mm axis/height`
+      : `${state.side} mm side, ${state.height} mm axis/height`;
+
+  const orientationMessage = state.suspendedFromCorner
+    ? `Recognised ${state.solidLabel}. Dimensions: ${dimensionsMessage}. Freely suspended from a base corner; derived axis inclination ${Math.round(state.axisAngle * 100) / 100}° to HP; top-view axis angle ${state.suspensionPlanAngle}° with XY.`
+    : state.restingFaceOnHP
+    ? `Recognised ${state.solidLabel}. Dimensions: ${dimensionsMessage}. One lateral triangular face on HP; derived axis inclination ${Math.round(state.axisAngle * 100) / 100}° to HP.`
+    : state.baseEdgeAngleVP !== null
+    ? `Recognised ${state.solidLabel}. Dimensions: ${dimensionsMessage}. Axis ${state.axisAngle}° to HP; base edge ${state.baseEdgeAngleVP}° to VP; true axis inclination ${Math.round(state.vpAngle * 100) / 100}° to VP.`
+    : state.frontViewAngle !== null
+    ? `Recognised ${state.solidLabel}. Dimensions: ${dimensionsMessage}. Front-view axis angle ${state.frontViewAngle}° to XY; true axis inclination ${Math.round(state.axisAngle * 100) / 100}° to HP${state.planAngleSource === 'front' ? `; derived plan rotation ${Math.round(state.topViewAngle * 100) / 100}°` : `; top-view axis angle ${state.topViewAngle}°`}.`
+    : state.topViewAngle !== null
+    ? `Recognised ${state.solidLabel}. Dimensions: ${dimensionsMessage}. Axis ${Math.round(state.axisAngle * 100) / 100}° to HP; top view of the axis ${state.topViewAngle}° relative to VP.`
+    : state.hasSecondInclination
+    ? `Recognised ${state.solidLabel}. Dimensions: ${dimensionsMessage}. Inclinations: ${state.axisAngle}° to HP and ${state.vpAngle}° to VP.`
+    : `Recognised ${state.solidLabel}. Dimensions: ${dimensionsMessage}. Inclination: ${state.axisAngle}° to HP, with the axis parallel to VP.`;
+
+  const supportMessage = state.baseContact === 'corner'
+    ? state.suspendedFromCorner
+      ? 'Suspension corner placed on HP as a drawing reference'
+      : `Base corner on ${state.basePlane}`
+    : state.baseContact === 'point'
+      ? `Base point on ${state.basePlane}`
+    : state.restingFaceOnHP
+      ? 'Triangular face on HP; assumes its base edge is the specified edge'
+    : state.baseContact === 'generator'
+      ? `Cone generator on ${state.basePlane}`
+    : state.baseContact === 'face'
+      ? `Base face on ${state.basePlane} in the simple position; the solid pivots about a base edge when inclined`
+      : `Base edge on ${state.basePlane}`;
+
+  const baseInclinationMessage = [
+    state.baseInclinationHP === null
+      ? ''
+      : `Base plane ${state.baseInclinationHP}° to HP.`,
+    state.baseInclinationVP === null
+      ? ''
+      : `Base plane ${state.baseInclinationVP}° to VP.`
+  ].filter(Boolean).join(' ');
+
+  const assumptionMessage = state.assumedParallelVP
+    ? 'Assumed axis parallel to VP because no VP condition was given.'
+    : '';
+
+  const apexDirectionMessage = state.apexAwayFromVP && state.apexTowardRight
+    ? 'Apex directed away from VP and toward the right.'
+    : state.apexTowardVP
+      ? 'Apex directed toward VP.'
+    : '';
+
+  const confirmationMessage = [
+    orientationMessage,
+    baseInclinationMessage,
+    assumptionMessage,
+    apexDirectionMessage,
+    `Support: ${supportMessage}.`,
+    'Check each generated construction stage.'
+  ].filter(Boolean).join(' ');
+
+  showNotice(
+    confirmationMessage,
+    'success'
+  );
+
+  // Build the model and regenerate projections.
+  createSolid();
+
+  // Reframe the camera for this solid's dimensions.
+  const extent = Math.max(state.side, state.width, state.radius, state.height, 30);
+
+  controls.target.set(0, state.height * 0.4, 0);
+
+  camera.position.set(
+    extent * 1.5,
+    state.height + extent * 1.3,
+    state.height * 1.7 + extent * 1.5
+  );
+
+  camera.near = 0.1;
+  camera.far = Math.max(2500, state.height * 15);
+  camera.updateProjectionMatrix();
+
+  controls.update();
+
+  // Show Stage 1 immediately without an animation.
+  moveToStep(0, false);
+}
+
+/* Resize the 3D canvas when the browser window changes. */
+function resizeRenderer() {
+  const width = Math.max(1, sceneHost.clientWidth);
+  const height = Math.max(1, sceneHost.clientHeight);
+
+  renderer.setSize(width, height, false);
+
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+}
+
+const resizeObserver = new ResizeObserver(resizeRenderer);
+
+resizeObserver.observe(sceneHost);
+window.addEventListener('resize', resizeRenderer);
+
+resizeRenderer();
+
+/* Main animation loop. The model and drawing use the same angles. */
+function renderLoop(now) {
+  requestAnimationFrame(renderLoop);
+
+  if (state.tween) {
+    const tween = state.tween;
+
+    const elapsed = now - tween.start;
+    const t = Math.min(1, elapsed / tween.duration);
+
+    // Smooth ease-in/ease-out animation.
+    const eased = t < 0.5
+      ? 4 * t * t * t
+      : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    state.currentTilt =
+      tween.fromTilt +
+      (tween.toTilt - tween.fromTilt) * eased;
+
+    state.currentAzimuth =
+      tween.fromAzimuth +
+      (tween.toAzimuth - tween.fromAzimuth) * eased;
+
+    applyModelOrientation();
+    updateConstructionUI();
+    updateProjection(state.currentTilt);
+
+    if (t >= 1) {
+      state.currentTilt = tween.toTilt;
+      state.currentAzimuth = tween.toAzimuth;
+
+      state.tween = null;
+
+      applyModelOrientation();
+      updateProjection(state.currentTilt, true);
+      updateConstructionUI();
+    }
+  }
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+/* ---------------- User controls ---------------- */
+
+$('solveButton').addEventListener('click', generateConstruction);
+
+input.addEventListener('keydown', event => {
+  if (
+    (event.ctrlKey || event.metaKey) &&
+    event.key === 'Enter'
+  ) {
+    generateConstruction();
+  }
+});
+
+stepButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    moveToStep(Number(button.dataset.step));
+  });
+});
+
+$('previousStep').addEventListener('click', () => {
+  moveToStep(state.step - 1);
+});
+
+$('nextStep').addEventListener('click', () => {
+  moveToStep(state.step === 3 ? 0 : state.step + 1);
+});
+
+$('animateButton').addEventListener('click', () => {
+  moveToStep(state.step === 3 ? 0 : state.step + 1, true);
+});
+
+$('resetView').addEventListener('click', () => {
+  const extent = Math.max(
+    state.side,
+    state.width,
+    state.radius,
+    state.height,
+    30
+  );
+
+  controls.target.set(0, state.height * 0.4, 0);
+
+  camera.position.set(
+    extent * 1.5,
+    state.height + extent * 1.3,
+    state.height * 1.7 + extent * 1.5
+  );
+
+  controls.update();
+});
+
+/* Download the current drawing as an SVG file. */
+$('downloadSvg').addEventListener('click', () => {
+  const clone = projectionSvg.cloneNode(true);
+
+  clone.setAttribute(
+    'xmlns',
+    'http://www.w3.org/2000/svg'
+  );
+
+  clone.setAttribute('width', '760');
+  clone.setAttribute('height', '400');
+
+  const styles = document.createElementNS(
+    'http://www.w3.org/2000/svg',
+    'style'
+  );
+
+  styles.textContent = `
+    .edge {
+      fill: none;
+      stroke: #4e65d9;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .hidden-edge {
+      fill: none;
+      stroke: #7c8799;
+      stroke-width: 1.2;
+      stroke-dasharray: 5 4;
+      stroke-linecap: round;
+    }
+
+    .projector {
+      fill: none;
+      stroke: #aeb9cf;
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+    }
+
+    .axis-line {
+      fill: none;
+      stroke: #52617b;
+      stroke-width: 1.1;
+      stroke-dasharray: 8 3 1 3;
+    }
+
+    .xy {
+      stroke: #7d8aa3;
+      stroke-width: 1.3;
+    }
+
+    .projection-text {
+      fill: #8190a7;
+      font: 10px Arial, sans-serif;
+    }
+
+    .point-text {
+      fill: #5068d9;
+      font: 700 9px Arial, sans-serif;
+    }
+  `;
+
+  clone.insertBefore(styles, clone.firstChild);
+
+  const blob = new Blob(
+    [new XMLSerializer().serializeToString(clone)],
+    { type: 'image/svg+xml;charset=utf-8' }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+
+  anchor.href = url;
+  anchor.download = 'draftmate-projection.svg';
+
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+
+  URL.revokeObjectURL(url);
+});
+
+/* Topic library placeholder. */
+$('topicButton').addEventListener('click', () => {
+  showNotice(
+    'The current mission focuses on the Projections of Solids module. Other Engineering Graphics modules will be developed separately.',
+    'success'
+  );
+});
+
+/* Start the completed page with the sample question. */
+generateConstruction();
+requestAnimationFrame(renderLoop);
+</script>
+</body>
+</html>
