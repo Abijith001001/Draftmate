@@ -733,6 +733,12 @@ function parseQuestion(raw) {
   const text = raw.toLowerCase()
     .replace(/[−–—]/g, '-')
     .replace(/\s+/g, ' ')
+    .replace(/\bkept\b/g, 'placed')
+    .replace(/\blying\b/g, 'resting')
+    .replace(/\brests\s+with\b/g, 'rests')
+    .replace(/\bbase\s+corner\b/g, 'base corner')
+    .replace(/\bsolid\s+diagonal\b/g, 'solid diagonal')
+    .replace(/\bbody\s+diagonal\b/g, 'body diagonal')
     .trim();
 
   if (!text) {
@@ -884,7 +890,9 @@ function parseQuestion(raw) {
     /\bfront\s+view\b(?:\s+(?:of\s+)?(?:the\s+)?axis\b)?[^.;,]{0,35}?(?:inclined|makes?)(?:\s+at)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:with|to)\s*(?:the\s+)?(?:x\s*-?\s*y|h\.?\s*p\.?|horizontal\s+plane)\b/i
   );
 
-  const triangularFaceOnHP = /\btriangular\s+faces?\b.{0,45}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
+  const triangularFaceOnHP =
+    /\btriangular\s+faces?\b.{0,45}\b(?:on|rests?\s+on|lies?\s+on|placed\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text) ||
+    /\b(?:one\s+of\s+)?(?:its\s+)?triangular\s+faces?\b.{0,45}\b(?:rests?\s+on|lies?\s+on|placed\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
   const faceEdgeVPMatch = text.match(
     /\bedge\b[^.;,]{0,80}?(?:inclined|makes?)(?:\s+at)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:with|to)\s*(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i
   );
@@ -977,13 +985,9 @@ function parseQuestion(raw) {
     ) * 180 / Math.PI
     : null;
 
-  if (
-    isCube &&
-    (bodyDiagonalPerpendicularVP || solidDiagonalPerpendicularVP) &&
-    !edgeOrientationSpecified
-  ) {
+  if (bodyDiagonalPerpendicularVP || solidDiagonalPerpendicularVP) {
     return {
-      error: 'A cube solid diagonal perpendicular to VP does not uniquely fix its rotation. Specify an edge or face orientation, such as an edge angle to HP or VP.'
+      error: 'This version recognises the body/solid-diagonal condition, but does not yet solve diagonal-constrained orientation reliably. Please use a supported edge/face or axis inclination condition for now; do not treat a generated drawing as the answer for this diagonal case.'
     };
   }
   const faceRestingAxisAngle = triangularFaceOnHP
