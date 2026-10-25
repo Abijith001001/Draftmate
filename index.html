@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0b1020">
 
-  <title>DraftMate | Engineering Graphics Made Clear</title>
-  <meta name="description" content="Explore Engineering Graphics with DraftMate. Visualize solid projections, understand technical drawings, and explore step-by-step solutions.">
+  <title>GeoDraft | Engineering Graphics Solver</title>
+  <meta name="description" content="GeoDraft helps engineering students explore Engineering Graphics, solid projections, technical views, and visual construction workflows.">
 
   <style>
     :root {
@@ -44,22 +44,16 @@
       text-decoration: none;
     }
 
-    button, a {
-      -webkit-tap-highlight-color: transparent;
-    }
-
     .container {
       width: min(1120px, 90%);
       margin: auto;
     }
 
-    /* Navigation */
-
     header {
       position: sticky;
       top: 0;
       z-index: 10;
-      background: rgba(8, 13, 25, 0.88);
+      background: rgba(8, 13, 25, 0.9);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
@@ -88,13 +82,17 @@
       display: grid;
       place-items: center;
       color: white;
-      font-size: 22px;
+      font-size: 24px;
       background: linear-gradient(135deg, #397cff, #45d8e9);
       box-shadow: 0 0 28px rgba(66, 132, 255, 0.25);
     }
 
-    .brand span:last-child {
-      color: var(--blue);
+    .brand .geo {
+      color: var(--text);
+    }
+
+    .brand .draft {
+      color: var(--cyan);
     }
 
     .nav-links {
@@ -114,15 +112,12 @@
       border: 1px solid var(--border);
       border-radius: 10px;
       color: white !important;
-      transition: 0.2s;
     }
 
     .nav-cta:hover {
       background: var(--panel-light);
       border-color: var(--blue);
     }
-
-    /* Buttons */
 
     .btn {
       display: inline-flex;
@@ -135,8 +130,7 @@
       font-weight: 700;
       border: 1px solid transparent;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s,
-                  background 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .btn:hover {
@@ -163,12 +157,9 @@
       background: var(--panel);
     }
 
-    /* Hero */
-
     .hero {
       position: relative;
       padding: 90px 0 85px;
-      overflow: hidden;
       background:
         radial-gradient(ellipse at 75% 30%,
           rgba(43, 100, 205, 0.17), transparent 45%),
@@ -241,21 +232,11 @@
       font-size: 12px;
     }
 
-    /* Technical drawing preview */
-
-    .drawing-wrap {
-      position: relative;
-      min-width: 0;
-    }
-
     .drawing-card {
-      position: relative;
       padding: 18px;
       border: 1px solid rgba(111, 161, 245, 0.24);
       border-radius: 22px;
-      background: linear-gradient(145deg,
-        rgba(20, 35, 61, 0.96),
-        rgba(10, 17, 32, 0.96));
+      background: linear-gradient(145deg, #14233d, #0a1120);
       box-shadow: 0 30px 90px rgba(0,0,0,0.32);
       animation: float 6s ease-in-out infinite;
     }
@@ -306,8 +287,6 @@
       50% { transform: translateY(-8px); }
     }
 
-    /* Section shared styles */
-
     section {
       scroll-margin-top: 90px;
     }
@@ -343,8 +322,6 @@
       font-size: 15px;
     }
 
-    /* Feature cards */
-
     .features {
       background: #0b1120;
       border-top: 1px solid rgba(255,255,255,0.035);
@@ -361,9 +338,7 @@
       padding: 27px;
       border: 1px solid var(--border);
       border-radius: 17px;
-      background: linear-gradient(150deg,
-        rgba(22, 34, 56, 0.78),
-        rgba(14, 22, 39, 0.8));
+      background: linear-gradient(150deg, #162238c7, #0e1627cc);
       transition: transform 0.25s, border-color 0.25s;
     }
 
@@ -395,8 +370,6 @@
       font-size: 13px;
       line-height: 1.8;
     }
-
-    /* How it works */
 
     .steps-grid {
       display: grid;
@@ -434,15 +407,11 @@
       font-size: 13px;
     }
 
-    /* Call to action */
-
     .cta-section {
       padding: 25px 0 90px;
     }
 
     .cta-box {
-      position: relative;
-      overflow: hidden;
       padding: 52px 25px;
       text-align: center;
       border-radius: 24px;
@@ -459,8 +428,6 @@
       color: var(--muted);
       font-size: 14px;
     }
-
-    /* Footer */
 
     footer {
       padding: 25px 0;
@@ -488,8 +455,6 @@
       color: #72829b;
     }
 
-    /* Accessibility */
-
     a:focus-visible {
       outline: 2px solid var(--cyan);
       outline-offset: 4px;
@@ -503,8 +468,6 @@
         transition-duration: 0.01ms !important;
       }
     }
-
-    /* Tablet and mobile */
 
     @media (max-width: 850px) {
       .hero-grid {
@@ -540,89 +503,39 @@
     }
 
     @media (max-width: 560px) {
-      nav {
-        min-height: 66px;
-      }
-
-      .brand {
-        font-size: 20px;
-      }
-
-      .brand-icon {
-        width: 37px;
-        height: 37px;
-      }
-
-      .nav-links {
-        gap: 12px;
-        font-size: 12px;
-      }
-
-      .nav-links .nav-about {
-        display: none;
-      }
-
-      .nav-cta {
-        padding: 8px 10px;
-      }
-
-      .hero {
-        padding: 53px 0 60px;
-      }
+      nav { min-height: 66px; }
+      .brand { font-size: 20px; }
+      .brand-icon { width: 37px; height: 37px; }
+      .nav-links { gap: 12px; font-size: 12px; }
+      .nav-links .nav-about { display: none; }
+      .nav-cta { padding: 8px 10px; }
+      .hero { padding: 53px 0 60px; }
 
       h1 {
         font-size: clamp(38px, 10vw, 49px);
         letter-spacing: -1.8px;
       }
 
-      .hero-description {
-        font-size: 15px;
-      }
-
-      .hero-actions {
-        flex-direction: column;
-      }
-
-      .hero-actions .btn {
-        width: 100%;
-      }
-
-      .drawing-card {
-        padding: 12px;
-      }
-
-      .section {
-        padding: 65px 0;
-      }
-
-      .feature-grid,
-      .steps-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .feature-card {
-        padding: 23px;
-      }
-
-      .steps-grid {
-        gap: 18px;
-      }
-
-      .cta-box {
-        padding: 38px 19px;
-      }
+      .hero-description { font-size: 15px; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { width: 100%; }
+      .drawing-card { padding: 12px; }
+      .section { padding: 65px 0; }
+      .feature-grid, .steps-grid { grid-template-columns: 1fr; }
+      .feature-card { padding: 23px; }
+      .steps-grid { gap: 18px; }
+      .cta-box { padding: 38px 19px; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Navigation -->
   <header>
     <nav class="container">
-      <a class="brand" href="#home" aria-label="DraftMate home">
+      <a class="brand" href="#home" aria-label="GeoDraft home">
         <span class="brand-icon">⌘</span>
-        <span>Draft<span>Mate</span></span>
+        <span><span class="geo">Geo</span><span class="draft">Draft</span></span>
       </a>
 
       <div class="nav-links">
@@ -636,8 +549,6 @@
   </header>
 
   <main>
-
-    <!-- Welcome section -->
     <section class="hero" id="home">
       <div class="container hero-grid">
 
@@ -655,7 +566,7 @@
           <p class="hero-description">
             Engineering Graphics doesn't have to be confusing.
             Explore technical drawings, visualize solid projections,
-            and work through engineering problems with DraftMate.
+            and work through engineering problems with GeoDraft.
           </p>
 
           <div class="hero-actions">
@@ -670,11 +581,10 @@
           </div>
 
           <p class="trust-line">
-            Built for learners. Designed for clearer understanding.
+            Visualize. Construct. Understand.
           </p>
         </div>
 
-        <!-- Illustrative engineering drawing -->
         <div class="drawing-wrap">
           <div class="drawing-card">
             <div class="drawing-top">
@@ -685,23 +595,19 @@
             <svg class="drawing-canvas"
                  viewBox="0 0 460 365"
                  role="img"
-                 aria-label="Illustrative isometric prism and its front and top projections"
+                 aria-label="Illustrative isometric prism and front and top projections"
                  xmlns="http://www.w3.org/2000/svg">
 
               <defs>
                 <pattern id="grid" width="22" height="22"
                          patternUnits="userSpaceOnUse">
-                  <path d="M 22 0 L 0 0 0 22"
-                        fill="none"
-                        stroke="#253750"
-                        stroke-width="0.7"/>
+                  <path d="M22 0 L0 0 0 22"
+                        fill="none" stroke="#253750" stroke-width="0.7"/>
                 </pattern>
-
                 <linearGradient id="faceA" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stop-color="#559cff" stop-opacity="0.6"/>
                   <stop offset="100%" stop-color="#2454a2" stop-opacity="0.35"/>
                 </linearGradient>
-
                 <linearGradient id="faceB" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stop-color="#44d8df" stop-opacity="0.5"/>
                   <stop offset="100%" stop-color="#176e93" stop-opacity="0.3"/>
@@ -710,66 +616,48 @@
 
               <rect width="460" height="365" fill="url(#grid)"/>
 
-              <!-- Coordinate axes -->
               <g stroke="#536c91" stroke-width="1.2"
                  stroke-dasharray="5 5" opacity="0.7">
                 <path d="M30 178 H430"/>
                 <path d="M230 20 V340"/>
               </g>
 
-              <!-- Isometric solid: illustrative hexagonal prism -->
-              <g stroke="#80c7ff" stroke-width="1.6"
-                 stroke-linejoin="round">
-                <path d="M230 60 L286 89 L286 177
-                         L230 206 L174 177 L174 89 Z"
+              <g stroke="#80c7ff" stroke-width="1.6" stroke-linejoin="round">
+                <path d="M230 60 L286 89 L286 177 L230 206 L174 177 L174 89 Z"
                       fill="#2459a0" fill-opacity="0.22"/>
-
                 <path d="M230 60 L286 89 L230 118 L174 89 Z"
                       fill="url(#faceB)"/>
-
                 <path d="M230 60 L230 118 L230 206 L230 148 Z"
-                      fill="url(#faceA)" opacity="0.9"/>
-
-                <path d="M286 89 L286 177 L230 206
-                         L230 118 Z"
                       fill="url(#faceA)"/>
-
+                <path d="M286 89 L286 177 L230 206 L230 118 Z"
+                      fill="url(#faceA)"/>
                 <path d="M174 89 L230 118 L230 206 L174 177 Z"
                       fill="#214e8d" fill-opacity="0.45"/>
-
-                <path d="M230 60 L286 89 L230 118 L174 89 Z"
-                      fill="none"/>
-
                 <path d="M230 118 L230 206"
                       stroke="#a3e8ff" stroke-dasharray="4 4"/>
               </g>
 
-              <!-- Front view -->
-              <g stroke="#63dce9" stroke-width="1.5"
-                 fill="none">
+              <g stroke="#63dce9" stroke-width="1.5" fill="none">
                 <path d="M70 252 H180 V305 H70 Z"/>
                 <path d="M70 252 L180 305"/>
-                <path d="M70 305 L180 252"
-                      stroke-dasharray="4 4" opacity="0.6"/>
+                <path d="M70 305 L180 252" stroke-dasharray="4 4" opacity="0.6"/>
               </g>
 
               <text x="125" y="326" text-anchor="middle"
-                    fill="#9bdbe9" font-size="11"
-                    font-family="Arial">FRONT VIEW</text>
+                    fill="#9bdbe9" font-size="11" font-family="Arial">
+                FRONT VIEW
+              </text>
 
-              <!-- Top view -->
-              <g stroke="#80b1ff" stroke-width="1.5"
-                 fill="none">
-                <path d="M285 254 L313 239 L341 254
-                         L341 284 L313 299 L285 284 Z"/>
-                <path d="M285 254 L341 284 M313 239 L313 299
-                         M341 254 L285 284"
+              <g stroke="#80b1ff" stroke-width="1.5" fill="none">
+                <path d="M285 254 L313 239 L341 254 L341 284 L313 299 L285 284 Z"/>
+                <path d="M285 254 L341 284 M313 239 L313 299 M341 254 L285 284"
                       stroke-dasharray="3 4" opacity="0.7"/>
               </g>
 
               <text x="313" y="326" text-anchor="middle"
-                    fill="#9abfff" font-size="11"
-                    font-family="Arial">TOP VIEW</text>
+                    fill="#9abfff" font-size="11" font-family="Arial">
+                TOP VIEW
+              </text>
 
               <text x="22" y="25" fill="#7189aa"
                     font-size="10" font-family="Arial">
@@ -789,12 +677,10 @@
       </div>
     </section>
 
-    <!-- Features -->
     <section class="section features" id="features">
       <div class="container">
-
         <div class="section-heading">
-          <span class="section-kicker">Explore DraftMate</span>
+          <span class="section-kicker">Explore GeoDraft</span>
           <h2>Make Engineering Graphics Easier to Understand</h2>
           <p class="section-description">
             Visualize concepts and explore the tools available
@@ -803,152 +689,101 @@
         </div>
 
         <div class="feature-grid">
-
           <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">📐</div>
+            <div class="feature-icon">📐</div>
             <h3>Step-by-Step Learning</h3>
-            <p>
-              Follow construction stages and understand how
-              a drawing develops from its initial position
-              to the required solution.
-            </p>
+            <p>Follow construction stages and understand how a drawing develops from its initial position to the required solution.</p>
           </article>
 
           <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">⬡</div>
+            <div class="feature-icon">⬡</div>
             <h3>Solid Projections</h3>
-            <p>
-              Explore solid projection problems and the
-              relationships between object orientation,
-              front view, and top view.
-            </p>
+            <p>Explore solid projection problems and the relationships between object orientation, front view, and top view.</p>
           </article>
 
           <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">◈</div>
+            <div class="feature-icon">◈</div>
             <h3>3D Visualization</h3>
-            <p>
-              Use visual representations to build a clearer
-              understanding of three-dimensional objects
-              and their engineering views.
-            </p>
+            <p>Use visual representations to build a clearer understanding of three-dimensional objects and their engineering views.</p>
           </article>
 
           <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">⌕</div>
+            <div class="feature-icon">⌕</div>
             <h3>Question-Based Workflow</h3>
-            <p>
-              Open the solver and enter an Engineering
-              Graphics question to explore the solution
-              supported by the current application.
-            </p>
+            <p>Open the solver and enter an Engineering Graphics question to explore the solution supported by the application.</p>
           </article>
 
           <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">↗</div>
+            <div class="feature-icon">↗</div>
             <h3>Learn at Your Pace</h3>
-            <p>
-              Revisit concepts, examine different views,
-              and use the workspace while studying
-              Engineering Graphics.
-            </p>
+            <p>Revisit concepts, examine different views, and use the workspace while studying Engineering Graphics.</p>
           </article>
 
           <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">⌘</div>
+            <div class="feature-icon">⌘</div>
             <h3>One Convenient Workspace</h3>
-            <p>
-              Start from one central homepage and move
-              directly into the DraftMate solver when
-              you are ready to work.
-            </p>
+            <p>Start from one central homepage and move directly into the GeoDraft solver when you are ready to work.</p>
           </article>
-
         </div>
       </div>
     </section>
 
-    <!-- How it works -->
     <section class="section" id="how-it-works">
       <div class="container">
-
         <div class="section-heading">
           <span class="section-kicker">Simple Workflow</span>
           <h2>Three Steps to Get Started</h2>
           <p class="section-description">
-            Open the workspace and begin exploring your
-            Engineering Graphics problem.
+            Open the workspace and begin exploring your Engineering Graphics problem.
           </p>
         </div>
 
         <div class="steps-grid">
-
           <article class="step">
             <div class="step-number">01</div>
             <h3>Open the Solver</h3>
-            <p>
-              Click Start Solving to enter the
-              DraftMate workspace.
-            </p>
+            <p>Click Start Solving to enter the GeoDraft workspace.</p>
           </article>
 
           <article class="step">
             <div class="step-number">02</div>
             <h3>Enter Your Question</h3>
-            <p>
-              Type the Engineering Graphics problem
-              you want to explore.
-            </p>
+            <p>Type the Engineering Graphics problem you want to explore.</p>
           </article>
 
           <article class="step">
             <div class="step-number">03</div>
             <h3>Explore the Result</h3>
-            <p>
-              Review the construction, views, and
-              visualization provided by the solver.
-            </p>
+            <p>Review the construction, views, and visualization provided by the solver.</p>
           </article>
-
         </div>
       </div>
     </section>
 
-    <!-- Call to action -->
     <section class="cta-section">
       <div class="container">
         <div class="cta-box">
           <span class="section-kicker">YOUR WORKSPACE AWAITS</span>
           <h2>Ready to Start Drawing?</h2>
           <p>
-            Take the next step in your Engineering Graphics
-            learning journey. Open DraftMate and explore
-            your next problem.
+            Take the next step in your Engineering Graphics learning journey.
+            Open GeoDraft and explore your next problem.
           </p>
-
-          <a class="btn btn-primary"
-             href="./Draftmate_Working.HTML">
-            Enter DraftMate <span aria-hidden="true">→</span>
+          <a class="btn btn-primary" href="./Draftmate_Working.HTML">
+            Enter GeoDraft <span aria-hidden="true">→</span>
           </a>
         </div>
       </div>
     </section>
-
   </main>
 
-  <!-- Footer -->
   <footer>
     <div class="container footer-inner">
       <div>
-        <div class="footer-brand">DraftMate</div>
-        <div class="footer-note">
-          Engineering Graphics, made easier to explore.
-        </div>
+        <div class="footer-brand">GeoDraft</div>
+        <div class="footer-note">Visualize. Construct. Understand.</div>
       </div>
-
-      <div>
-        A learning project for engineering students.
-      </div>
+      <div>A learning project for engineering students.</div>
     </div>
   </footer>
 
