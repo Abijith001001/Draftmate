@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GeoDraft | KTU Engineering Graphics</title>
+<title>GeoDraft | KTU Engineering Graphics — Working Solver</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -509,7 +509,7 @@ footer {
     </header>
 
     <section class="heading">
-      <div class="eyebrow">ENGINEERING GRAPHICS · LEARN BY SEEING</div>
+      <div class="eyebrow">GEODRAFT · BASE-PLANE INCLINATION TEST COPY</div>
       <h1>Make every projection <span>make sense.</span></h1>
       <div class="subtitle">
         Type a question, explore the solid in 3D and follow the construction stages.
@@ -520,10 +520,20 @@ footer {
       <h2>Enter your engineering question</h2>
       <div class="small-note">
         Describe a prism, pyramid, cylinder or cone, its dimensions,
-        and its base/axis position. Use HP/VP or spell out the plane names.
+        and its base/axis position. This test copy also accepts base-plane
+        inclinations to HP and VP, with an edge or corner resting on either plane.
       </div>
 
-      <textarea id="questionInput" spellcheck="false">A regular hexagonal prism of side 25 mm and axis length 60 mm is initially placed with its base on HP. Its axis is inclined at 30 degrees to HP and parallel to VP.</textarea>
+      <textarea id="questionInput" spellcheck="false">A regular hexagonal prism of side 30 mm and axis length 60 mm is resting on HP on one edge of its base. The base plane is inclined at 60 degrees to HP. The base plane is inclined at 60 degrees to VP.</textarea>
+
+      <div class="small-note" style="margin-top:10px;line-height:1.55">
+        <strong>Base-plane test prompts (use one at a time):</strong><br>
+        1. Base edge on HP; base plane 60° to HP; separately state that the base plane is inclined 60° to VP.<br>
+        2. Base edge on VP; base plane 60° to HP; separately state that the base plane is inclined 60° to VP.<br>
+        3. Base corner on HP; base plane 60° to HP; separately state that the base plane is inclined 60° to VP.<br>
+        4. Base corner on VP; base plane 60° to HP; separately state that the base plane is inclined 60° to VP.<br>
+        Keep the angles geometrically compatible. This is a separate test copy; your successful file is unchanged.
+      </div>
 
       <div class="row">
         <div class="small-note">Angles and resting conditions must be geometrically compatible.</div>
@@ -683,6 +693,9 @@ const state = {
   faceEdgeAngleVP: null,
   suspendedFromCorner: false,
   suspensionPlanAngle: null,
+  // Exact special placement: cube body diagonal normal to VP, with a corner on HP.
+  diagonalCondition: null,
+  cornerOnHP: false,
   hasSecondInclination: false,
   basePlane: 'HP',
   baseContact: 'edge',
@@ -788,7 +801,7 @@ function parseQuestion(raw) {
       };
     }
 
-    solidLabel = `${baseShape[0].toUpperCase()}${baseShape.slice(1)} pyramid`;
+    solidLabel = `${baseShape === 'hexagon' ? 'Hexagonal' : baseShape === 'pentagon' ? 'Pentagonal' : baseShape === 'triangle' ? 'Triangular' : baseShape === 'square' ? 'Square' : baseShape === 'octagon' ? 'Octagonal' : baseShape === 'heptagon' ? 'Heptagonal' : baseShape[0].toUpperCase() + baseShape.slice(1)} pyramid`;
   } else if (/\b(?:prism|cuboid|cube)\b/.test(text)) {
     solidType = 'prism';
 
@@ -824,7 +837,7 @@ function parseQuestion(raw) {
     }
 
     if (!isCube) {
-      solidLabel = `${baseShape[0].toUpperCase()}${baseShape.slice(1)} prism`;
+      solidLabel = `${baseShape === 'hexagon' ? 'Hexagonal' : baseShape === 'pentagon' ? 'Pentagonal' : baseShape === 'triangle' ? 'Triangular' : baseShape === 'square' ? 'Square' : baseShape === 'octagon' ? 'Octagonal' : baseShape === 'heptagon' ? 'Heptagonal' : baseShape === 'rectangle' ? 'Rectangular' : baseShape[0].toUpperCase() + baseShape.slice(1)} prism`;
     }
   } else {
     return {
@@ -924,10 +937,15 @@ function parseQuestion(raw) {
   );
 
   const parallelVP = /\bparallel\s+to\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
-  const perpendicularHP = /\bperpendicular\s+to\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
-  const perpendicularVP = /\bperpendicular\s+to\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
   const bodyDiagonalPerpendicularVP = /\bbody\s+diagonals?\b.{0,50}\bperpendicular\s+to\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
   const solidDiagonalPerpendicularVP = /\bsolid\s+diagonals?\b.{0,50}\bperpendicular\s+to\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
+  const diagonalCondition = isCube && (bodyDiagonalPerpendicularVP || solidDiagonalPerpendicularVP)
+    ? 'cube-body-diagonal-perpendicular-vp'
+    : null;
+  const perpendicularHP = /\bperpendicular\s+to\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
+  // Do not accidentally treat a body-diagonal condition as an axis condition.
+  const perpendicularVP = !bodyDiagonalPerpendicularVP && !solidDiagonalPerpendicularVP &&
+    /\bperpendicular\s+to\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
   const edgeOrientationSpecified = /\bedges?\b.{0,45}(?:parallel|perpendicular|inclined|making|makes?)\b.{0,30}(?:h\.?\s*p\.?|v\.?\s*p\.?|horizontal|vertical)\b/i.test(text);
   const cornerOnHP = /\bcorners?\b.{0,35}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
   const freelySuspendedCorner = /\b(?:freely\s+)?suspended\b.{0,60}\b(?:base\s+)?corners?\b/i.test(text);
@@ -935,7 +953,7 @@ function parseQuestion(raw) {
   const generatorOnVP = /\bgenerator\b.{0,24}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
   const pointOnHP = /\bpoint\b.{0,30}\bbase\b.{0,30}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text) || /\bbase\s+point\b.{0,25}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b/i.test(text);
   const pointOnVP = /\bpoint\b.{0,30}\bbase\b.{0,30}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text) || /\bbase\s+point\b.{0,25}\b(?:on|rests?\s+on|lies?\s+on)\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b/i.test(text);
-  const baseContact = /\bbase\s+corners?\b|\bcorners?\s+of\s+(?:(?:its|the)\s+)?base\b/i.test(text) || freelySuspendedCorner
+  const baseContact = /\bbase\s+corners?\b|\bcorners?\s+of\s+(?:(?:its|the)\s+)?base\b/i.test(text) || freelySuspendedCorner || cornerOnHP
     ? 'corner'
     : generatorOnHP || generatorOnVP
       ? 'generator'
@@ -959,7 +977,7 @@ function parseQuestion(raw) {
   }
 
   const baseInVP = /\bbase\b.{0,45}\b(?:on|in|rests?\s+on|lies?\s+on|placed\s+on|kept\s+on)\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b|\b(?:on|in)\s+(?:the\s+)?(?:v\.?\s*p\.?|vertical\s+plane)\b.{0,30}\bbase\b/i.test(text) || generatorOnVP || pointOnVP;
-  const baseInHP = /\bbase\b.{0,45}\b(?:on|in|rests?\s+on|lies?\s+on|placed\s+on|kept\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b|\b(?:on|in)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b.{0,30}\bbase\b/i.test(text) || generatorOnHP || pointOnHP;
+  const baseInHP = /\bbase\b.{0,45}\b(?:on|in|rests?\s+on|lies?\s+on|placed\s+on|kept\s+on)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b|\b(?:on|in)\s+(?:the\s+)?(?:h\.?\s*p\.?|horizontal\s+plane)\b.{0,30}\bbase\b/i.test(text) || generatorOnHP || pointOnHP || cornerOnHP;
 
   if (baseInVP && baseInHP) {
     return { error: 'Specify the base on either HP or VP, not both.' };
@@ -985,9 +1003,14 @@ function parseQuestion(raw) {
     ) * 180 / Math.PI
     : null;
 
-  if (bodyDiagonalPerpendicularVP || solidDiagonalPerpendicularVP) {
+  if ((bodyDiagonalPerpendicularVP || solidDiagonalPerpendicularVP) && !isCube) {
     return {
-      error: 'This version recognises the body/solid-diagonal condition, but does not yet solve diagonal-constrained orientation reliably. Please use a supported edge/face or axis inclination condition for now; do not treat a generated drawing as the answer for this diagonal case.'
+      error: 'The diagonal-constrained placement is currently implemented for cubes. Please use a cube for this body/solid-diagonal test, or enter a different supported placement condition.'
+    };
+  }
+  if ((bodyDiagonalPerpendicularVP || solidDiagonalPerpendicularVP) && !cornerOnHP) {
+    return {
+      error: 'For this cube diagonal construction, also specify which condition places a cube corner on HP.'
     };
   }
   const faceRestingAxisAngle = triangularFaceOnHP
@@ -1014,6 +1037,13 @@ function parseQuestion(raw) {
     return { error: 'The axis angle must be complementary to the base-plane angle for a right solid.' };
   }
 
+  // axisAngle is the true acute angle of the cone axis to HP, as used by
+  // getTargetForStep(). For a generator to lie on HP, the cone must tilt so
+  // its axis line makes atan(radius / height) with HP. The axis direction is
+  // reversed relative to the ordinary upright cone during the contact stage
+  // (handled in getModelPose), so the apex and one rim point become the low
+  // support line instead of the base circle falling below HP.
+  // Example: h=60, r=20 => 18.435 degrees to HP.
   const generatorAxisAngle = baseContact === 'generator' && solidType === 'cone'
     ? Math.atan2(radius, height) * 180 / Math.PI
     : null;
@@ -1105,13 +1135,21 @@ function parseQuestion(raw) {
       Math.cos(radians(axisAngle)) * Math.sin(radians(Number(baseEdgeVpAngle[1])))
     ) * 180 / Math.PI;
   } else if (planAngle !== null && axisVpInclination && planAngleSource === 'front') {
+    // A front-view axis angle plus a true VP inclination is a distinct
+    // construction: preserve the stated true VP angle while deriving the
+    // plan rotation from the front-view constraint.
     vpAngle = Number(axisVpInclination[1]);
-  } else if (planAngle !== null) {
-    vpAngle = 0;
   } else if (axisVpInclination) {
+    // A true axis-to-VP inclination takes precedence over a separately
+    // stated top-view axis orientation. The two are validated below.
     vpAngle = Number(axisVpInclination[1]);
   } else if (vpMatch && !baseVpInclination) {
     vpAngle = Number(vpMatch[1]);
+  } else if (planAngle !== null) {
+    // A top-view angle alone specifies plan orientation, not a true
+    // inclination to VP. In that case the axis is not assumed to have a
+    // non-zero true VP inclination unless the question states one.
+    vpAngle = 0;
   } else if (baseVpInclination) {
     vpAngle = 90 - Number(baseVpInclination[1]);
   } else if (baseHpInclination) {
@@ -1173,10 +1211,28 @@ function parseQuestion(raw) {
   const alpha = radians(axisAngle);
   const beta = radians(vpAngle);
 
-  if (planAngle === null && Math.sin(alpha) ** 2 + Math.sin(beta) ** 2 > 1.000001) {
+  if (Math.sin(alpha) ** 2 + Math.sin(beta) ** 2 > 1.000001) {
     return {
       error: 'The two inclination angles are geometrically incompatible. Check the question.'
     };
+  }
+
+  // If the question gives both a true inclination to VP and an explicit
+  // top-view axis angle, confirm that both describe the same 3D axis.
+  // azimuth is measured from the model's reference direction; HP-supported
+  // and VP-supported solids use different coordinate-plane conventions.
+  if (planAngle !== null && planAngleSource === 'top' &&
+      (axisVpInclination || (vpMatch && !baseVpInclination))) {
+    const expectedVp = Math.asin(Math.max(0, Math.min(1,
+      Math.cos(alpha) * (baseInVP
+        ? Math.abs(Math.cos(radians(planAngle)))
+        : Math.abs(Math.sin(radians(planAngle))))
+    ))) * 180 / Math.PI;
+    if (Math.abs(expectedVp - vpAngle) > 0.5) {
+      return {
+        error: `The stated top-view axis angle implies about ${expectedVp.toFixed(1)}° to VP, which conflicts with the specified ${vpAngle}° true inclination to VP.`
+      };
+    }
   }
 
   if (vpAngle > 0.001 && !vpMatch && !axisVpInclination && !baseVpInclination && !perpendicularVP) {
@@ -1206,6 +1262,8 @@ function parseQuestion(raw) {
     faceEdgeAngleVP: faceEdgeVPMatch ? Number(faceEdgeVPMatch[1]) : null,
     suspendedFromCorner: freelySuspendedCorner,
     suspensionPlanAngle: freelySuspendedCorner ? planAngle : null,
+    diagonalCondition,
+    cornerOnHP,
     basePlane: baseInVP ? 'VP' : 'HP',
     baseContact,
     baseInclinationHP: baseHpInclination ? Number(baseHpInclination[1]) : null,
@@ -1214,7 +1272,7 @@ function parseQuestion(raw) {
       baseHpInclination && !vpMatch && !axisVpInclination &&
       !parallelVP && !perpendicularVP && !baseVpInclination && planAngle === null
     ),
-    hasSecondInclination: vpAngle > 0.001 || planAngle !== null
+    hasSecondInclination: diagonalCondition ? false : (vpAngle > 0.001 || planAngle !== null)
   };
 }
 
@@ -1575,21 +1633,48 @@ function createSolid() {
 ------------------------------------------------------- */
 
 function getModelPose(tilt, azimuth) {
+  // Exact cube construction: rotate a true body diagonal onto the VP normal
+  // (world Z, since front-view projection is X/Y), then place the specified
+  // corner on HP. The opposite corner necessarily shares its elevation because
+  // the diagonal is horizontal. This is a geometric constraint, not an axis tilt.
+  if (state.diagonalCondition === 'cube-body-diagonal-perpendicular-vp' && state.step > 0) {
+    const n = state.sides; // cube base has four corners
+    const corner = state.baseVertices[0].clone();
+    const oppositeCorner = state.baseVertices[n + 2].clone();
+    const bodyDiagonal = oppositeCorner.sub(corner).normalize();
+    const vpNormal = new THREE.Vector3(0, 0, 1);
+    const quaternion = new THREE.Quaternion().setFromUnitVectors(bodyDiagonal, vpNormal);
+    const cornerAfterRotation = corner.clone().applyQuaternion(quaternion);
+    return {
+      quaternion,
+      // Align one corner with HP (y = 0); do not force other corners above HP,
+      // which would be mathematically incompatible with a horizontal body diagonal.
+      position: new THREE.Vector3(0, -cornerAfterRotation.y, 0)
+    };
+  }
+
   const hpAngle = state.basePlane === 'VP'
     ? tilt
     : Math.PI / 2 - tilt;
 
   const horizontalComponent = Math.cos(hpAngle);
   const verticalComponent = Math.sin(hpAngle);
+  // For a cone resting on a generator, the apex-to-base-centre axis
+  // must point AWAY from the support plane in the local solid's +Y direction:
+  // with HP support, the apex is a lowest contact point and the base rim lies
+  // above HP.  A positive normal component put the base ring below HP, which
+  // caused the incorrect Stage 2 shown in the user's screenshot.
+  const generatorContact = state.baseContact === 'generator' && state.step > 0;
+  const normalAxisSign = generatorContact ? -1 : 1;
   const axis = state.basePlane === 'VP'
     ? new THREE.Vector3(
       horizontalComponent * Math.sin(azimuth),
       verticalComponent,
-      horizontalComponent * Math.cos(azimuth)
+      normalAxisSign * horizontalComponent * Math.cos(azimuth)
     )
     : new THREE.Vector3(
       horizontalComponent * Math.cos(azimuth),
-      verticalComponent,
+      normalAxisSign * verticalComponent,
       -horizontalComponent * Math.sin(azimuth)
     );
 
@@ -1697,52 +1782,43 @@ function getModelPose(tilt, azimuth) {
       );
     }
   } else if (state.step > 0 && state.baseContact === 'generator') {
+    // Keep the axis orientation fixed, but roll the cone around its own axis
+    // until the selected apex-to-rim generator is exactly parallel to HP/VP.
+    // The old implementation aimed the generator along axis x normal, which
+    // is perpendicular to the axis and therefore cannot satisfy the cone's
+    // fixed generator-to-axis angle in general.
     const apex = state.baseVertices[state.sides];
     const basePoint = state.baseVertices[0];
     const localGenerator = apex.clone().sub(basePoint).normalize();
-    const currentGenerator = localGenerator.clone().applyQuaternion(quaternion);
-    const axialComponent = currentGenerator.dot(axis);
+    const currentGenerator = localGenerator.clone().applyQuaternion(quaternion).normalize();
+    const axialComponent = THREE.MathUtils.clamp(currentGenerator.dot(axis), -1, 1);
     const radialLength = Math.sqrt(Math.max(0, 1 - axialComponent ** 2));
-    const tangent = axis.clone().cross(normal);
+    const currentRadial = currentGenerator.clone()
+      .addScaledVector(axis, -axialComponent);
+    const normalAlongAxis = axis.dot(normal);
+    const normalPerpendicular = normal.clone()
+      .addScaledVector(axis, -normalAlongAxis);
+    const normalPerpendicularSq = normalPerpendicular.lengthSq();
 
-    if (tangent.lengthSq() > 1e-10 && radialLength > 1e-10) {
-      tangent.normalize().multiplyScalar(radialLength);
+    if (currentRadial.lengthSq() > 1e-10 && normalPerpendicularSq > 1e-10 && radialLength > 1e-10) {
+      // For a unit generator g = a*axis + r, impose g·normal = 0.
+      // Thus r·normalPerpendicular = -a*(axis·normal). Construct a radial
+      // vector of the required length satisfying that equation.
+      const requiredProjection = -axialComponent * normalAlongAxis;
+      const parallelCoefficient = requiredProjection / normalPerpendicularSq;
+      const parallelPart = normalPerpendicular.clone().multiplyScalar(parallelCoefficient);
+      const remainingSq = radialLength ** 2 - parallelPart.lengthSq();
 
-      const currentRadial = currentGenerator.clone()
-        .addScaledVector(axis, -axialComponent);
-      const targets = [tangent, tangent.clone().negate()].map(direction =>
-        axis.clone().multiplyScalar(axialComponent).add(direction)
-      );
-
-      const candidates = targets.map(target => {
-        const targetRadial = target.clone()
-          .addScaledVector(axis, -target.dot(axis));
+      if (remainingSq >= -1e-8) {
+        const perpendicularPart = axis.clone().cross(normalPerpendicular).normalize()
+          .multiplyScalar(Math.sqrt(Math.max(0, remainingSq)));
+        const targetRadial = parallelPart.add(perpendicularPart);
         const rollAngle = Math.atan2(
           axis.dot(currentRadial.clone().cross(targetRadial)),
           currentRadial.dot(targetRadial)
         );
-
-        return new THREE.Quaternion()
-          .setFromAxisAngle(axis, rollAngle)
-          .multiply(quaternion);
-      });
-
-      const supportScore = candidate => {
-        const contactLevel = [basePoint, apex].reduce((sum, vertex) =>
-          sum + vertex.clone().applyQuaternion(candidate).dot(normal), 0
-        ) / 2;
-        const lowestLevel = Math.min(...state.baseVertices.map(vertex =>
-          vertex.clone().applyQuaternion(candidate).dot(normal)
-        ));
-
-        return Math.abs(contactLevel - lowestLevel);
-      };
-
-      quaternion.copy(
-        supportScore(candidates[1]) < supportScore(candidates[0])
-          ? candidates[1]
-          : candidates[0]
-      );
+        quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(axis, rollAngle));
+      }
     }
   } else if (state.step > 0 && state.baseContact !== 'corner') {
     const edgeDirection = state.baseVertices[1].clone()
@@ -1946,7 +2022,9 @@ function isOccluded(point, projection, tolerance) {
 }
 
 function classifyEdgeRuns(start, end, triangles, view, tolerance) {
-  const samples = 24;
+  // Use dense sampling so short occluded sections in oblique pyramid views
+  // are not incorrectly classified as visible (or vice versa).
+  const samples = 120;
   const runs = [];
   let runStart = 0;
   let runHidden = null;
@@ -2141,39 +2219,91 @@ function updateProjection(tilt = state.currentTilt, force = false) {
 /*
   Construction stages:
   0 = Simple position
-  1 = First inclination to HP
-  2 = Second inclination to VP, if required
+  1 = First inclination, chosen from the support plane
+      - base on HP: incline to the requested HP angle first
+      - base on VP: incline to the requested VP angle first
+  2 = Apply the second inclination / derived plan rotation
   3 = Final setup and views
 */
+// Classroom construction helper for a solid whose base rests on HP.
+// Stage 1 tilts the axis to alpha while keeping it parallel to VP. In the
+// second construction, beta is the PLAN rotation obtained geometrically by
+// transferring the first-inclined axis projection against the true axis
+// length drawn at the stated true inclination to VP. In vector terms this is
+// sin(beta_plan) = sin(vpAngle) / cos(axisAngle). This is a derived plan angle,
+// not the true axis-to-VP angle itself.
+function deriveClassroomBetaPlan() {
+  const alpha = radians(state.axisAngle);
+  const vp = radians(state.vpAngle);
+  const denominator = Math.cos(alpha);
+  if (Math.abs(denominator) < 1e-8) return 0;
+  const ratio = Math.sin(vp) / denominator;
+  if (ratio < -1e-7 || ratio > 1 + 1e-7) return null;
+  return Math.asin(Math.max(0, Math.min(1, ratio)));
+}
 
 function getTargetForStep(step) {
-  // Stage 1 is the initial simple position.
-  // Stage 2 inclines the axis to the required HP angle.
-  const tilt = step === 0
-    ? 0
-    : radians(state.basePlane === 'VP'
-      ? state.axisAngle
-      : 90 - state.axisAngle);
-
-  // During the first inclination, keep the axis parallel to VP.
-  // Apply the second rotation from Stage 3 onward if the question
-  // explicitly specifies an inclination to VP.
+  const alpha = radians(state.axisAngle); // required true axis angle to HP
+  const vp = radians(state.vpAngle);      // required true axis angle to VP
+  let tilt = 0;
   let azimuth = 0;
 
-  if (step >= 2 && state.hasSecondInclination) {
-    if (state.topViewAngle !== null) {
-      azimuth = radians(state.topViewAngle) * state.planAngleSign;
+  // Stage 0: simple position. Stage 1: only the FIRST inclination is applied.
+  // For a base on HP, rotate the axis away from vertical until it is alpha
+  // above HP, while keeping the plan orientation fixed (azimuth = 0). This
+  // makes the intermediate axis parallel to VP. Do not apply the requested
+  // VP inclination during Stage 1.
+  if (step >= 1) {
+    if (state.basePlane === 'HP') {
+      tilt = Math.PI / 2 - alpha;
+      azimuth = 0;
     } else {
-      const alpha = radians(state.axisAngle);
-      const beta = radians(state.vpAngle);
+      // Base on VP: the simple-position axis is perpendicular to VP and
+      // parallel to HP. In the FIRST inclination, rotate only in plan so the
+      // axis reaches the requested angle to VP while remaining parallel to HP.
+      // With the model convention axis=(cos(hp)*sin(azimuth), sin(hp),
+      // cos(hp)*cos(azimuth)), hp=0 at this stage and
+      // sin(vpAngle)=cos(azimuth). Do NOT tilt toward HP in Stage 1.
+      if (step === 1) {
+        tilt = 0;
+        azimuth = Math.acos(Math.max(0, Math.min(1, Math.sin(vp))));
+      } else {
+        // Final inclination: set the true angle to HP and derive alpha-plan
+        // from the classroom second-inclination construction so the final
+        // axis satisfies both stated true inclinations.
+        tilt = alpha;
+        const ratio = Math.sin(vp) / Math.max(Math.cos(alpha), 1e-8);
+        azimuth = (ratio >= 0 && ratio <= 1) ? Math.acos(ratio) : 0;
+      }
+    }
+  }
 
-      const denominator = Math.max(Math.cos(alpha), 1e-8);
-      const ratio = Math.sin(beta) / denominator;
-
-      const clampedRatio = Math.max(-1, Math.min(1, ratio));
-      azimuth = state.basePlane === 'VP'
-        ? Math.acos(clampedRatio)
-        : Math.asin(clampedRatio);
+  // Stage 2 and Stage 3: apply the SECOND inclination/derived plan rotation.
+  // For HP support, this is the classroom beta construction: the true axis
+  // length is drawn at the requested true inclination to VP, then the
+  // first-inclined axis length is transferred to obtain beta. In the 3D
+  // coordinate model the same construction is represented by the equivalent
+  // plan rotation satisfying sin(vp) = cos(alpha) * sin(betaPlan).
+  if (step >= 2 && state.hasSecondInclination) {
+    if (state.topViewAngle !== null && state.planAngleSource !== 'derived-inclination') {
+      azimuth = radians(state.topViewAngle) * state.planAngleSign;
+    } else if (state.basePlane === 'HP') {
+      const betaPlan = deriveClassroomBetaPlan();
+      azimuth = betaPlan === null ? 0 : betaPlan;
+    } else {
+      // Base on VP uses a different azimuth convention from base on HP.
+      // Its axis vector is (cos(alpha)*sin(azimuth), sin(alpha),
+      // cos(alpha)*cos(azimuth)). Therefore the required angle to VP beta
+      // satisfies sin(beta) = cos(alpha)*cos(azimuth), so the classroom
+      // second rotation is acos(sin(beta)/cos(alpha)), NOT asin(...).
+      // Using asin here was the bug: the VP-first final model did not satisfy
+      // the requested pair of angles even though the labels described them.
+      const ratio = Math.sin(vp) / Math.max(Math.cos(alpha), 1e-8);
+      if (ratio > 1 + 1e-6 || ratio < -1e-6) {
+        azimuth = 0; // invalid combinations are rejected by question validation
+      } else {
+        azimuth = Math.acos(Math.max(0, Math.min(1, ratio)));
+      }
     }
   }
 
@@ -2191,22 +2321,38 @@ function updateConstructionUI() {
         : 'Begin with the solid in its simple position. Establish its base, axis and initial projections before applying an inclination.'
     },
     {
-      title: state.suspendedFromCorner
+      title: state.diagonalCondition
+        ? 'Align body diagonal perpendicular to VP'
+        : state.suspendedFromCorner
         ? 'Free suspension'
         : state.restingFaceOnHP ? 'Rest triangular face on HP' : 'First inclination',
-      detail: state.suspendedFromCorner
+      detail: state.diagonalCondition
+        ? 'Rotate the cube so the selected body diagonal is normal to VP and place one corner on HP.'
+        : state.suspendedFromCorner
         ? 'Hang from the base corner with the center of gravity below the pivot.'
         : state.restingFaceOnHP
         ? `Place one triangular face on HP; axis inclination is ${displayAxisAngle}°.`
-        : `Incline the axis to ${displayAxisAngle}° with HP.`,
-      explanation: state.suspendedFromCorner
+        : state.baseContact === 'generator'
+        ? 'Rest the selected cone generator on HP.'
+        : state.basePlane === 'VP'
+        ? `First incline the axis to ${Math.round(state.vpAngle * 100) / 100}° with VP; the final HP inclination is applied in the next stage.`
+        : `First inclination only: incline the axis to ${displayAxisAngle}° with HP while keeping the axis parallel to VP. Do not apply the VP condition yet.`,
+      explanation: state.diagonalCondition
+        ? 'Apply a 3D rotation that maps a true cube body diagonal to the normal of VP. Translate the cube so the selected corner has zero height; FV projects the diagonal to a single point.'
+        : state.suspendedFromCorner
         ? 'Rotate the solid until its center of gravity is vertically below the suspension corner.'
         : state.restingFaceOnHP
         ? 'Rotate the selected lateral triangular face into HP. The derived axis inclination follows from the pyramid dimensions.'
-        : `Rotate the solid to make its axis ${displayAxisAngle}° with HP. This is the intermediate position used before applying a second orientation condition.`
+        : state.baseContact === 'generator'
+        ? `Tilt the cone to its generator-contact position. The apex and selected base-rim point form the generator that lies on HP; the axis line is ${displayAxisAngle}° to HP.`
+        : state.basePlane === 'VP'
+        ? `First inclination only: incline the axis to ${state.vpAngle}° with VP while keeping it parallel to HP. Do not apply the HP inclination yet; find α for the second inclination and apply the requested HP angle in the final position.`
+        : `Classroom Stage 1: set only the specified ${displayAxisAngle}° inclination to HP and keep the axis parallel to VP. The second inclination is applied in the next stage using the constructed β; this stage must not jump directly to the final orientation.`
     },
     {
-      title: state.suspendedFromCorner
+      title: state.diagonalCondition
+        ? 'Check diagonal and projections'
+        : state.suspendedFromCorner
         ? 'Set top-view orientation'
         : state.restingFaceOnHP
         ? 'Orient the resting face edge'
@@ -2217,10 +2363,14 @@ function updateConstructionUI() {
           ? 'Plan orientation from front view'
           : 'Plan-view orientation'
         : state.hasSecondInclination
-        ? 'Second inclination'
+        ? state.basePlane === 'HP' && state.topViewAngle === null
+          ? 'Find β and apply second inclination'
+          : 'Second inclination'
         : 'Check the VP condition',
 
-      detail: state.suspendedFromCorner
+      detail: state.diagonalCondition
+        ? 'Confirm the body diagonal is a point in FV and true length in TV.'
+        : state.suspendedFromCorner
         ? `Set the top-view axis angle to ${state.suspensionPlanAngle}° with XY.`
         : state.restingFaceOnHP
         ? `Set the face's base edge to ${state.faceEdgeAngleVP}° with VP.`
@@ -2231,10 +2381,14 @@ function updateConstructionUI() {
           ? `Use the derived ${Math.round(state.topViewAngle * 100) / 100}° plan rotation.`
           : `Set the top view of the axis to ${state.topViewAngle}° with VP.`
         : state.hasSecondInclination
-        ? `Apply the ${state.vpAngle}° condition to VP.`
+        ? state.basePlane === 'HP' && state.topViewAngle === null
+          ? `Construct β from the true axis length and the first-inclined axis length; the equivalent plan rotation is ${Math.round((deriveClassroomBetaPlan() || 0) * 18000 / Math.PI) / 100}°.`
+          : `Apply the ${state.vpAngle}° condition to VP.`
         : 'No second inclination is specified.',
 
-      explanation: state.suspendedFromCorner
+      explanation: state.diagonalCondition
+        ? 'No second rotation is needed: the diagonal constraint defines the final orientation. The FV endpoints of the body diagonal coincide; its TV shows the true 3D diagonal length.'
+        : state.suspendedFromCorner
         ? `Rotate the suspended solid about the vertical so the top-view axis angle is ${state.suspensionPlanAngle}° with XY.`
         : state.restingFaceOnHP
         ? `Rotate the pyramid about the HP normal so the selected triangular face's base edge is ${state.faceEdgeAngleVP}° to VP.`
@@ -2245,7 +2399,11 @@ function updateConstructionUI() {
           ? `Derive the plan rotation from the stated ${state.frontViewAngle}° front-view angle and ${Math.round(state.axisAngle * 100) / 100}° true inclination to HP.`
           : `Rotate the plan of the axis to ${state.topViewAngle}° relative to the VP reference while retaining the specified support condition.`
         : state.hasSecondInclination
-        ? `Apply the second rotation to satisfy the ${state.vpAngle}° inclination to VP while retaining the required inclination to HP.`
+        ? state.basePlane === 'HP' && state.topViewAngle === null
+          ? 'Classroom method: draw the true axis at the stated inclination to VP, draw the parallel to XY, transfer the axis length from the first-inclined position to locate the intersection, and use the resulting β with XY for the second rotation. The 3D solid and both projections use that same final orientation.'
+          : state.basePlane === 'VP' && state.topViewAngle === null
+          ? `Classroom method for base on VP: Stage 1 sets only ${Math.round(state.vpAngle * 100) / 100}° to VP while the axis stays parallel to HP. Construct α from the true axis length and the first-inclined axis length, then apply the HP inclination in the final position. The final axis and both projections must satisfy both requested angles.`
+          : `Apply the second rotation to satisfy the ${state.vpAngle}° inclination to VP while retaining the required inclination to HP.`
         : 'The axis is parallel to VP, so no additional inclination is needed. The final orientation is the same as the first inclined position.'
     },
     {
@@ -2286,7 +2444,9 @@ function updateConstructionUI() {
     : 'Next step →';
 
   const pose = getModelPose(state.currentTilt, state.currentAzimuth);
-  const actualAxis = new THREE.Vector3(0, 1, 0)
+  const actualAxis = (state.diagonalCondition
+    ? state.baseVertices[state.sides + 2].clone().sub(state.baseVertices[0])
+    : new THREE.Vector3(0, 1, 0))
     .applyQuaternion(pose.quaternion)
     .normalize();
   const currentHpAngle = Math.asin(
@@ -2296,11 +2456,13 @@ function updateConstructionUI() {
     Math.max(0, Math.min(1, Math.abs(actualAxis.z)))
   ) * 180 / Math.PI;
 
-  $('angleValue').textContent =
-    `${Math.round(currentHpAngle * 10) / 10}° to HP`;
+  $('angleValue').textContent = state.diagonalCondition
+    ? `${Math.round(currentHpAngle * 10) / 10}° to HP (body diagonal)`
+    : `${Math.round(currentHpAngle * 10) / 10}° to HP`;
 
-  $('vpReadout').textContent =
-    `Current inclination to VP: ${Math.round(actualVpAngle * 10) / 10}°`;
+  $('vpReadout').textContent = state.diagonalCondition
+    ? `Body diagonal to VP: ${Math.round(actualVpAngle * 10) / 10}° (perpendicular)`
+    : `Current inclination to VP: ${Math.round(actualVpAngle * 10) / 10}°`;
 
   $('drawingTitle').textContent = state.step === 3
     ? 'Final drawing · Front view and top view'
@@ -2351,7 +2513,30 @@ function generateConstruction() {
   const parsed = parseQuestion(input.value);
 
   if (parsed.error) {
-    showNotice(parsed.error, 'error');
+    // Do not leave a previous successful model looking like the answer to
+    // the newly entered (invalid or unsupported) question.
+    showNotice(parsed.error + ' No new model was generated; the previous model has been cleared.', 'error');
+    if (state.geometryGroup) {
+      scene.remove(state.geometryGroup);
+      state.geometryGroup.traverse(object => {
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) {
+          if (Array.isArray(object.material)) object.material.forEach(material => material.dispose());
+          else object.material.dispose();
+        }
+      });
+      state.geometryGroup = null;
+    }
+    state.baseVertices = [];
+    state.edges = [];
+    state.surfaceTriangles = [];
+    state.tween = null;
+    state.currentTilt = 0;
+    state.currentAzimuth = 0;
+    state.lastDrawTilt = -999;
+    state.lastDrawAzimuth = -999;
+    projectionSvg.innerHTML = '';
+    $('modelTitle').textContent = 'No valid model · Correct the question';
     return;
   }
 
@@ -2380,6 +2565,8 @@ function generateConstruction() {
   state.faceEdgeAngleVP = parsed.faceEdgeAngleVP;
   state.suspendedFromCorner = parsed.suspendedFromCorner;
   state.suspensionPlanAngle = parsed.suspensionPlanAngle;
+  state.diagonalCondition = parsed.diagonalCondition;
+  state.cornerOnHP = parsed.cornerOnHP;
   state.hasSecondInclination = parsed.hasSecondInclination;
   state.basePlane = parsed.basePlane;
   state.baseContact = parsed.baseContact;
@@ -2410,7 +2597,9 @@ function generateConstruction() {
       ? `base ${state.side} x ${state.width} mm, ${state.height} mm axis/height`
       : `${state.side} mm side, ${state.height} mm axis/height`;
 
-  const orientationMessage = state.suspendedFromCorner
+  const orientationMessage = state.diagonalCondition
+    ? `Recognised ${state.solidLabel}. Dimensions: ${dimensionsMessage}. Body diagonal perpendicular to VP; one cube corner aligned with HP. The two ends of that diagonal coincide in the front view.`
+    : state.suspendedFromCorner
     ? `Recognised ${state.solidLabel}. Dimensions: ${dimensionsMessage}. Freely suspended from a base corner; derived axis inclination ${Math.round(state.axisAngle * 100) / 100}° to HP; top-view axis angle ${state.suspensionPlanAngle}° with XY.`
     : state.restingFaceOnHP
     ? `Recognised ${state.solidLabel}. Dimensions: ${dimensionsMessage}. One lateral triangular face on HP; derived axis inclination ${Math.round(state.axisAngle * 100) / 100}° to HP.`
