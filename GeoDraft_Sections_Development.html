@@ -1,0 +1,1700 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GeoDraft | Sections & Development Workspace</title>
+  <style>
+    :root{
+      --bg:#f4f7fb; --panel:#ffffff; --ink:#17243a; --muted:#64748b; --line:#dbe3ef; --accent:#2563eb; --accent-soft:#e8f0ff; --danger:#dc2626; --gold:#f59e0b; --success:#10b981;
+      --shadow:0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:linear-gradient(180deg,#f7f9fd 0%,#eef4ff 100%);font:15px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink)}
+    .wrap{max-width:1280px;margin:0 auto;padding:18px 18px 42px}
+    header{background:linear-gradient(120deg,#10203d,#17447c);color:white;border-bottom:3px solid rgba(255,255,255,0.15)}
+    .masthead{max-width:1280px;margin:0 auto;padding:28px 18px 18px;display:flex;justify-content:space-between;gap:16px;align-items:end;flex-wrap:wrap}
+    .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#bfdbfe;font-weight:800}
+    h1{margin:10px 0 6px;font-size:clamp(2rem,4vw,3rem);line-height:1.1}
+    .subtitle{margin:0;color:#dbeafe}
+    .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(255,255,255,0.2);border-radius:999px;background:rgba(255,255,255,0.08);font-size:12px;color:#edf6ff}
+    .app{display:grid;grid-template-columns:360px 1fr;gap:18px;margin-top:18px}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+    .sidebar{padding:14px;display:flex;flex-direction:column;gap:12px}
+    .manual-controls{border:1px solid var(--line);border-radius:14px;background:#f8fbff;padding:10px}
+    .manual-controls summary{cursor:pointer;font-weight:800;color:#334155}
+    .manual-controls[open]{display:flex;flex-direction:column;gap:12px}
+    .question-card{padding:18px;margin-bottom:18px}
+    .question-card h2{margin:0 0 5px;font-size:20px}
+    .question-card textarea{display:block;width:100%;min-height:84px;resize:vertical;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font:inherit;color:var(--ink)}
+    .question-actions{display:grid;grid-template-columns:220px 1fr;gap:12px;align-items:center;margin-top:8px}
+    .question-actions .run{margin-top:0}
+    .question-actions .result{margin-top:0}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .tab{padding:12px 10px;border:1px solid var(--line);border-radius:12px;background:#f8fbff;cursor:pointer;font-weight:700;color:var(--ink);text-align:left}
+    .tab b{display:block;font-size:13px}
+    .tab small{display:block;margin-top:4px;color:var(--muted);font-size:11px;line-height:1.3}
+    .tab.active{background:var(--accent-soft);border-color:#b7cfff;box-shadow:inset 0 0 0 1px #b7cfff}
+    .card{padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff}
+    .card h2{margin:0 0 6px;font-size:18px}
+    .sub{margin:0 0 10px;color:var(--muted);font-size:12px;line-height:1.5}
+    label{display:block;margin:10px 0 6px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#465a76}
+    input,select,button{font:inherit}
+    input,select{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;background:white;color:var(--ink)}
+    .run{width:100%;margin-top:14px;padding:12px 14px;border:0;border-radius:10px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(37,99,235,0.2)}
+    .secondary{width:100%;margin-top:8px;padding:11px 12px;border:1px solid #cfe0ff;border-radius:10px;background:#f8fbff;color:#1d4ed8;font-weight:700;cursor:pointer}
+    .result{padding:10px 12px;border-radius:10px;background:#eff6ff;color:#1d4ed8;font-size:13px;line-height:1.5;margin-top:12px;border:1px solid #dbeafe}
+    .small{font-size:11px;color:var(--muted);line-height:1.5;margin-top:8px}
+    .workspace{padding:14px;display:flex;flex-direction:column;gap:14px}
+    .canvas-card{padding:14px}
+    .solid3d-card{padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff;user-select:none}
+    .solid3d-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .solid3d-heading h2{margin:0;font-size:16px;color:#334155}
+    .solid3d-controls{display:flex;align-items:center;gap:8px}
+    .solid3d-controls button{padding:6px 10px;border:1px solid #cfe0ff;border-radius:8px;background:#f8fbff;color:#1d4ed8;font-weight:700;cursor:pointer}
+    .solid3d-controls span{font-size:11px;color:var(--muted)}
+    .solid3d-svg{margin-top:8px;border:1px solid var(--line);border-radius:10px;cursor:grab;touch-action:none}
+    .solid3d-svg:active{cursor:grabbing}
+    .svg-wrap{border:1px solid var(--line);border-radius:12px;background:#fcfdff;padding:10px;overflow:auto}
+    svg{width:100%;height:auto;background:linear-gradient(180deg,#fbfdff,#f4f8ff);display:block;border-radius:10px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .view{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff}
+    .view h3{margin:0 0 6px;font-size:14px;color:#334155}
+    .steps{margin:0;padding-left:18px;color:#475569;font-size:13px;line-height:1.65}
+    .tos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .mini{padding:10px;border:1px solid var(--line);border-radius:10px;background:#fafcff}
+    .mini h4{margin:0 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#465a76}
+    .mini p{margin:0;font-size:12px;color:var(--muted);line-height:1.5}
+    .hidden{display:none}
+    @media(max-width:980px){.app{grid-template-columns:1fr}.tabs{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.tabs,.question-actions{grid-template-columns:1fr}.grid,.tos{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="masthead">
+    <div>
+      <div class="eyebrow">GeoDraft · KTU Engineering Graphics</div>
+      <h1>Sections & Development Workspace</h1>
+      <p class="subtitle">B.Tech classroom guide for module sections and development of solids</p>
+    </div>
+    <div class="toolbar">
+      <span class="chip">Pyramids</span>
+      <span class="chip">Prisms</span>
+      <span class="chip">Cylinders</span>
+      <span class="chip">Cones</span>
+      <span class="chip">KTU: True shapes & cut developments</span>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <section class="panel question-card" aria-labelledby="questionTitle">
+    <h2 id="questionTitle">Describe your engineering graphics question</h2>
+    <p class="sub">Type the full question as written in your syllabus. Axis positions can be stated as a midpoint, top/base end, fraction, or distance from either end.</p>
+    <textarea id="questionInput" rows="3" placeholder="Example: A cone with 60 mm base diameter and 70 mm axis rests on HP. It is cut by a plane bisecting the axis and inclined at 45° to HP. Draw the sectional top view and true shape."></textarea>
+    <div class="question-actions">
+      <button class="run" id="solveQuestion">Generate solution</button>
+      <div class="result" id="questionStatus" role="status" aria-live="polite">Enter a question to get started. You can also adjust the controls manually below.</div>
+    </div>
+  </section>
+  <div class="app">
+    <aside class="panel sidebar">
+      <details class="manual-controls">
+      <summary>Manual controls · adjust recognized values</summary>
+      <div class="tabs">
+        <button class="tab active" data-id="section-panel"><b>Sections</b><small>Cutting plane</small></button>
+        <button class="tab" data-id="development-panel"><b>Development</b><small>Surface layout</small></button>
+        <button class="tab" data-id="cut-panel"><b>Cut surface</b><small>After cutting</small></button>
+        <button class="tab" data-id="library-panel"><b>Library</b><small>Examples</small></button>
+      </div>
+
+      <section class="panel card" id="section-panel">
+        <h2>Section of a solid</h2>
+        <p class="sub">Choose a cutting-plane orientation, then enter its angle or distance from the axis.</p>
+        <label>Solid type</label>
+        <select id="secSolid">
+          <option value="cone" selected>Cone</option>
+          <option value="rectangular-pyramid">Rectangular pyramid</option>
+          <option value="regular-pyramid">Regular pyramid</option>
+          <option value="prism">Prism</option>
+          <option value="cylinder">Cylinder</option>
+        </select>
+        <label id="xLabel">Base diameter (mm)</label>
+        <input id="x" type="number" value="60" min="1" step="0.1" />
+        <label id="yLabel" class="hidden">Base side Y (mm)</label>
+        <input id="y" class="hidden" type="number" value="60" min="1" step="0.1" />
+        <label id="sidesLabel">Number of sides</label>
+        <input id="sides" type="number" value="4" min="3" max="12" step="1" />
+        <label>Height (mm)</label>
+        <input id="h" type="number" value="70" min="1" step="0.1" />
+        <label>Cutting-plane orientation</label>
+        <select id="sectionPlaneOrientation">
+          <option value="inclined-to-hp">Perpendicular to VP, inclined to HP</option>
+          <option value="horizontal-hp">Perpendicular to VP, parallel to HP</option>
+          <option value="vertical-parallel-vp">Perpendicular to HP, parallel to VP</option>
+          <option value="vertical-inclined-vp">Perpendicular to HP, inclined to VP</option>
+        </select>
+        <label id="cutAngleLabel">Section plane angle to HP (°)</label>
+        <input id="cutAngle" type="number" value="45" min="0" max="89.9" step="0.1" />
+        <label id="axisFractionLabel">Axis fraction at plane (0–1 from base)</label>
+        <input id="axisFraction" type="number" value="0.5" min="0" max="1" step="0.01" />
+        <label id="verticalPlaneAngleLabel" class="hidden">Vertical plane angle to VP (°)</label>
+        <input id="verticalPlaneAngle" class="hidden" type="number" value="45" min="0" max="90" step="0.1" />
+        <label id="sectionOffsetLabel" class="hidden">Cutting-plane distance from axis (mm)</label>
+        <input id="sectionOffset" class="hidden" type="number" value="7.5" min="0.1" step="0.1" />
+        <label>Base-edge angle to VP in plan (°)</label>
+        <input id="a" type="number" value="0" min="-80" max="80" step="0.1" />
+        <button class="run" id="goSec">Calculate section</button>
+        <div class="result" id="secResult">Ready.</div>
+      </section>
+
+      <section class="panel card hidden" id="development-panel">
+        <h2>Complete development</h2>
+        <p class="sub">Generate the developed surface for the selected solid.</p>
+        <label>Development type</label>
+        <select id="devSolid">
+          <option value="cone">Cone</option>
+          <option value="cylinder">Cylinder</option>
+          <option value="prism">Regular prism (set side count)</option>
+          <option value="pyramid">Pyramid</option>
+        </select>
+        <label>Base diameter / side (mm)</label>
+        <input id="d" type="number" value="50" min="1" step="0.1" />
+        <label id="devSidesLabel" class="hidden">Polygon sides</label>
+        <input id="devSides" class="hidden" type="number" value="6" min="3" max="12" step="1" />
+        <label>Height (mm)</label>
+        <input id="ch" type="number" value="70" min="1" step="0.1" />
+        <label>Generator divisions</label>
+        <select id="n">
+          <option>12</option>
+          <option>16</option>
+          <option>24</option>
+          <option>30</option>
+        </select>
+        <button class="run" id="goCone">Calculate development</button>
+        <div class="result" id="coneResult">Ready.</div>
+      </section>
+
+      <section class="panel card hidden" id="cut-panel">
+        <h2>Development after cutting</h2>
+        <p class="sub">Lay out the remaining surface after a plane cuts the solid.</p>
+        <label>Cut solid type</label>
+        <select id="cutSolid">
+          <option value="pyramid">Pyramid</option>
+          <option value="prism">Prism</option>
+          <option value="cone">Cone</option>
+          <option value="cylinder">Cylinder</option>
+        </select>
+        <label>Base side (mm)</label>
+        <input id="ps" type="number" value="30" min="1" step="0.1" />
+        <label>Polygon sides</label>
+        <input id="cutSides" type="number" value="5" min="3" max="12" step="1" />
+        <label>Height (mm)</label>
+        <input id="ph" type="number" value="75" min="1" step="0.1" />
+        <label>Cut angle to HP (°)</label>
+        <input id="pa" type="number" value="30" min="1" max="89" step="0.1" />
+        <label>Section fraction from base</label>
+        <input id="pf" type="number" value="0.5" min="0.05" max="0.95" step="0.05" />
+        <button class="run" id="goPyr">Calculate cut surface</button>
+        <div class="result" id="pyrResult">Ready.</div>
+      </section>
+
+      <section class="panel card hidden" id="library-panel">
+        <h2>Quick examples</h2>
+        <p class="sub">Load a common classroom problem.</p>
+        <button class="secondary" data-preset="cone-section">Cone section: 60 × 70 mm, 45° at mid-axis</button>
+        <button class="secondary" data-preset="rect-pyr">Rectangular pyramid section</button>
+        <button class="secondary" data-preset="cone-dev">Cone development</button>
+        <button class="secondary" data-preset="pent-pyr-cut">Pentagonal pyramid cut</button>
+        <button class="secondary" data-preset="hex-prism">Hexagonal prism section</button>
+      </section>
+      </details>
+    </aside>
+
+    <div class="workspace panel">
+      <section class="solid3d-card" aria-labelledby="solid3dTitle">
+        <div class="solid3d-heading">
+          <h2 id="solid3dTitle">Interactive 3D solid</h2>
+          <div class="solid3d-controls">
+            <span>Drag to rotate</span>
+            <button type="button" id="reset3d">Reset view</button>
+          </div>
+        </div>
+        <svg id="solid3d" class="solid3d-svg" viewBox="0 0 620 330" role="img" aria-label="Interactive three-dimensional solid with section plane"></svg>
+      </section>
+      <div class="canvas-card">
+        <div class="grid" id="sectionViews">
+          <div class="view"><h3>Sectional top view / plan</h3><svg id="plan" viewBox="0 0 420 260"></svg></div>
+          <div class="view"><h3>Front view / elevation</h3><svg id="elev" viewBox="0 0 420 260"></svg></div>
+        </div>
+        <div class="view" id="resultView" style="margin-top:12px"><h3 id="trueTitle">True shape of section</h3><svg id="true" viewBox="0 0 620 260"></svg></div>
+      </div>
+      <div class="tos">
+        <div class="mini">
+          <h4>Section method</h4>
+          <p>For a plane perpendicular to VP, set its angle to HP and axis crossing. For a vertical plane, set its angle to VP and distance from the axis; use the elevation for true shape only when the plane is parallel to VP.</p>
+        </div>
+        <div class="mini">
+          <h4>Development logic</h4>
+          <p>Use true lengths to lay out each face. Cone uses sector geometry; prism uses a perimeter strip; pyramid uses radial faces from the apex.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <h2>Construction steps</h2>
+        <ol class="steps" id="stepsList">
+          <li>Select a solid and enter dimensions.</li>
+          <li>Calculate the cut section or the development surface.</li>
+          <li>Use the true shape and the development strip to complete the engineering drawing.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const NS = 'http://www.w3.org/2000/svg';
+
+  function clear(node) {
+    while (node.firstChild) node.removeChild(node.firstChild);
+  }
+
+  function el(parent, tag, attrs = {}) {
+    const node = document.createElementNS(NS, tag);
+    for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+    parent.appendChild(node);
+    return node;
+  }
+
+  function line(svg, x1, y1, x2, y2, stroke = '#2563eb', width = 2, dash = '') {
+    el(svg, 'line', { x1, y1, x2, y2, stroke, 'stroke-width': width, 'stroke-dasharray': dash });
+  }
+
+  function polygon(svg, points, stroke = '#2563eb', width = 2, fill = 'none') {
+    const d = points.map(([x, y]) => `${x},${y}`).join(' ');
+    el(svg, 'polygon', { points: d, stroke, 'stroke-width': width, fill });
+  }
+
+  function text(svg, x, y, str, size = 12, fill = '#475569', weight = 400) {
+    const t = el(svg, 'text', { x, y, fill, 'font-size': size, 'font-weight': weight, 'font-family': 'Arial' });
+    t.textContent = str;
+  }
+
+  function circle(svg, cx, cy, r, fill = '#2563eb') {
+    el(svg, 'circle', { cx, cy, r, fill });
+  }
+
+  function regularPolygon(sides, radius, cx = 0, cy = 0, rotation = -Math.PI / 2) {
+    const pts = [];
+    for (let i = 0; i < sides; i++) {
+      const a = rotation + i * (2 * Math.PI / sides);
+      pts.push([cx + radius * Math.cos(a), cy + radius * Math.sin(a)]);
+    }
+    return pts;
+  }
+
+  function sortOnSectionPlane(points, angle, axisHeight) {
+    const c = Math.cos(angle);
+    const s = Math.sin(angle);
+    const local = points.map(point => ({
+      point,
+      u: point[0] * c + (point[2] - axisHeight) * s,
+      v: point[1]
+    }));
+    const centerU = local.reduce((sum, item) => sum + item.u, 0) / local.length;
+    const centerV = local.reduce((sum, item) => sum + item.v, 0) / local.length;
+    return local
+      .sort((a, b) => Math.atan2(a.v - centerV, a.u - centerU) - Math.atan2(b.v - centerV, b.u - centerU))
+      .map(item => item.point);
+  }
+
+  function uniquePoints(points) {
+    return points.filter((point, index) => points.findIndex(other =>
+      Math.hypot(point[0] - other[0], point[1] - other[1], point[2] - other[2]) < 1e-6
+    ) === index);
+  }
+
+  function planeValue(point, slope, axisHeight) {
+    return point[2] - axisHeight - slope * point[0];
+  }
+
+  function planeIntersect(p, q, slope, axisHeight) {
+    const a = planeValue(p, slope, axisHeight);
+    const b = planeValue(q, slope, axisHeight);
+    if (Math.abs(a) < 1e-9) return p;
+    if (Math.abs(b) < 1e-9) return q;
+    if (a * b < 0) {
+      const t = a / (a - b);
+      return p.map((value, index) => value + t * (q[index] - value));
+    }
+    return null;
+  }
+
+  let viewYaw = -0.65;
+  let viewPitch = 0.55;
+
+  function drawSolid3D(base, top, type, height, cutPts = [], cutAngle = 0, axisHeight = height / 2, planeOrientation = 'inclined-to-hp', verticalPlaneAngle = 0) {
+    const svg = $('solid3d');
+    clear(svg);
+    if (!base.length || !top.length) {
+      current3dRedraw = () => {};
+      return;
+    }
+    current3dRedraw = () => drawSolid3D(base, top, type, height, cutPts, cutAngle, axisHeight, planeOrientation, verticalPlaneAngle);
+
+    const hasTopFace = type === 'prism' || type === 'cylinder';
+    const smoothCircular = (type === 'cone' || type === 'cylinder') && base.length > 30;
+    const faces = [base];
+    if (hasTopFace) faces.push(top);
+    if (type === 'cone' || type === 'regular-pyramid' || type === 'rectangular-pyramid') {
+      const apex = top[0];
+      for (let i = 0; i < base.length; i++) faces.push([base[i], base[(i + 1) % base.length], apex]);
+    } else {
+      for (let i = 0; i < base.length; i++) {
+        faces.push([base[i], base[(i + 1) % base.length], top[(i + 1) % top.length], top[i]]);
+      }
+    }
+
+    const project3d = ([x, y, z]) => {
+      const rotatedX = x * Math.cos(viewYaw) - y * Math.sin(viewYaw);
+      const rotatedY = x * Math.sin(viewYaw) + y * Math.cos(viewYaw);
+      return {
+        x: rotatedX,
+        y: z * Math.cos(viewPitch) - rotatedY * Math.sin(viewPitch),
+        depth: z * Math.sin(viewPitch) + rotatedY * Math.cos(viewPitch)
+      };
+    };
+    const vertices = [...base, ...top, ...cutPts].map(project3d);
+    const minX = Math.min(...vertices.map(point => point.x));
+    const maxX = Math.max(...vertices.map(point => point.x));
+    const minY = Math.min(...vertices.map(point => point.y));
+    const maxY = Math.max(...vertices.map(point => point.y));
+    const scale = Math.min(440 / Math.max(maxX - minX, 1), 230 / Math.max(maxY - minY, 1));
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    const screen = point => {
+      const projected = project3d(point);
+      return [310 + (projected.x - centerX) * scale, 165 - (projected.y - centerY) * scale];
+    };
+
+    faces.map(face => ({
+      face,
+      depth: face.reduce((sum, point) => sum + project3d(point).depth, 0) / face.length
+    })).sort((a, b) => a.depth - b.depth).forEach(({ face }) => {
+      polygon(svg, face.map(screen), smoothCircular ? 'none' : '#60a5fa', smoothCircular ? 0 : 0.45, '#60a5fa');
+      svg.lastChild.setAttribute('fill-opacity', '0.24');
+    });
+
+    if (smoothCircular) {
+      polygon(svg, base.map(screen), '#3b82f6', 1.2, 'none');
+      if (type === 'cylinder') polygon(svg, top.map(screen), '#3b82f6', 1.2, 'none');
+      const sidePoints = base.map((point, index) => ({ point, index, x: project3d(point).x }))
+        .sort((a, b) => a.x - b.x);
+      for (const { index } of [sidePoints[0], sidePoints[sidePoints.length - 1]]) {
+        const lower = screen(base[index]);
+        const upper = screen(type === 'cone' ? top[0] : top[index]);
+        line(svg, lower[0], lower[1], upper[0], upper[1], '#2563eb', 1.3);
+      }
+    }
+
+    if (cutPts.length >= 3) {
+      const cutPolygon = planeOrientation.startsWith('vertical-')
+        ? sortOnVerticalSectionPlane(cutPts, verticalPlaneAngle)
+        : sortOnSectionPlane(cutPts, cutAngle * Math.PI / 180, axisHeight);
+      polygon(svg, cutPolygon.map(screen), '#dc2626', 2.5, '#fca5a5');
+      svg.lastChild.setAttribute('fill-opacity', '0.68');
+      if (cutPolygon.length <= 12) {
+        cutPolygon.forEach(point => {
+          const [x, y] = screen(point);
+          circle(svg, x, y, 2.5, '#b91c1c');
+        });
+      }
+    }
+
+    text(svg, 12, 22, cutPts.length >= 3 ? 'Solid with section plane (red)' : 'Solid model', 12, '#475569', 700);
+    text(svg, 12, 310, `Axis: ${height.toFixed(1)} mm`, 11, '#64748b');
+  }
+
+  function set3dRotationFromPointer(event, previousPosition) {
+    const svg = $('solid3d');
+    const rect = svg.getBoundingClientRect();
+    const width = Math.max(rect.width, 1);
+    const height = Math.max(rect.height, 1);
+    viewYaw += (event.clientX - previousPosition[0]) / width * Math.PI;
+    viewPitch = Math.max(-0.2, Math.min(1.35, viewPitch + (event.clientY - previousPosition[1]) / height * Math.PI));
+    redrawCurrent3d();
+  }
+
+  let current3dRedraw = () => {};
+  let last3dPointerPosition = null;
+  function redrawCurrent3d() {
+    current3dRedraw();
+  }
+
+  $('solid3d').addEventListener('pointerdown', event => {
+    $('solid3d').setPointerCapture(event.pointerId);
+    last3dPointerPosition = [event.clientX, event.clientY];
+  });
+  $('solid3d').addEventListener('pointermove', event => {
+    if (event.buttons && last3dPointerPosition) {
+      set3dRotationFromPointer(event, last3dPointerPosition);
+      last3dPointerPosition = [event.clientX, event.clientY];
+    }
+  });
+  $('solid3d').addEventListener('pointerup', () => { last3dPointerPosition = null; });
+  $('reset3d').addEventListener('click', () => {
+    viewYaw = -0.65;
+    viewPitch = 0.55;
+    redrawCurrent3d();
+  });
+
+  function sectionIntersections(base, top, type, slope, axisHeight) {
+    const edges = [];
+    if (type === 'prism' || type === 'cylinder') {
+      for (let i = 0; i < base.length; i++) {
+        edges.push([base[i], top[i]], [base[i], base[(i + 1) % base.length]], [top[i], top[(i + 1) % top.length]]);
+      }
+    } else {
+      const apex = top[0];
+      for (let i = 0; i < base.length; i++) edges.push([base[i], apex], [base[i], base[(i + 1) % base.length]]);
+    }
+    return uniquePoints(edges.map(([p, q]) => planeIntersect(p, q, slope, axisHeight)).filter(Boolean));
+  }
+
+  function sortOnVerticalSectionPlane(points, angleToVP = 0) {
+    const angle = angleToVP * Math.PI / 180;
+    const centerU = points.reduce((sum, point) => sum + point[0] * Math.cos(angle) + point[1] * Math.sin(angle), 0) / points.length;
+    const centerZ = points.reduce((sum, point) => sum + point[2], 0) / points.length;
+    return [...points].sort((a, b) =>
+      Math.atan2(a[2] - centerZ, a[0] * Math.cos(angle) + a[1] * Math.sin(angle) - centerU)
+      - Math.atan2(b[2] - centerZ, b[0] * Math.cos(angle) + b[1] * Math.sin(angle) - centerU)
+    );
+  }
+
+  function verticalSectionIntersections(base, top, type, offset, angleToVP = 0) {
+    const angle = angleToVP * Math.PI / 180;
+    const normalX = -Math.sin(angle);
+    const normalY = Math.cos(angle);
+    const edges = [];
+    if (type === 'prism' || type === 'cylinder') {
+      for (let i = 0; i < base.length; i++) {
+        edges.push([base[i], top[i]], [base[i], base[(i + 1) % base.length]], [top[i], top[(i + 1) % top.length]]);
+      }
+    } else {
+      const apex = top[0];
+      for (let i = 0; i < base.length; i++) edges.push([base[i], apex], [base[i], base[(i + 1) % base.length]]);
+    }
+
+    return uniquePoints(edges.map(([p, q]) => {
+      const start = normalX * p[0] + normalY * p[1] - offset;
+      const end = normalX * q[0] + normalY * q[1] - offset;
+      if (Math.abs(start) < 1e-9) return p;
+      if (Math.abs(end) < 1e-9) return q;
+      if (start * end >= 0) return null;
+      const t = start / (start - end);
+      return p.map((value, index) => value + t * (q[index] - value));
+    }).filter(Boolean));
+  }
+
+  function drawDevelopmentSolid3D(type, size, height, sides) {
+    let base;
+    if (type === 'cone' || type === 'cylinder') {
+      const radius = size / 2;
+      base = Array.from({ length: 60 }, (_, i) => {
+        const angle = i * 2 * Math.PI / 60;
+        return [radius * Math.cos(angle), radius * Math.sin(angle), 0];
+      });
+    } else {
+      const radius = size / (2 * Math.sin(Math.PI / sides));
+      base = regularPolygon(sides, radius).map(([x, y]) => [x, y, 0]);
+    }
+    const top = type === 'prism' || type === 'cylinder'
+      ? base.map(([x, y]) => [x, y, height])
+      : [[0, 0, height]];
+    const modelType = type === 'pyramid' ? 'regular-pyramid' : type;
+    drawSolid3D(base, top, modelType, height);
+  }
+
+  function applyPreset(name) {
+    const presets = {
+      'rect-pyr': { secSolid: 'rectangular-pyramid', x: 20, y: 25, h: 35, cutAngle: 45, axisFraction: 0.5, sectionPlaneOrientation: 'inclined-to-hp', a: 0, sides: 4 },
+      'cone-section': { secSolid: 'cone', x: 60, y: 60, h: 70, cutAngle: 45, axisFraction: 0.5, sectionPlaneOrientation: 'inclined-to-hp', a: 0, sides: 4 },
+      'cone-dev': { devSolid: 'cone', d: 50, ch: 70, n: '12' },
+      'pent-pyr-cut': { cutSolid: 'pyramid', ps: 30, ph: 75, pa: 30, pf: 0.5 },
+      'hex-prism': { secSolid: 'prism', x: 18, y: 18, h: 60, cutAngle: 45, axisFraction: 0.5, sectionPlaneOrientation: 'inclined-to-hp', a: 0, sides: 6 }
+    };
+    const values = presets[name] || {};
+    Object.entries(values).forEach(([id, value]) => {
+      const el = $(id);
+      if (el) el.value = value;
+    });
+    updateSectionPlaneControls();
+    if (name === 'rect-pyr') calcSection();
+    if (name === 'cone-section') calcSection();
+    if (name === 'cone-dev') calcCone();
+    if (name === 'pent-pyr-cut') calcPyramid();
+    if (name === 'hex-prism') calcSection();
+  }
+
+  function showPanel(panelId) {
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.toggle('active', tab.dataset.id === panelId));
+    ['section-panel', 'development-panel', 'cut-panel', 'library-panel'].forEach(id => {
+      $(id).classList.toggle('hidden', id !== panelId);
+    });
+    setDrawingMode(panelId);
+  }
+
+  function setDrawingMode(panelId) {
+    const sectionMode = panelId === 'section-panel';
+    $('sectionViews').classList.toggle('hidden', !sectionMode);
+    $('trueTitle').textContent = sectionMode ? 'True shape of section' : 'Developed surface';
+  }
+
+  function parseAxisPosition(text, axisLength) {
+    const positionText = text;
+    const makePosition = (fraction, description) => ({
+      fraction,
+      description,
+      error: fraction < 0 || fraction > 1
+        ? `The specified cutting-plane position (${description}) lies outside the axis length.`
+        : null
+    });
+
+    if (/\b(?:bisect(?:s|ed|ing)?|midpoint|midway|halfway|middle|centre|center)\b|\bhalf\s+(?:of\s+)?(?:the\s+)?axis\b/.test(positionText)) {
+      return makePosition(0.5, 'the axis midpoint');
+    }
+
+    const length = Number.isFinite(axisLength) && axisLength > 0 ? axisLength : null;
+    const number = '(\\d+(?:\\.\\d+)?)';
+    const topReference = '(?:the\\s+)?(?:top|upper|apex|tip|vertex)(?:\\s+(?:end|extremity))?(?:\\s+of\\s+(?:the\\s+)?axis)?';
+    const baseReference = '(?:the\\s+)?(?:base|bottom|lower)(?:\\s+(?:end|extremity))?(?:\\s+of\\s+(?:the\\s+)?axis)?';
+    const excludeFractionDenominator = match => match && positionText[match.index - 1] === '/' ? null : match;
+    const topDistance = excludeFractionDenominator(positionText.match(new RegExp(`${number}\\s*(?:mm\\s*)?(?:below|from)\\s+${topReference}\\b`)));
+    const baseDistance = excludeFractionDenominator(positionText.match(new RegExp(`${number}\\s*(?:mm\\s*)?(?:above|from)\\s+${baseReference}\\b`)));
+    const alongAxisDistance = excludeFractionDenominator(positionText.match(new RegExp(`${number}\\s*mm\\s+(?:along|on)\\s+(?:the\\s+)?axis\\s+(?:from|above)\\s+(?:the\\s+)?(?:base|bottom)\\b`)));
+    const axisAtDistance = excludeFractionDenominator(positionText.match(new RegExp(`${number}\\s*(?:mm\\s*)?(?:(?:from|above)\\s+(?:the\\s+)?(?:base|bottom)|below\\s+(?:the\\s+)?(?:top|apex|upper|vertex))`)));
+    const axisAtHeight = positionText.match(/(?:axis|height)\s*(?:at|through|cross(?:es|ed)?|met(?:s|ting)?|meets?)\s*(?:a\s+point\s*)?(?:at\s*)?(\d+(?:\.\d+)?)\s*(?:mm\s*)?(?:above\s+(?:the\s+)?(?:hp|base)|from\s+(?:the\s+)?base)/);
+
+    if (axisAtHeight) {
+      const distance = Number(axisAtHeight[1]);
+      if (length === null) return { fraction: null, description: `${distance} mm above HP`, error: null };
+      return makePosition(distance / length, `${distance} mm above the base plane`);
+    }
+    if (axisAtDistance) {
+      const distance = Number(axisAtDistance[1]);
+      const belowTop = /\b(?:below|under)\b[^.;]{0,20}\b(?:the\s+)?(?:top|apex|upper|vertex)\b/.test(axisAtDistance[0])
+        || /\bbelow\b/.test(axisAtDistance[0]);
+      if (length === null) return { fraction: null, description: `${distance} mm ${belowTop ? 'below the top end' : 'from the base end'}`, error: null };
+      const fraction = belowTop ? (length - distance) / length : distance / length;
+      return makePosition(fraction, `${distance} mm ${belowTop ? 'below the top end' : 'from the base end'}`);
+    }
+
+    if (topDistance || baseDistance || alongAxisDistance) {
+      const fromTop = Boolean(topDistance);
+      const distance = Number((topDistance || baseDistance || alongAxisDistance)[1]);
+      if (length === null) return { fraction: null, description: `${distance} mm ${fromTop ? 'below the top end' : 'from the base end'}`, error: null };
+      const fraction = fromTop ? (length - distance) / length : distance / length;
+      const direction = topDistance
+        ? (/\bbelow\b/.test(topDistance[0]) ? 'below the top end' : 'from the top end')
+        : baseDistance && /\babove\b/.test(baseDistance[0]) ? 'above the base end' : 'from the base end';
+      const description = `${distance} mm ${direction}`;
+      return makePosition(fraction, description);
+    }
+
+    const topEnd = /\b(?:top|upper)\s+(?:end|extremity)(?:\s+of\s+(?:the\s+)?axis)?\b|\b(?:top|upper)\s+of\s+(?:the\s+)?axis\b|\b(?:at|through|on)\s+(?:the\s+)?(?:top|upper|apex|tip|vertex)(?:\s+(?:end|extremity))?\b/.test(positionText);
+    const baseEnd = /\b(?:base|bottom|lower)\s+(?:end|extremity)(?:\s+of\s+(?:the\s+)?axis)?\b|\b(?:base|bottom|lower)\s+of\s+(?:the\s+)?axis\b|\b(?:at|through|on)\s+(?:the\s+)?(?:base|bottom|lower)(?:\s+(?:end|extremity))?\b/.test(positionText);
+    if (topEnd) return makePosition(1, 'the top end of the axis');
+    if (baseEnd) return makePosition(0, 'the base end of the axis');
+
+    const percentage = positionText.match(new RegExp(
+      `${number}\\s*%(?:\\s*(?:of\\s+)?(?:the\\s+)?axis(?:\\s+(?:length|height))?)?(?:\\s+(?:from|measured\\s+from)\\s+(?:the\\s+)?(top|upper|base|bottom|lower))?`
+    ));
+    if (percentage && (percentage[2] || /\b(?:of\s+(?:the\s+)?axis|of\s+(?:the\s+)?length)\b/.test(percentage[0]))) {
+      const fromTop = percentage[2] === 'top' || percentage[2] === 'upper';
+      const fraction = Number(percentage[1]) / 100;
+      return makePosition(fromTop ? 1 - fraction : fraction, `${percentage[1]}% of the axis from the ${fromTop ? 'top' : 'base'}`);
+    }
+
+    const numericFraction = positionText.match(new RegExp(
+      `${number}\\s*\\/\\s*${number}(?:st|nd|rd|th)?(?:\\s*(?:of\\s+)?(?:the\\s+)?axis(?:\\s+(?:length|height))?|\\s+of\\s+(?:the\\s+)?length(?:\\s+of\\s+(?:the\\s+)?axis)?)?(?:\\s+(?:from|measured\\s+from)\\s+(?:the\\s+)?(top|upper|base|bottom|lower))?`
+    ));
+    if (numericFraction && (numericFraction[3] || /\b(?:axis|length)\b/.test(numericFraction[0]))) {
+      const numerator = Number(numericFraction[1]);
+      const denominator = Number(numericFraction[2]);
+      if (denominator === 0) return { fraction: null, description: null, error: 'The cutting-plane axis fraction has a zero denominator.' };
+      const reverse = numericFraction[3] === 'top' || numericFraction[3] === 'upper';
+      const fraction = numerator / denominator;
+      return makePosition(reverse ? 1 - fraction : fraction, `${numerator}/${denominator} of the axis from the ${reverse ? 'top' : 'base'}`);
+    }
+
+    const words = { a: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 };
+    const denominators = { half: 2, third: 3, quarter: 4, fourth: 4, fifth: 5, sixth: 6, seventh: 7, eighth: 8, ninth: 9 };
+    const wordFraction = positionText.match(/\b(a|one|two|three|four|five|six|seven|eight|nine)\s*[- ]?(half|third|quarter|fourth|fifth|sixth|seventh|eighth|ninth)s?(?:\s+(?:of\s+)?(?:the\s+)?axis(?:\s+(?:length|height))?|\s+of\s+(?:the\s+)?length(?:\s+of\s+(?:the\s+)?axis)?)?(?:\s+(?:from|measured\s+from)\s+(?:the\s+)?(top|upper|base|bottom|lower))?/);
+    if (wordFraction) {
+      const numerator = words[wordFraction[1]];
+      const denominator = denominators[wordFraction[2]];
+      const reverse = wordFraction[3] === 'top' || wordFraction[3] === 'upper';
+      const fraction = numerator / denominator;
+      return makePosition(reverse ? 1 - fraction : fraction, `${numerator}/${denominator} of the axis from the ${reverse ? 'top' : 'base'}`);
+    }
+
+    const divisionRatio = positionText.match(/\b(?:divid(?:ed|es|ing)|cut|split)\b[^.;]{0,40}\b(?:ratio|proportion)\s*(?:of\s*)?(\d+(?:\.\d+)?)\s*:\s*(\d+(?:\.\d+)?)(?:\s+(?:from\s+)?(?:the\s+)?(top|upper|base|bottom|lower))?/);
+    if (divisionRatio) {
+      const firstPart = Number(divisionRatio[1]);
+      const secondPart = Number(divisionRatio[2]);
+      const total = firstPart + secondPart;
+      if (total === 0) return { fraction: null, description: null, error: 'The cutting-plane division ratio cannot total zero.' };
+      const reverse = divisionRatio[3] === 'top' || divisionRatio[3] === 'upper';
+      const fraction = firstPart / total;
+      return makePosition(reverse ? 1 - fraction : fraction, `the ${firstPart}:${secondPart} axis division from the ${reverse ? 'top' : 'base'}`);
+    }
+
+    return { fraction: null, description: null, error: null };
+  }
+
+  function readQuestion(text) {
+    const question = text.toLowerCase()
+      .replace(/[−–—]/g, '-')
+      .replace(/\bh\s*\.?\s*p\.?(?=\s|$|[,;:!?])/g, 'hp')
+      .replace(/\bv\s*\.?\s*p\.?(?=\s|$|[,;:!?])/g, 'vp')
+      .replace(/millimet(?:er|re)s?/g, 'mm')
+      .replace(/([a-z])\.(?=[a-z])/gi, '$1 ')
+      .replace(/,/g, ' ');
+    const number = '(\\d+(?:\\.\\d+)?)';
+    const dimensionsMatch = question.match(new RegExp(
+      `${number}\\s*(?:mm)?\\s*(?:x|\\u00d7|by)\\s*${number}\\s*(?:mm)?\\b`
+    ));
+    const baseDimensions = dimensionsMatch
+      ? [Number(dimensionsMatch[1]), Number(dimensionsMatch[2])]
+      : null;
+    const matchNumber = patterns => {
+      for (const pattern of patterns) {
+        const match = question.match(pattern);
+        if (match) return Number(match[1]);
+      }
+      return null;
+    };
+    const diameter = matchNumber([
+      /(?:diameter|dia\.?|ø)\s*(?:of|is|=)?\s*(\d+(?:\.\d+)?)/,
+      /(\d+(?:\.\d+)?)\s*(?:mm\s*)?(?:base\s*)?(?:diameter|dia\.?)\b/
+    ]);
+    const height = matchNumber([
+      /(?:axis(?:\s+(?:length|height))?|height|altitude)\s*(?:of|is|=)?\s*(\d+(?:\.\d+)?)/,
+      /(\d+(?:\.\d+)?)\s*(?:mm\s*)?(?:long\s*)?(?:axis(?:\s+(?:length|height))?|height)\b/
+    ]);
+    const side = matchNumber([
+      /(?:base\s*)?(?:side|edge)\s*(?:(?:of\s+)?(?:the\s+)?base\s*)?(?:of|is|=)?\s*(\d+(?:\.\d+)?)/,
+      /(\d+(?:\.\d+)?)\s*(?:mm\s*)?(?:base\s*)?(?:side|edge)\b/
+    ]) ?? (baseDimensions && /\brectangular\b/.test(question) ? baseDimensions[0] : null);
+    const heightValue = height;
+    const explicitCutStart = question.search(/\bvertical\s+(?:(?:section|cutting)\s+)?plane\b|\b(?:section|cutting)\s+plane\b|\b(?:sectioned|cut)\s+by\s+(?:a\s+)?(?:section\s+)?plane\b/);
+    const planeContext = explicitCutStart >= 0 ? question.slice(explicitCutStart) : question;
+    const baseOrientationContext = explicitCutStart >= 0 ? question.slice(0, explicitCutStart) : question;
+    const angle = (() => {
+      const hpReference = planeContext.match(/(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:(?:to|with)\s*(?:the\s*)?(?:hp|horizontal plane)|(?:inclined|at)\b[^.;]{0,25}(?:hp|horizontal plane))/);
+      if (hpReference) return Number(hpReference[1]);
+      const match = planeContext.match(/(?:inclined|inclination|angle)\s*(?:at|of|to|is)?\s*(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\b(?:\s*(?:to|with)\s*(?:the\s*)?(?:hp|horizontal plane))?/);
+      if (match) return Number(match[1]);
+      const explicit = planeContext.match(/(?:section|cutting)\s+plane\b[^.;]{0,80}?(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\b[^.;]{0,20}(?:hp|horizontal plane)\b/);
+      return explicit ? Number(explicit[1]) : null;
+    })();
+    const verticalPlaneAngleMatch = planeContext.match(/(\d+(?:\.\d+)?)\s*(?:°|degrees?|deg)\s*(?:to|with)\s*(?:the\s*)?(?:vp|vertical plane)\b/);
+    const verticalPlaneAngle = verticalPlaneAngleMatch ? Number(verticalPlaneAngleMatch[1]) : null;
+    const edgeAngleMatch = baseOrientationContext.match(/\b(?:the\s+)?(?:\d+(?:\.\d+)?\s*mm\s+)?(?:base\s+)?(?:edge|side)\b[^.;]{0,100}?\b(?:inclined|inclination|angle|makes|making)\b[^.;]{0,60}?\b(\d+(?:\.\d+)?)\s*(?:degrees?|deg|°)\s*(?:to|with)\s*(?:the\s*)?(?:vp|vertical plane)\b/)
+      || baseOrientationContext.match(/\b(?:base\s+)?(?:edge|side)\b[^.;]{0,100}?(\d+(?:\.\d+)?)\s*(?:degrees?|deg|°)\s*(?:to|with)\s*(?:the\s*)?(?:vp|vertical plane)\b/);
+    const baseEdgeParallelVP = /\b(?:edge|side)\b[^.;]{0,100}\b(?:parallel\s+to\s+(?:the\s+)?vp|parallel\s+to\s+it)\b/.test(baseOrientationContext);
+    const baseEdgeEquallyInclinedVP = /\b(?:all\s+|two\s+adjacent\s+)?(?:base\s+)?(?:sides?|edges?)\b[^.;]{0,100}\bequally\s+inclined\s+to\s+(?:the\s+)?(?:vp|vertical plane)\b/.test(baseOrientationContext)
+      || /\b(?:sides?|edges?)\b[^.;]{0,100}\b(?:make|making|at)\b[^.;]{0,20}(?:\d+(?:\.\d+)?\s*(?:degrees?|deg|°)\s*(?:to|with)\s*(?:the\s*)?(?:vp|vertical plane)[^.;]{0,20}\b(?:equally|one\s+set))/.test(baseOrientationContext);
+    let baseEdgeAngle = edgeAngleMatch ? Number(edgeAngleMatch[1]) : baseEdgeParallelVP ? 0 : null;
+    const offset = matchNumber([
+      /(?:offset(?:\s+(?:by|of))?|distance\s+of)\s*(\d+(?:\.\d+)?)\s*(?:mm)?\b/,
+      /(\d+(?:\.\d+)?)\s*(?:mm\s*)?(?:away\s+from|from)\s+(?:the\s+)?axis\b/
+    ]);
+    const polygonMatch = question.match(/\b(triangular|square|pentagonal|hexagonal|heptagonal|octagonal)\b/);
+    const sideCount = polygonMatch
+      ? ({ triangular: 3, square: 4, pentagonal: 5, hexagonal: 6, heptagonal: 7, octagonal: 8 }[polygonMatch[1]])
+      : null;
+    if (baseEdgeAngle === null && baseEdgeEquallyInclinedVP && sideCount === 4) baseEdgeAngle = 45;
+    let solid;
+    if (/\bcone\b/.test(question)) solid = 'cone';
+    else if (/\bcylinder\b/.test(question)) solid = 'cylinder';
+    else if (/\bprism\b/.test(question)) solid = 'prism';
+    else if (/\bpyramid\b/.test(question)) solid = question.includes('rectangular') ? 'rectangular-pyramid' : 'regular-pyramid';
+
+    const hasPerpendicularHP = /\b(?:perpendicular|normal)\s+to\s+(?:the\s*)?(?:hp|horizontal plane)\b/.test(planeContext);
+    const hasParallelVP = /\bparallel\s+to\s+(?:the\s*)?(?:vp|vertical plane)\b/.test(planeContext);
+    const hasPerpendicularVP = /\b(?:perpendicular|normal)\s+to\s+(?:the\s*)?(?:vp|vertical plane)\b/.test(planeContext);
+    const hasParallelHP = /\bparallel\s+to\s+(?:the\s*)?(?:hp|horizontal plane)\b/.test(planeContext);
+    const isVerticalPlane = hasPerpendicularHP
+      || hasParallelVP
+      || /\bvertical\s+(?:section\s+|cutting\s+)?plane\b/.test(planeContext);
+    const isHorizontalPlane = hasParallelHP
+      && !isVerticalPlane
+      && !hasPerpendicularHP;
+    const planeOrientation = isHorizontalPlane
+      ? 'horizontal-hp'
+      : isVerticalPlane
+      ? verticalPlaneAngle !== null
+        ? verticalPlaneAngle === 0 ? 'vertical-parallel-vp' : 'vertical-inclined-vp'
+        : hasParallelVP ? 'vertical-parallel-vp' : 'vertical-angle-required'
+      : hasPerpendicularVP ? 'inclined-to-hp'
+      : hasParallelVP || hasParallelHP ? 'unsupported'
+      : 'inclined-to-hp';
+    const isCutDevelopment =
+      /\b(develop|development)\b/.test(question)
+      && (
+        /\b(after cutting|sectioned|truncated|cut surface|cut by|cutting plane)\b/.test(question)
+        || /\bdevelop(?:ed|ing)?\b[^.;]{0,80}\b(?:cut|sectioned|truncated)\b/.test(question)
+        || /\b(?:cut|sectioned|truncated)\b[^.;]{0,80}\bdevelop(?:ed|ing)?\b/.test(question)
+      );
+    const isDevelopment = /\b(develop|development)\b/.test(question) && !isCutDevelopment;
+    const bodyDiagonalPlane = solid === 'prism' && sideCount === 4 && hasPerpendicularVP
+      && /\bbody\s+diagonals?\b/.test(planeContext);
+    const axisPosition = parseAxisPosition(planeContext, height);
+    if (bodyDiagonalPlane && axisPosition.fraction === null) {
+      axisPosition.fraction = 0.5;
+      axisPosition.description = 'the axis midpoint inferred from the body diagonal';
+    }
+    const diagonalHorizontalSpan = side !== null && baseEdgeAngle !== null
+      ? side * Math.SQRT2 * Math.max(
+        Math.abs(Math.cos((baseEdgeAngle - 45) * Math.PI / 180)),
+        Math.abs(Math.cos((baseEdgeAngle + 45) * Math.PI / 180))
+      )
+      : null;
+    const inferredBodyDiagonalAngle = bodyDiagonalPlane && height !== null && diagonalHorizontalSpan > 0
+      ? Math.atan2(height, diagonalHorizontalSpan) * 180 / Math.PI
+      : null;
+    const sectionAngle = angle
+      ?? (isHorizontalPlane ? 0 : inferredBodyDiagonalAngle);
+
+    return {
+      question,
+      planeContext,
+      baseDimensions,
+      diameter,
+      height: heightValue,
+      side,
+      secondSide: baseDimensions ? baseDimensions[1] : null,
+      angle: sectionAngle,
+      baseEdgeAngle,
+      baseSideEquallyInclined: baseEdgeEquallyInclinedVP,
+      bodyDiagonalPlane,
+      offset,
+      planeOrientation,
+      verticalPlaneAngle: verticalPlaneAngle ?? 0,
+      isVerticalPlane: planeOrientation.startsWith('vertical-'),
+      sideCount,
+      solid,
+      isCutDevelopment,
+      isDevelopment,
+      fraction: axisPosition.fraction,
+      axisPositionDescription: axisPosition.description,
+      axisPositionError: axisPosition.error
+    };
+  }
+
+  function solveQuestion() {
+    const raw = $('questionInput').value.trim();
+    if (!raw) {
+      $('questionStatus').textContent = 'Type or paste a question first.';
+      return;
+    }
+
+    const parsed = readQuestion(raw);
+    if (!parsed.solid) {
+      $('questionStatus').textContent = 'I could not identify a supported solid. Try a cone, cylinder, prism, or pyramid question, then adjust the controls manually if needed.';
+      return;
+    }
+    if (parsed.planeOrientation === 'unsupported') {
+      $('questionStatus').textContent = 'I recognized the solid and its dimensions, but this cutting-plane orientation is not supported. Use a plane perpendicular to VP, or a vertical plane with its angle to VP specified.';
+      return;
+    }
+    if (parsed.planeOrientation === 'vertical-angle-required') {
+      $('questionStatus').textContent = 'I recognized a vertical cutting plane, but need its angle to VP. State an angle such as “45 degrees to VP” or say that it is parallel to VP.';
+      return;
+    }
+
+    const isSection = /\b(section|sectional|sectioned|cut|cutting plane|intersect(?:ed|ing)?|true shape)\b/.test(parsed.question);
+    if (parsed.isCutDevelopment) {
+      if (!['prism','regular-pyramid','cone','cylinder'].includes(parsed.solid)) {
+        $('questionStatus').textContent = 'Development after cutting is available for cones, cylinders, prisms, and regular pyramids. The rectangular-pyramid case needs the base side and second side entered manually.';
+        return;
+      }
+      if ((parsed.side === null && parsed.diameter === null) || parsed.height === null) {
+        $('questionStatus').textContent = 'I recognized a cut-development question, but need the base side/diameter and axis/height in millimetres.';
+        return;
+      }
+      if (parsed.axisPositionError || parsed.fraction === null) {
+        $('questionStatus').textContent = parsed.axisPositionError
+          || 'I recognized a cut-development question, but could not find where the cutting plane meets the axis. State a midpoint, end, fraction, or distance from an end.';
+        return;
+      }
+      showPanel('cut-panel');
+      $('cutSolid').value =
+        parsed.solid === 'prism' ? 'prism'
+        : parsed.solid === 'cone' ? 'cone'
+        : parsed.solid === 'cylinder' ? 'cylinder'
+        : 'pyramid';
+      $('ps').value = parsed.diameter ?? parsed.side;
+      $('ph').value = parsed.height;
+      $('cutSides').value = parsed.sideCount || 5;
+      $('pa').value = parsed.angle ?? 30;
+      $('pf').value = parsed.fraction;
+      $('questionStatus').textContent = 'Recognized a development-after-cutting question. The cut boundary is generated from the cutting plane.';
+      calcPyramid();
+      $('questionStatus').textContent += ` ${$('pyrResult').textContent}`;
+      return;
+    }
+
+    if (parsed.isDevelopment && !isSection) {
+      if ((parsed.diameter === null && parsed.side === null) || parsed.height === null) {
+        $('questionStatus').textContent = 'I recognized a complete-development question, but need the base diameter/side and axis/height in millimetres.';
+        return;
+      }
+      showPanel('development-panel');
+      $('devSolid').value = parsed.solid === 'regular-pyramid' ? 'pyramid' : parsed.solid;
+      $('d').value = parsed.diameter ?? parsed.side;
+      $('ch').value = parsed.height;
+      $('devSides').value = parsed.sideCount || 6;
+      updateDevelopmentFields();
+      $('questionStatus').textContent = 'Question recognized and the development generated.';
+      calcCone();
+      $('questionStatus').textContent += ` ${$('coneResult').textContent}`;
+      return;
+    }
+
+    if (!isSection) {
+      $('questionStatus').textContent = 'I identified the solid, but not whether you want a section or a development. Include words such as “section”, “true shape”, or “develop”.';
+      return;
+    }
+    if (parsed.height === null || (parsed.solid === 'cone' || parsed.solid === 'cylinder' ? parsed.diameter === null : parsed.side === null)) {
+      $('questionStatus').textContent = 'I recognized the solid, but need its axis/height and base diameter or side length in millimetres.';
+      return;
+    }
+    if (!parsed.isVerticalPlane && parsed.axisPositionError) {
+      $('sectionPlaneOrientation').value = parsed.planeOrientation;
+      updateSectionPlaneControls();
+      clearQuestionSection(parsed.axisPositionError);
+      return;
+    }
+    if (!parsed.isVerticalPlane && parsed.fraction === null) {
+      $('sectionPlaneOrientation').value = parsed.planeOrientation;
+      updateSectionPlaneControls();
+      clearQuestionSection('I recognized the section, but could not locate the cutting plane along the axis. State a midpoint, top/base end, fraction of the axis, or a distance measured from an end.');
+      return;
+    }
+    if (parsed.isVerticalPlane && parsed.offset === null) {
+      $('questionStatus').textContent = 'I recognized a vertical cutting plane, but could not find its distance from the axis. Include wording such as “7.5 mm away from the axis”.';
+      return;
+    }
+    if (!parsed.isVerticalPlane && parsed.angle === null) {
+      $('questionStatus').textContent = 'I recognized a section question, but could not find the cutting-plane angle to HP. Include wording such as “45 degrees to HP”.';
+      return;
+    }
+
+    showPanel('section-panel');
+    $('secSolid').value = parsed.solid;
+    $('x').value = parsed.diameter ?? parsed.side;
+    if (parsed.solid === 'rectangular-pyramid') $('y').value = parsed.secondSide ?? parsed.side;
+    $('h').value = parsed.height;
+    $('sides').value = parsed.sideCount || 4;
+    $('cutAngle').value = parsed.angle ?? 45;
+    $('axisFraction').value = parsed.fraction;
+    $('sectionPlaneOrientation').value = parsed.planeOrientation;
+    $('verticalPlaneAngle').value = parsed.verticalPlaneAngle;
+    $('sectionOffset').value = parsed.offset ?? 7.5;
+    $('a').value = parsed.baseEdgeAngle ?? 0;
+    updateSectionPlaneControls();
+    updateSectionFields();
+    calcSection();
+    const constructionResult = $('secResult').textContent;
+    if (!/\b(?:section points calculated|section curve sampled)\b/i.test(constructionResult)) {
+      const positionNote = parsed.isVerticalPlane
+        ? ''
+        : `The position at ${parsed.axisPositionDescription} was recognized, but `;
+      $('questionStatus').textContent = `${positionNote}no section drawing was generated: ${constructionResult}`;
+      return;
+    }
+    const baseDescription = parsed.baseDimensions
+      ? `${parsed.baseDimensions[0]} × ${parsed.baseDimensions[1]} mm base`
+      : parsed.diameter === null
+      ? `${parsed.side} mm base side`
+      : `${parsed.diameter} mm base diameter`;
+    $('questionStatus').textContent = parsed.isVerticalPlane
+      ? `Question recognized: ${parsed.solid.replace('-', ' ')}, ${baseDescription}, ${parsed.height} mm axis, base ${parsed.baseSideEquallyInclined ? 'sides equally inclined: one edge set at' : 'edge at'} ${parsed.baseEdgeAngle ?? 0}° to VP, and a vertical cutting plane ${parsed.planeOrientation === 'vertical-parallel-vp' ? 'parallel to VP' : `inclined ${parsed.verticalPlaneAngle}° to VP`}, ${parsed.offset} mm from the axis (positive side assumed). The true shape is shown below.`
+      : parsed.planeOrientation === 'horizontal-hp'
+      ? `Question recognized: ${parsed.solid.replace('-', ' ')}, ${baseDescription}, ${parsed.height} mm axis, with a horizontal cutting plane parallel to HP at ${parsed.axisPositionDescription}. The true shape is the plan boundary shown below.`
+      : `Question recognized: ${parsed.solid.replace('-', ' ')}, ${baseDescription}, ${parsed.height} mm axis${parsed.baseEdgeAngle !== null ? `, base ${parsed.baseSideEquallyInclined ? 'sides equally inclined: one edge set at' : 'edge at'} ${parsed.baseEdgeAngle}° to VP` : ''}, ${parsed.angle.toFixed(1)}° cutting plane at ${parsed.axisPositionDescription}. ${parsed.bodyDiagonalPlane ? 'The inclination and midpoint were inferred for the body diagonal rising left-to-right in front view; the opposite diagonal mirrors the cut.' : 'Assumed the standard plane perpendicular to VP.'} Check the construction steps and drawings below.`;
+  }
+
+  function clearQuestionSection(message) {
+    showPanel('section-panel');
+    $('axisFraction').value = '';
+    clear($('plan'));
+    clear($('elev'));
+    clear($('true'));
+    drawSolid3D([], [], '', 0);
+    $('secResult').textContent = message;
+    $('stepsList').textContent = message;
+    $('questionStatus').textContent = message;
+  }
+
+  $('solveQuestion').addEventListener('click', solveQuestion);
+  $('sectionPlaneOrientation').addEventListener('change', () => {
+    updateSectionPlaneControls();
+    calcSection();
+  });
+  $('questionInput').addEventListener('keydown', event => {
+    if (event.ctrlKey && event.key === 'Enter') solveQuestion();
+  });
+
+  document.querySelectorAll('.tab').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.toggle('active', tab === button));
+      document.querySelectorAll('.card').forEach(card => {
+        if (card.id && ['section-panel', 'development-panel', 'cut-panel', 'library-panel'].includes(card.id)) {
+          card.classList.toggle('hidden', card.id !== button.dataset.id);
+        }
+      });
+      setDrawingMode(button.dataset.id);
+      if (button.dataset.id === 'section-panel') calcSection();
+      if (button.dataset.id === 'development-panel') calcCone();
+      if (button.dataset.id === 'cut-panel') calcPyramid();
+    });
+  });
+
+  document.querySelectorAll('[data-preset]').forEach(btn => btn.addEventListener('click', () => applyPreset(btn.dataset.preset)));
+
+  function updateSectionFields() {
+    const type = $('secSolid').value;
+    const circular = type === 'cone' || type === 'cylinder';
+    const polygonal = type === 'regular-pyramid' || type === 'prism';
+    $('xLabel').textContent = circular ? 'Base diameter (mm)' : 'Base side X (mm)';
+    $('yLabel').textContent = circular ? 'Base side Y (mm)' : 'Base side Y (mm)';
+    $('yLabel').classList.toggle('hidden', circular || polygonal);
+    $('y').classList.toggle('hidden', circular || polygonal);
+    $('sidesLabel').classList.toggle('hidden', !polygonal);
+    $('sides').classList.toggle('hidden', !polygonal);
+  }
+
+  $('secSolid').addEventListener('change', updateSectionFields);
+
+  function updateDevelopmentFields() {
+    const showSides = $('devSolid').value === 'prism' || $('devSolid').value === 'pyramid';
+    $('devSidesLabel').classList.toggle('hidden', !showSides);
+    $('devSides').classList.toggle('hidden', !showSides);
+  }
+
+  $('devSolid').addEventListener('change', updateDevelopmentFields);
+
+  function drawSectionPlan(base, cutPts, planeSlope, axisHeight, baseEdgeAngle = 0) {
+    const svg = $('plan');
+    clear(svg);
+    const maxDim = Math.max(1, ...base.map(p => Math.max(Math.abs(p[0]), Math.abs(p[1]))));
+    const scale = 105 / maxDim;
+    const centerX = 210;
+    const centerY = 130;
+    const planPts = base.map(([x, y]) => [centerX + x * scale, centerY - y * scale]);
+    polygon(svg, planPts, '#3b82f6', 2, '#eff6ff');
+    const secPts = cutPts.map(([x, y]) => [centerX + x * scale, centerY - y * scale]);
+    polygon(svg, secPts, '#dc2626', 2, '#fee2e2');
+    if (secPts.length <= 12) {
+      secPts.forEach((pt, i) => {
+        circle(svg, pt[0], pt[1], 4, '#dc2626');
+        text(svg, pt[0] + 6, pt[1] - 5, String(i + 1), 10, '#991b1b');
+      });
+    }
+    const traceX = Math.abs(planeSlope) > 1e-8 ? centerX - axisHeight / planeSlope * scale : null;
+    if (traceX !== null && traceX > 0 && traceX < 420) {
+      line(svg, traceX, 30, traceX, 235, '#dc2626', 1.5, '5 4');
+      text(svg, Math.min(traceX + 5, 335), 245, 'HP trace', 10, '#991b1b');
+    }
+    text(svg, 8, 18, 'Plan: cut section is red', 12, '#475569');
+    text(svg, 8, 36, `Base orientation: edge set at ${baseEdgeAngle.toFixed(1)}° to VP`, 11, '#1d4ed8', 700);
+  }
+
+  function drawSectionElevation(base, top, cutPts, height, type, cutAngle, axisHeight) {
+    const svg = $('elev');
+    clear(svg);
+    const maxRadius = Math.max(...base.map(p => Math.abs(p[0])));
+    const scale = Math.min(150 / Math.max(1, maxRadius), 130 / Math.max(1, height));
+    const leftX = 210;
+    const baseY = 225;
+    const apexY = baseY - height * scale;
+    const project = ([x, y, z]) => [leftX + x * scale, baseY - z * scale];
+    if (type === 'cone' || type === 'cylinder') {
+      const rx = maxRadius * scale;
+      line(svg, leftX - rx, baseY, leftX + rx, baseY, '#2563eb', 2);
+      if (type === 'cone') {
+        line(svg, leftX - rx, baseY, leftX, apexY, '#2563eb', 2);
+        line(svg, leftX + rx, baseY, leftX, apexY, '#2563eb', 2);
+      } else {
+        line(svg, leftX - rx, baseY, leftX - rx, apexY, '#2563eb', 2);
+        line(svg, leftX + rx, baseY, leftX + rx, apexY, '#2563eb', 2);
+        line(svg, leftX - rx, apexY, leftX + rx, apexY, '#2563eb', 2);
+      }
+    } else if (type === 'prism') {
+      polygon(svg, base.map(project), '#2563eb', 2);
+      polygon(svg, top.map(project), '#2563eb', 2);
+      base.forEach((point, index) => {
+        const p = project(point);
+        const q = project(top[index]);
+        line(svg, p[0], p[1], q[0], q[1], '#2563eb', 1.5);
+      });
+    } else {
+      polygon(svg, base.map(project), '#2563eb', 2);
+      const apex = project([0, 0, height]);
+      base.forEach(point => {
+        const p = project(point);
+        line(svg, p[0], p[1], apex[0], apex[1], '#2563eb', 1.5);
+      });
+    }
+    line(svg, leftX, baseY + 2, leftX, apexY - 2, '#334155', 1.5, '7 4');
+    const section = cutPts.map(project);
+    if (section.length > 2) polygon(svg, section, '#dc2626', 2.5, '#fee2e2');
+    const slope = Math.tan(cutAngle * Math.PI / 180);
+    if (Math.abs(slope) < 1e-8) {
+      const y = baseY - axisHeight * scale;
+      line(svg, leftX - maxRadius * scale, y, leftX + maxRadius * scale, y, '#dc2626', 1.5, '5 4');
+    } else {
+      const leftTraceX = leftX - axisHeight / slope * scale;
+      const rightTraceX = leftX + (height - axisHeight) / slope * scale;
+      line(svg, leftTraceX, baseY, rightTraceX, baseY - height * scale, '#dc2626', 1.5, '5 4');
+    }
+    const axisStart = [leftX, baseY];
+    const axisEnd = [leftX, apexY];
+    const axisMid = [leftX, baseY - axisHeight * scale];
+    const isMidpoint = Math.abs(axisHeight - height / 2) <= height * 1e-6;
+    circle(svg, axisStart[0], axisStart[1], 3, '#17243a');
+    circle(svg, axisEnd[0], axisEnd[1], 3, '#17243a');
+    circle(svg, axisMid[0], axisMid[1], 4, '#f59e0b');
+    text(svg, leftX - 18, baseY + 14, 'A', 12, '#17243a', 700);
+    text(svg, leftX - 18, apexY - 7, 'B', 12, '#17243a', 700);
+    text(svg, leftX + 8, axisMid[1] + 14, isMidpoint ? 'C (midpoint)' : 'C', 12, '#b45309', 700);
+    text(svg, leftX + 12, apexY + 25, 'Axis AB', 10, '#334155');
+    if (section.length > 0) {
+      const leftPoint = section.reduce((best, point) => point[0] < best[0] ? point : best);
+      const rightPoint = section.reduce((best, point) => point[0] > best[0] ? point : best);
+      circle(svg, leftPoint[0], leftPoint[1], 3.5, '#b91c1c');
+      circle(svg, rightPoint[0], rightPoint[1], 3.5, '#b91c1c');
+      text(svg, leftPoint[0] - 15, leftPoint[1] - 7, 'D', 11, '#991b1b', 700);
+      text(svg, rightPoint[0] + 6, rightPoint[1] - 7, 'E', 11, '#991b1b', 700);
+    }
+    text(svg, 8, 18, `Elevation: cutting plane at ${cutAngle.toFixed(1)}° to HP`, 12, '#475569');
+    if (isMidpoint) text(svg, 8, 35, 'Cutting plane passes through axis midpoint', 11, '#b91c1c', 700);
+  }
+
+  function drawTrueShape(cutPts, cutAngle, axisHeight) {
+    const svg = $('true');
+    clear(svg);
+    const angle = cutAngle * Math.PI / 180;
+    const points = cutPts.map(([x, y, z]) => [
+      x * Math.cos(angle) + (z - axisHeight) * Math.sin(angle), y
+    ]);
+    const minX = Math.min(...points.map(p => p[0]));
+    const maxX = Math.max(...points.map(p => p[0]));
+    const minY = Math.min(...points.map(p => p[1]));
+    const maxY = Math.max(...points.map(p => p[1]));
+    const scale = Math.min(410 / Math.max(maxX - minX, 1), 155 / Math.max(maxY - minY, 1));
+    const pts = points.map(([x, y]) => [105 + (x - minX) * scale, 205 - (y - minY) * scale]);
+    polygon(svg, pts, '#dc2626', 2.5, '#fee2e2');
+    text(svg, 8, 18, 'True shape of section (plane flattened)', 12, '#475569');
+  }
+
+  function drawVerticalSectionPlan(base, cutPts, offset, angleToVP, baseEdgeAngle = 0) {
+    const svg = $('plan');
+    clear(svg);
+    const maxDim = Math.max(1, ...base.map(p => Math.max(Math.abs(p[0]), Math.abs(p[1]))));
+    const scale = 105 / maxDim;
+    const centerX = 210;
+    const centerY = 130;
+    polygon(svg, base.map(([x, y]) => [centerX + x * scale, centerY - y * scale]), '#3b82f6', 2, '#eff6ff');
+
+    const angle = angleToVP * Math.PI / 180;
+    const alongPlane = point => point[0] * Math.cos(angle) + point[1] * Math.sin(angle);
+    const section = [...cutPts].sort((a, b) => alongPlane(a) - alongPlane(b))
+      .map(([x, y]) => [centerX + x * scale, centerY - y * scale]);
+    if (section.length > 1) {
+      line(svg, section[0][0], section[0][1], section[section.length - 1][0], section[section.length - 1][1], '#dc2626', 3);
+      section.forEach((point, index) => {
+        circle(svg, point[0], point[1], 3.5, '#dc2626');
+        text(svg, point[0] + 5, point[1] - 5, String(index + 1), 10, '#991b1b');
+      });
+    }
+    const orientation = angleToVP === 0 ? 'parallel to VP' : `${angleToVP.toFixed(1)}° to VP`;
+    text(svg, 8, 18, `Plan: vertical plane ${orientation}, ${offset.toFixed(1)} mm from axis`, 12, '#475569');
+    text(svg, 8, 36, `Base orientation: edge set at ${baseEdgeAngle.toFixed(1)}° to VP`, 11, '#1d4ed8', 700);
+  }
+
+  function drawVerticalSectionElevation(base, top, cutPts, height, type, angleToVP) {
+    const svg = $('elev');
+    clear(svg);
+    const maxRadius = Math.max(1, ...base.map(p => Math.abs(p[0])));
+    const scale = Math.min(150 / maxRadius, 130 / Math.max(1, height));
+    const centerX = 210;
+    const baseY = 225;
+    const project = ([x, y, z]) => [centerX + x * scale, baseY - z * scale];
+
+    if (type === 'cone' || type === 'cylinder') {
+      const rx = maxRadius * scale;
+      line(svg, centerX - rx, baseY, centerX + rx, baseY, '#2563eb', 2);
+      if (type === 'cone') {
+        line(svg, centerX - rx, baseY, centerX, baseY - height * scale, '#2563eb', 2);
+        line(svg, centerX + rx, baseY, centerX, baseY - height * scale, '#2563eb', 2);
+      } else {
+        line(svg, centerX - rx, baseY, centerX - rx, baseY - height * scale, '#2563eb', 2);
+        line(svg, centerX + rx, baseY, centerX + rx, baseY - height * scale, '#2563eb', 2);
+        line(svg, centerX - rx, baseY - height * scale, centerX + rx, baseY - height * scale, '#2563eb', 2);
+      }
+    } else if (type === 'prism') {
+      polygon(svg, base.map(project), '#2563eb', 2);
+      polygon(svg, top.map(project), '#2563eb', 2);
+      base.forEach((point, index) => {
+        const p = project(point);
+        const q = project(top[index]);
+        line(svg, p[0], p[1], q[0], q[1], '#2563eb', 1.5);
+      });
+    } else {
+      polygon(svg, base.map(project), '#2563eb', 2);
+      const apex = project([0, 0, height]);
+      base.forEach(point => {
+        const p = project(point);
+        line(svg, p[0], p[1], apex[0], apex[1], '#2563eb', 1.5);
+      });
+    }
+
+    const section = sortOnVerticalSectionPlane(cutPts, angleToVP);
+    if (section.length > 2) polygon(svg, section.map(project), '#dc2626', 2.5, '#fee2e2');
+    const orientation = angleToVP === 0 ? 'parallel to VP' : `inclined ${angleToVP.toFixed(1)}° to VP`;
+    text(svg, 8, 18, `Elevation: vertical plane ${orientation}`, 12, '#475569');
+  }
+
+  function drawVerticalTrueShape(cutPts, angleToVP) {
+    const svg = $('true');
+    clear(svg);
+    const angle = angleToVP * Math.PI / 180;
+    const points = sortOnVerticalSectionPlane(cutPts, angleToVP)
+      .map(([x, y, z]) => [x * Math.cos(angle) + y * Math.sin(angle), z]);
+    const minX = Math.min(...points.map(p => p[0]));
+    const maxX = Math.max(...points.map(p => p[0]));
+    const minZ = Math.min(...points.map(p => p[1]));
+    const maxZ = Math.max(...points.map(p => p[1]));
+    const scale = Math.min(410 / Math.max(maxX - minX, 1), 155 / Math.max(maxZ - minZ, 1));
+    const shape = points.map(([x, z]) => [105 + (x - minX) * scale, 205 - (z - minZ) * scale]);
+    polygon(svg, shape, '#dc2626', 2.5, '#fee2e2');
+    const orientation = angleToVP === 0 ? 'plane parallel to VP' : `plane at ${angleToVP.toFixed(1)}° to VP`;
+    text(svg, 8, 18, `True shape of section (${orientation})`, 12, '#475569');
+  }
+
+  function updateSectionPlaneControls() {
+    const orientation = $('sectionPlaneOrientation').value;
+    const vertical = orientation.startsWith('vertical-');
+    const horizontal = orientation === 'horizontal-hp';
+    const inclinedVertical = orientation === 'vertical-inclined-vp';
+    $('cutAngle').disabled = vertical || horizontal;
+    $('axisFraction').disabled = vertical;
+    $('sectionOffset').disabled = !vertical;
+    $('verticalPlaneAngle').disabled = !inclinedVertical;
+    $('cutAngleLabel').classList.toggle('hidden', vertical || horizontal);
+    $('cutAngle').classList.toggle('hidden', vertical || horizontal);
+    $('axisFractionLabel').classList.toggle('hidden', vertical);
+    $('axisFraction').classList.toggle('hidden', vertical);
+    $('verticalPlaneAngleLabel').classList.toggle('hidden', !inclinedVertical);
+    $('verticalPlaneAngle').classList.toggle('hidden', !inclinedVertical);
+    $('sectionOffsetLabel').classList.toggle('hidden', !vertical);
+    $('sectionOffset').classList.toggle('hidden', !vertical);
+  }
+
+  function calcSection() {
+    const type = $('secSolid').value;
+    const X = +$('x').value;
+    const Y = +$('y').value;
+    const H = +$('h').value;
+    const A = +$('a').value * Math.PI / 180;
+    const axisFraction = +$('axisFraction').value;
+    const planeOffset = +$('sectionOffset').value;
+    const planeOrientation = $('sectionPlaneOrientation').value;
+    const cutAngle = planeOrientation === 'horizontal-hp' ? 0 : +$('cutAngle').value;
+    const verticalPlaneAngle = planeOrientation === 'vertical-parallel-vp'
+      ? 0
+      : +$('verticalPlaneAngle').value;
+    const verticalPlane = planeOrientation.startsWith('vertical-');
+    const nSides = Math.min(12, Math.max(3, Math.round(+$('sides').value || 4)));
+
+    const validBase = type === 'rectangular-pyramid' ? X > 0 && Y > 0 : X > 0;
+    const validCut = verticalPlane
+      ? planeOffset > 0 && verticalPlaneAngle >= 0 && verticalPlaneAngle <= 90
+      : cutAngle >= 0 && cutAngle < 89.9 && axisFraction >= 0 && axisFraction <= 1;
+    if (!(validBase && H > 0 && Math.abs(A) < Math.PI * 0.75 && validCut)) {
+      $('secResult').textContent = verticalPlane
+        ? 'Check the dimensions, vertical-plane angle, and distance from the axis.'
+        : 'Check dimensions, section angle, and axis fraction.';
+      clear($('plan')); clear($('elev')); clear($('true'));
+      drawSolid3D([], [], '', 0);
+      return;
+    }
+
+    let base = [];
+    if (type === 'rectangular-pyramid') {
+      const rect = [[-Y / 2, -X / 2, 0], [Y / 2, -X / 2, 0], [Y / 2, X / 2, 0], [-Y / 2, X / 2, 0]];
+      base = rect.map(([u, v]) => {
+        const x = u * Math.cos(A) - v * Math.sin(A);
+        const y = u * Math.sin(A) + v * Math.cos(A);
+        return [x, y, 0];
+      });
+    } else if (type === 'regular-pyramid') {
+      const radius = X / (2 * Math.sin(Math.PI / nSides));
+      base = regularPolygon(nSides, radius, 0, 0, -Math.PI / 2 - Math.PI / nSides).map(([x, y]) => [x * Math.cos(A) - y * Math.sin(A), x * Math.sin(A) + y * Math.cos(A), 0]);
+    } else if (type === 'prism') {
+      const radius = X / (2 * Math.sin(Math.PI / nSides));
+      base = regularPolygon(nSides, radius, 0, 0, -Math.PI / 2 - Math.PI / nSides).map(([x, y]) => [x * Math.cos(A) - y * Math.sin(A), x * Math.sin(A) + y * Math.cos(A), 0]);
+    } else if (type === 'cylinder' || type === 'cone') {
+      const radius = X / 2;
+      base = Array.from({ length: 120 }, (_, i) => {
+        const ang = (i / 120) * 2 * Math.PI;
+        const x = radius * Math.cos(ang);
+        const y = radius * Math.sin(ang);
+        return [x * Math.cos(A) - y * Math.sin(A), x * Math.sin(A) + y * Math.cos(A), 0];
+      });
+    }
+
+    const cutAngleRadians = cutAngle * Math.PI / 180;
+    const slope = Math.tan(cutAngleRadians);
+    const axisHeight = H * axisFraction;
+    let cutPts = [];
+    let top = [];
+
+    if (type === 'prism' || type === 'cylinder') {
+      top = base.map(([x, y]) => [x, y, H]);
+    } else {
+      top = [[0, 0, H]];
+    }
+
+    if (verticalPlane) {
+      cutPts = verticalSectionIntersections(base, top, type, planeOffset, verticalPlaneAngle);
+      if (cutPts.length >= 3) cutPts = sortOnVerticalSectionPlane(cutPts, verticalPlaneAngle);
+      if (cutPts.length < 3) {
+        $('secResult').textContent = 'The vertical plane does not produce a closed section inside this solid. Adjust its distance from the axis.';
+        clear($('plan')); clear($('elev')); clear($('true'));
+        drawSolid3D(base, top, type, H);
+        return;
+      }
+
+      drawVerticalSectionPlan(base, cutPts, planeOffset, verticalPlaneAngle, +$('a').value);
+      drawVerticalSectionElevation(base, top, cutPts, H, type, verticalPlaneAngle);
+      drawVerticalTrueShape(cutPts, verticalPlaneAngle);
+      drawSolid3D(base, top, type, H, cutPts, 0, H / 2, planeOrientation, verticalPlaneAngle);
+      const planeDescription = verticalPlaneAngle === 0
+        ? 'parallel to VP'
+        : `inclined ${verticalPlaneAngle.toFixed(1)}° to VP`;
+      $('secResult').textContent = `${cutPts.length} section points calculated. The cutting plane is perpendicular to HP, ${planeDescription}, and ${planeOffset.toFixed(2)} mm from the axis.`;
+      const orientationStep = verticalPlaneAngle === 0
+        ? 'parallel to VP'
+        : `inclined ${verticalPlaneAngle.toFixed(1)}° to VP`;
+      $('stepsList').innerHTML = `
+        <li>Draw the ${type.replace('-', ' ')} with its base on HP and axis ${H.toFixed(2)} mm long.</li>
+        <li>Orient the base so its specified edge makes ${$('a').value}° with VP.</li>
+        <li>In plan, draw the vertical cutting-plane trace ${orientationStep} at ${planeOffset.toFixed(2)} mm from the axis.</li>
+        <li>Mark where the trace intersects the base edges and project those points up the pyramid edges.</li>
+        <li>Join the section points in elevation for the sectional front view.</li>
+        <li>Use the section-plane coordinates to show its true shape; the elevation is true shape only when the plane is parallel to VP.</li>
+        <li>Complete the sectional views and hatch the cut surface.</li>
+      `;
+      return;
+    }
+
+    cutPts = sectionIntersections(base, top, type, slope, axisHeight);
+    if (cutPts.length >= 3) cutPts = sortOnSectionPlane(cutPts, cutAngleRadians, axisHeight);
+
+    if (cutPts.length < 3) {
+      const axisEnd = Math.abs(axisHeight) < 1e-8
+        ? 'base end'
+        : Math.abs(axisHeight - H) < 1e-8 ? 'top end' : null;
+      $('secResult').textContent = axisEnd
+        ? `The plane passes through the ${axisEnd} of the axis and does not produce a closed section inside this solid.`
+        : 'The plane does not produce a closed section inside this solid. Adjust the angle or axis position.';
+      clear($('plan')); clear($('elev')); clear($('true'));
+      drawSolid3D(base, top, type, H);
+      $('stepsList').textContent = $('secResult').textContent;
+      return;
+    }
+
+    drawSectionPlan(base, cutPts, slope, axisHeight, +$('a').value);
+    drawSectionElevation(base, top, cutPts, H, type, cutAngle, axisHeight);
+    drawTrueShape(cutPts, cutAngle, axisHeight);
+    drawSolid3D(base, top, type, H, cutPts, cutAngle, axisHeight);
+
+    const sectionCount = type === 'cone' || type === 'cylinder'
+      ? `Section curve sampled at ${cutPts.length} generator divisions`
+      : `${cutPts.length} section points calculated`;
+    $('secResult').textContent = `${sectionCount}. The plane crosses the axis at ${axisHeight.toFixed(2)} mm and is inclined ${cutAngle.toFixed(1)}° to HP.`;
+    $('stepsList').innerHTML = `
+      <li>Draw the ${type.replace('-', ' ')} in its simple position: base on HP and axis ${H.toFixed(2)} mm long.</li>
+      ${$('a').value !== '0' ? `<li>Orient the base so its specified edge is ${$('a').value}° to VP in plan.</li>` : ''}
+      <li>Label the elevation axis A–B; mark C where the cutting plane crosses the axis, at ${axisHeight.toFixed(2)} mm above HP.</li>
+      <li>In elevation, draw the cutting plane at ${cutAngle.toFixed(1)}° to XY through ${axisHeight.toFixed(2)} mm on the axis.</li>
+      <li>Label the cutting-plane intersections on the elevation outline D and E, then project the section points to plan.</li>
+      <li>Project intersections with the generators or edges into plan; the red boundary is the sectional top view.</li>
+      <li>Flatten the section plane to obtain the true shape shown in the lower view.</li>
+      <li>Hatch the cut face and complete the final engineering sketch.</li>
+    `;
+  }
+
+  $('goSec').addEventListener('click', calcSection);
+
+  function calcCone() {
+    const type = $('devSolid').value;
+    const D = +$('d').value;
+    const H = +$('ch').value;
+    const N = +$('n').value;
+    const lateralOnly = /\blateral\b/.test(($('questionInput').value || '').toLowerCase());
+
+    if (!(D > 0 && H > 0)) {
+      $('coneResult').textContent = 'Enter a positive base size and height.';
+      return;
+    }
+
+    drawDevelopmentSolid3D(type, D, H, Math.min(12, Math.max(3, Math.round(+$('devSides').value || 6))));
+    const svg = $('true');
+    clear(svg);
+
+    if (type === 'cylinder') {
+      const perimeter = Math.PI * D;
+      const rect = [
+        [60, 200],
+        [60 + perimeter * 1.4, 200],
+        [60 + perimeter * 1.4, 200 - H * 1.3],
+        [60, 200 - H * 1.3]
+      ];
+      polygon(svg, rect, '#2563eb', 2, '#eff6ff');
+      if (!lateralOnly) {
+        el(svg, 'circle', { cx: 60 + perimeter * 1.4 + 42, cy: 200 - 42, r: 32, stroke: '#2563eb', 'stroke-width': 2, fill: '#eff6ff' });
+        el(svg, 'circle', { cx: 60 + perimeter * 1.4 + 42, cy: 200 - 42 - H * 1.3, r: 32, stroke: '#2563eb', 'stroke-width': 2, fill: '#eff6ff' });
+      }
+      text(svg, 70, 70, `Rectangle size = ${perimeter.toFixed(2)} × ${H.toFixed(2)} mm`, 16, '#1d4ed8', 700);
+      $('coneResult').textContent = lateralOnly
+        ? `Cylinder lateral development: rectangle ${perimeter.toFixed(2)} × ${H.toFixed(2)} mm.`
+        : `Cylinder development: lateral rectangle ${perimeter.toFixed(2)} × ${H.toFixed(2)} mm plus two circular ends of diameter ${D.toFixed(2)} mm.`;
+      $('stepsList').innerHTML = `
+        <li>For a cylinder, the development is a rectangle.</li>
+        <li>Use the circumference as the width: πD = ${perimeter.toFixed(2)} mm.</li>
+        <li>Use the height as the vertical dimension: ${H.toFixed(2)} mm.</li>
+        <li>Divide the rectangle if equal generator spacing is required.</li>
+        ${lateralOnly ? '' : `<li>Attach two circles of diameter ${D.toFixed(2)} mm to represent the top and bottom bases.</li>`}
+      `;
+      return;
+    }
+
+    if (type === 'prism') {
+      const n = Math.min(12, Math.max(3, Math.round(+$('devSides').value || 6)));
+      const perimeter = n * D;
+      const scale = Math.min(420 / perimeter, 145 / H);
+      const width = perimeter * scale;
+      const height = H * scale;
+      const rect = [
+        [60, 225],
+        [60 + width, 225],
+        [60 + width, 225 - height],
+        [60, 225 - height]
+      ];
+      polygon(svg, rect, '#2563eb', 2, '#eff6ff');
+      for (let i = 1; i < n; i++) line(svg, 60 + i * D * scale, 225, 60 + i * D * scale, 225 - height, '#94a3b8', 1, '4 4');
+      if (!lateralOnly) {
+        const prismBaseScale = Math.min(38 / Math.max(D, 1), 38 / (2 * Math.sin(Math.PI / n)));
+        const baseCenter = [60 + width + 55, 225 - height / 2];
+        const prismBase = regularPolygon(n, D * prismBaseScale / 2, baseCenter[0], baseCenter[1]).map(([x,y]) => [x,y]);
+        polygon(svg, prismBase, '#2563eb', 2, '#eff6ff');
+      }
+      text(svg, 40, 30, `${n}-sided prism strip = ${perimeter.toFixed(2)} × ${H.toFixed(2)} mm`, 14, '#1d4ed8', 700);
+      $('coneResult').textContent = lateralOnly
+        ? `Prism lateral development: strip ${perimeter.toFixed(2)} × ${H.toFixed(2)} mm.`
+        : `Prism development: lateral strip ${perimeter.toFixed(2)} × ${H.toFixed(2)} mm, plus a top and bottom ${n}-gon of side ${D.toFixed(2)} mm.`;
+      $('stepsList').innerHTML = `
+        <li>For a ${n}-sided prism, the development is a strip of ${n} adjacent rectangles.</li>
+        <li>Each rectangle width is the base side ${D.toFixed(2)} mm; total perimeter = ${perimeter.toFixed(2)} mm.</li>
+        <li>Use the axis length as the strip height.</li>
+        <li>Transfer the base edges in order around the developed strip.</li>
+      `;
+      return;
+    }
+
+    if (type === 'pyramid') {
+      const side = D;
+      const n = Math.min(12, Math.max(3, Math.round(+$('devSides').value || 5)));
+      const radius = side / (2 * Math.sin(Math.PI / n));
+      const slant = Math.hypot(H, radius);
+      const faceAngle = 2 * Math.asin(Math.min(1, side / (2 * slant)));
+      const start = -n * faceAngle / 2;
+      const raw = Array.from({ length: n + 1 }, (_, i) => [
+        slant * Math.cos(start + i * faceAngle), slant * Math.sin(start + i * faceAngle)
+      ]);
+      const minX = Math.min(0, ...raw.map(p => p[0]));
+      const maxX = Math.max(0, ...raw.map(p => p[0]));
+      const minY = Math.min(0, ...raw.map(p => p[1]));
+      const maxY = Math.max(0, ...raw.map(p => p[1]));
+      const scale = Math.min(420 / Math.max(maxX - minX, 1), 145 / Math.max(maxY - minY, 1));
+      const origin = [100 - minX * scale, 210 - maxY * scale];
+      const pts = raw.map(([x, y]) => [origin[0] + x * scale, origin[1] + y * scale]);
+      for (let i = 0; i < n; i++) {
+        line(svg, origin[0], origin[1], pts[i][0], pts[i][1], '#94a3b8', 1.2, '4 4');
+        line(svg, pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], '#2563eb', 2);
+      }
+      line(svg, origin[0], origin[1], pts[n][0], pts[n][1], '#94a3b8', 1.2, '4 4');
+      if (!lateralOnly) {
+        const pyramidBase = regularPolygon(n, Math.min(42, side * 0.9), 510, 205);
+        polygon(svg, pyramidBase, '#2563eb', 2, '#eff6ff');
+      }
+      text(svg, 40, 25, `${n}-sided pyramid · true slant edge ${slant.toFixed(2)} mm`, 14, '#1d4ed8', 700);
+      $('coneResult').textContent = lateralOnly
+        ? `Pyramid lateral development: ${n} triangular faces with true slant edge ${slant.toFixed(2)} mm.`
+        : `Pyramid development: ${n} triangular faces with true slant edge ${slant.toFixed(2)} mm, plus the ${n}-gon base of side ${side.toFixed(2)} mm.`;
+      $('stepsList').innerHTML = `
+        <li>Calculate the base circumradius and true slant edge L = ${slant.toFixed(2)} mm.</li>
+        <li>Use a face angle of 2 sin⁻¹(side / 2L) = ${(faceAngle * 180 / Math.PI).toFixed(2)}°.</li>
+        <li>Lay out ${n} triangular faces radially; each outer chord equals the base side ${side.toFixed(2)} mm.</li>
+        <li>Transfer any section points to the corresponding generator if needed.</li>
+      `;
+      return;
+    }
+
+    const r = D / 2;
+    const slant = Math.hypot(H, r);
+    const angle = (360 * r) / slant;
+    const cx = 300;
+    const cy = 170;
+    const radius = 150;
+    const start = -Math.PI / 2;
+    const end = start + (angle * Math.PI / 180);
+    const sector = [[cx, cy]];
+    for (let i = 0; i <= 120; i++) {
+      const a = start + (end - start) * (i / 120);
+      sector.push([cx + radius * Math.cos(a), cy + radius * Math.sin(a)]);
+    }
+    polygon(svg, sector, '#2563eb', 2, '#eff6ff');
+    if (!lateralOnly) el(svg, 'circle', { cx: cx + 205, cy, r: r * 150 / slant, stroke: '#2563eb', 'stroke-width': 2, fill: '#eff6ff' });
+    for (let i = 0; i <= N; i++) {
+      const a = start + (end - start) * (i / N);
+      line(svg, cx, cy, cx + radius * Math.cos(a), cy + radius * Math.sin(a), '#94a3b8', 1.2, '4 4');
+    }
+    text(svg, 40, 50, `Cone sector: angle = ${angle.toFixed(2)}°, slant height = ${slant.toFixed(2)} mm`, 16, '#1d4ed8', 700);
+    $('coneResult').textContent = lateralOnly
+      ? `Cone lateral development: sector radius/slant height = ${slant.toFixed(2)} mm, sector angle = ${angle.toFixed(2)}°.`
+      : `Cone development: sector radius/slant height = ${slant.toFixed(2)} mm, sector angle = ${angle.toFixed(2)}°, plus a base circle of diameter ${D.toFixed(2)} mm.`;
+    $('stepsList').innerHTML = `
+      <li>Calculate true slant height using √(H² + r²).</li>
+      <li>Use the sector angle θ = 360 × r / L.</li>
+      <li>Draw the sector with radius L and the arc length equal to the base circumference.</li>
+      <li>Divide the arc to match equal generator spacing.</li>
+    `;
+  }
+
+  $('goCone').addEventListener('click', calcCone);
+
+  function calcPyramid() {
+    const type = $('cutSolid').value;
+    const S = +$('ps').value;
+    const H = +$('ph').value;
+    const A = +$('pa').value;
+    const F = +$('pf').value;
+
+    if (!(S > 0 && H > 0 && A >= 0 && A < 89.9 && F > 0 && F < 1)) {
+      $('pyrResult').textContent = 'Check section dimensions and the cut fraction.';
+      return;
+    }
+
+    const n = type === 'cone' || type === 'cylinder'
+      ? 60
+      : Math.min(12, Math.max(3, Math.round(+$('cutSides').value || (type === 'prism' ? 6 : 5))));
+    const radius = type === 'cone' || type === 'cylinder'
+      ? S / 2
+      : S / (2 * Math.sin(Math.PI / n));
+    const base = type === 'cone' || type === 'cylinder'
+      ? Array.from({ length:n }, (_,i) => {
+          const angle = i * 2 * Math.PI / n;
+          return [radius * Math.cos(angle), radius * Math.sin(angle), 0];
+        })
+      : regularPolygon(n, radius).map(([x,y]) => [x,y,0]);
+    const top = type === 'prism' || type === 'cylinder'
+      ? base.map(([x, y]) => [x, y, H])
+      : [[0, 0, H]];
+    const axisHeight = F * H;
+    const cutAngleRadians = A * Math.PI / 180;
+    let cutPts = sectionIntersections(base, top, type, Math.tan(cutAngleRadians), axisHeight);
+    if (cutPts.length >= 3) cutPts = sortOnSectionPlane(cutPts, cutAngleRadians, axisHeight);
+    drawSolid3D(base, top, type === 'pyramid' ? 'regular-pyramid' : type, H, cutPts, A, axisHeight);
+
+    const svg = $('true');
+    clear(svg);
+
+    if (type === 'cylinder') {
+      const perimeter = Math.PI * S;
+      const scale = Math.min(420 / perimeter, 145 / H);
+      const width = perimeter * scale;
+      const height = H * scale;
+      const rect = [[60,225],[60+width,225],[60+width,225-height],[60,225-height]];
+      polygon(svg, rect, '#2563eb', 2, '#eff6ff');
+      const divisions = 24;
+      const cutBoundary = [];
+      const radius = S / 2;
+      const slope = Math.tan(A * Math.PI / 180);
+      for (let i = 0; i <= divisions; i++) {
+        const angle = i * 2 * Math.PI / divisions;
+        const cutHeight = Math.max(0, Math.min(H, axisHeight + slope * radius * Math.cos(angle)));
+        const sx = 60 + i * width / divisions;
+        const sy = 225 - cutHeight * scale;
+        line(svg, sx, 225, sx, 225-height, '#94a3b8', 1, '4 4');
+        cutBoundary.push([sx,sy]);
+        circle(svg,sx,sy,2.8,'#dc2626');
+      }
+      polygon(svg,cutBoundary,'#dc2626',2.5,'#fee2e2');
+      text(svg,40,30,`Cut cylinder strip · ${perimeter.toFixed(2)} × ${H.toFixed(2)} mm`,14,'#1d4ed8',700);
+      $('pyrResult').textContent = `Cylinder cut-development strip: circumference = ${perimeter.toFixed(2)} mm, height = ${H.toFixed(2)} mm.`;
+      $('stepsList').innerHTML = `
+        <li>Develop the cylinder as a rectangle of width πD = ${perimeter.toFixed(2)} mm and height ${H.toFixed(2)} mm.</li>
+        <li>Divide the circumference into equal generator spacing.</li>
+        <li>Transfer the cutting height at each generator from the elevation.</li>
+        <li>Join the transferred points to form the developed cut boundary.</li>
+      `;
+      return;
+    }
+
+    if (type === 'cone') {
+      const radius = S / 2;
+      const slant = Math.hypot(H,radius);
+      const sectorAngle = 360 * radius / slant;
+      const cx = 300, cy = 175, drawnRadius = 150;
+      const start = -Math.PI / 2;
+      const end = start + sectorAngle * Math.PI / 180;
+      const sector = [[cx,cy]];
+      const divisions = 24;
+      const boundary = [];
+      const slope = Math.tan(A * Math.PI / 180);
+      for (let i = 0; i <= divisions; i++) {
+        const angle = i * 2 * Math.PI / divisions;
+        const a = start + (end-start) * i/divisions;
+        const x = radius * Math.cos(angle);
+        const denominator = H + slope * radius * Math.cos(angle);
+        const cutHeight = denominator > 1e-9
+          ? H * (axisHeight + slope * radius * Math.cos(angle)) / denominator
+          : axisHeight;
+        const sectionDistance = Math.max(0, Math.min(slant, slant * (H - cutHeight) / H));
+        const sx = cx + drawnRadius*(sectionDistance/slant)*Math.cos(a);
+        const sy = cy + drawnRadius*(sectionDistance/slant)*Math.sin(a);
+        sector.push([cx+drawnRadius*Math.cos(a),cy+drawnRadius*Math.sin(a)]);
+        boundary.push([sx,sy]);
+        line(svg,cx,cy,cx+drawnRadius*Math.cos(a),cy+drawnRadius*Math.sin(a),'#94a3b8',1,'4 4');
+        circle(svg,sx,sy,3,'#dc2626');
+      }
+      polygon(svg,sector,'#2563eb',2,'#eff6ff');
+      polygon(svg,boundary,'#dc2626',2.5,'#fee2e2');
+      text(svg,40,30,`Cut cone sector · true slant ${slant.toFixed(2)} mm`,14,'#1d4ed8',700);
+      text(svg,40,48,`Sector angle ${sectorAngle.toFixed(2)}°`,11,'#475569');
+      $('pyrResult').textContent = `Cone cut-development sector: slant height = ${slant.toFixed(2)} mm, sector angle = ${sectorAngle.toFixed(2)}°.`;
+      $('stepsList').innerHTML = `
+        <li>Calculate true slant height L = ${slant.toFixed(2)} mm and sector angle θ = ${sectorAngle.toFixed(2)}°.</li>
+        <li>Divide the base arc into equal generator divisions.</li>
+        <li>Transfer each true apex-to-section distance to the matching generator.</li>
+        <li>Join the red points to complete the developed cut boundary.</li>
+      `;
+      return;
+    }
+
+    if (type === 'prism') {
+      const perimeter = n * S;
+      const scale = Math.min(420 / perimeter, 145 / H);
+      const width = perimeter * scale;
+      const height = H * scale;
+      const strip = [
+        [60, 225],
+        [60 + width, 225],
+        [60 + width, 225 - height],
+        [60, 225 - height]
+      ];
+      polygon(svg, strip, '#2563eb', 2, '#eff6ff');
+      const cutBoundary = [];
+      const slope = Math.tan(A * Math.PI / 180);
+      for (let i = 0; i <= n; i++) {
+        const edgeIndex = i % n;
+        const [x] = base[edgeIndex];
+        const cutHeight = Math.max(0, Math.min(H, axisHeight + slope * x));
+        const sx = 60 + i * S * scale;
+        const sy = 225 - cutHeight * scale;
+        line(svg, sx, 225, sx, 225 - height, '#94a3b8', 1, '4 4');
+        cutBoundary.push([sx, sy]);
+        circle(svg, sx, sy, 3.2, '#dc2626');
+      }
+      if (cutBoundary.length > 1) {
+        polygon(svg, cutBoundary, '#dc2626', 2.5, 'none');
+        line(svg, cutBoundary[0][0], cutBoundary[0][1], cutBoundary[n][0], cutBoundary[n][1], '#dc2626', 2.5);
+      }
+      text(svg, 40, 30, `Cut ${n}-sided prism strip · ${perimeter.toFixed(2)} × ${H.toFixed(2)} mm`, 14, '#1d4ed8', 700);
+      text(svg, 40, 48, 'Red line: cut heights projected from the section elevation', 11, '#991b1b', 700);
+      $('pyrResult').textContent = `Prism cut-development strip: perimeter = ${perimeter.toFixed(2)} mm, height = ${H.toFixed(2)} mm. Cut points transferred to the ${n} vertical edges.`;
+      $('stepsList').innerHTML = `
+        <li>Set the cutting plane at ${A}° to HP through ${F.toFixed(2)} of the axis.</li>
+        <li>Develop ${n} adjacent rectangles, each ${S.toFixed(2)} mm wide and ${H.toFixed(2)} mm high.</li>
+        <li>Project each vertical-edge cutting height from the elevation.</li>
+        <li>Mark that height on the matching edge of the developed strip.</li>
+        <li>Join the red cut points in order to complete the developed cut surface.</li>
+      `;
+      return;
+    }
+
+    const slant = Math.hypot(H, radius);
+    const faceAngle = 2 * Math.asin(Math.min(1, S / (2 * slant)));
+    const start = -n * faceAngle / 2;
+    const raw = Array.from({ length: n + 1 }, (_, i) => [
+      slant * Math.cos(start + i * faceAngle), slant * Math.sin(start + i * faceAngle)
+    ]);
+    const minX = Math.min(0, ...raw.map(p => p[0]));
+    const maxX = Math.max(0, ...raw.map(p => p[0]));
+    const minY = Math.min(0, ...raw.map(p => p[1]));
+    const maxY = Math.max(0, ...raw.map(p => p[1]));
+    const scale = Math.min(420 / Math.max(maxX - minX, 1), 145 / Math.max(maxY - minY, 1));
+    const origin = [100 - minX * scale, 210 - maxY * scale];
+    const points = raw.map(([x, y]) => [origin[0] + x * scale, origin[1] + y * scale]);
+    for (let i = 0; i < n; i++) {
+      line(svg, origin[0], origin[1], points[i][0], points[i][1], '#94a3b8', 1.2, '4 4');
+      line(svg, points[i][0], points[i][1], points[i + 1][0], points[i + 1][1], '#2563eb', 2);
+    }
+    line(svg, origin[0], origin[1], points[n][0], points[n][1], '#94a3b8', 1.2, '4 4');
+    const slope = Math.tan(A * Math.PI / 180);
+    const cutBoundary = [];
+    for (let i = 0; i <= n; i++) {
+      const vertexIndex = i % n;
+      const [vx, vy] = base[vertexIndex];
+      const denominator = H + slope * vx;
+      const t = denominator > 1e-9
+        ? Math.max(0, Math.min(1, (axisHeight + slope * vx) / denominator))
+        : 0;
+      const cutDistance = t * slant;
+      const directionX = points[i][0] - origin[0];
+      const directionY = points[i][1] - origin[1];
+      const px = origin[0] + directionX * cutDistance / slant;
+      const py = origin[1] + directionY * cutDistance / slant;
+      cutBoundary.push([px, py]);
+      circle(svg, px, py, 3.2, '#dc2626');
+    }
+    polygon(svg, cutBoundary, '#dc2626', 2.5, '#fee2e2');
+    text(svg, 40, 48, 'Red points: true distances transferred from apex', 11, '#991b1b', 700);
+    text(svg, 40, 25, `Cut ${n}-sided pyramid · true slant edge ${slant.toFixed(2)} mm`, 14, '#1d4ed8', 700);
+    $('pyrResult').textContent = `Pyramid cut-development layout: ${n} triangular faces; true slant edge = ${slant.toFixed(2)} mm.`;
+    $('stepsList').innerHTML = `
+      <li>Project the cut plane through the pyramid at ${A}° to HP.</li>
+      <li>Mark where it crosses the axis: ${F.toFixed(2)} × ${H.toFixed(2)} = ${(F * H).toFixed(2)} mm above HP.</li>
+      <li>Lay out ${n} triangular faces using true slant edge ${slant.toFixed(2)} mm and face angle ${(faceAngle * 180 / Math.PI).toFixed(2)}°.</li>
+      <li>Find each true apex distance and mark it on the corresponding developed slant edge.</li>
+      <li>Join the transferred red points in sequence to complete the cut boundary.</li>
+    `;
+  }
+
+  $('goPyr').addEventListener('click', calcPyramid);
+
+  updateSectionFields();
+  updateDevelopmentFields();
+  calcSection();
+</script>
+</body>
+</html>

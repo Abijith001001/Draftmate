@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10203d">
+  <title>GeoDraft | Isometric Views &amp; Projections</title>
+  <style>
+    :root{--ink:#17243a;--muted:#64748b;--line:#dbe3ef;--panel:#fff;--accent:#2563eb;--navy:#10203d;--shadow:0 12px 30px rgba(15,23,42,.08)}
+    *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#f7f9fd,#eef4ff);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+    header{background:linear-gradient(120deg,#10203d,#17447c);color:#fff}.masthead,main{max-width:1380px;margin:auto;padding-left:20px;padding-right:20px}
+    .masthead{padding-top:25px;padding-bottom:20px;display:flex;align-items:end;justify-content:space-between;gap:18px;flex-wrap:wrap}
+    .eyebrow{color:#bfdbfe;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}h1{margin:8px 0 5px;font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.12}.subtitle{margin:0;color:#dbeafe}
+    .chips,.toolbar{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border:1px solid #ffffff3b;border-radius:20px;background:#ffffff12;color:#edf6ff;font-size:11px}
+    main{padding-top:18px;padding-bottom:38px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+    .question{padding:17px;margin-bottom:16px}.question h2,.card h2{margin:0 0 5px;font-size:18px}.hint{color:var(--muted);font-size:12px;margin:0 0 10px}
+    textarea,button{font:inherit}textarea{width:100%;min-height:66px;resize:vertical;padding:10px 12px;border:1px solid #cbd5e1;border-radius:9px;color:var(--ink)}
+    .question-actions{display:grid;grid-template-columns:190px 1fr;gap:10px;margin-top:8px;align-items:stretch}button{cursor:pointer}.primary{border:0;border-radius:9px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:800;padding:11px 14px}
+    .secondary{border:1px solid #cfe0ff;border-radius:9px;background:#f8fbff;color:#1d4ed8;font-weight:700;padding:9px 11px}.status{padding:10px 12px;border:1px solid #dbeafe;border-radius:9px;background:#eff6ff;color:#1d4ed8;font-size:12px}
+    .layout{display:block}.stage{padding:14px;min-width:0}
+    .stage-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.stage-head h2{margin:0;font-size:16px}.stage-head p{margin:2px 0 0}
+    .stage>svg{width:100%;height:auto;display:block;background:linear-gradient(180deg,#fcfdff,#f5f8ff);border:1px solid var(--line);border-radius:10px;margin-top:10px}
+    .draw-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.draw-card{padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;min-width:0}
+    .draw-card h3{margin:0;font-size:12px;color:#334155}.draw-card p{margin:2px 0 0;color:var(--muted);font-size:10px}.draw-card svg{width:100%;height:auto;display:block;margin-top:5px;background:#fcfdff}
+    .lesson{margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff}.lesson h2{margin:0 0 8px;font-size:16px}
+    .lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lesson-box{padding:10px;border-radius:9px;background:#f8fbff;border:1px solid #e8eef8}
+    .lesson-box h3{margin:0 0 5px;font-size:12px}.lesson-box p,.lesson-box li{margin:0;color:#59677e;font-size:11px;line-height:1.6}
+    .lesson-box ol,.lesson-box ul{margin:0;padding-left:18px}.steps{padding-left:20px;margin:8px 0 0;color:#475569;font-size:12px;line-height:1.7}.note{font-size:11px;color:#64748b;margin:10px 0 0}
+    .hidden{display:none!important}.solid-edge{fill:none;stroke:#2563eb;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+    .hidden-edge{fill:none;stroke:#94a3b8;stroke-width:1.4;stroke-dasharray:5 4;vector-effect:non-scaling-stroke}.face{stroke:none;fill:#60a5fa;fill-opacity:.16}
+    .axis{stroke:#94a3b8;stroke-width:1;stroke-dasharray:4 4}svg text{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;fill:#475569;font-size:11px}.small-label{font-size:9px;fill:#64748b}
+    @media(max-width:600px){.masthead,main{padding-left:12px;padding-right:12px}.question-actions,.draw-grid,.lesson-grid{grid-template-columns:1fr}.stage{padding:10px}.stage-head{align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header><div class="masthead">
+    <div><div class="eyebrow">GeoDraft · KTU B.Tech Engineering Graphics</div><h1>Isometric Views &amp; Projections</h1><p class="subtitle">Build the 3D view, compare orthographic projections, and learn the drawing method.</p></div>
+    <div class="chips" aria-label="Learning topics"><span class="chip">Isometric view</span><span class="chip">Isometric projection</span><span class="chip">First-angle views</span></div>
+  </div></header>
+  <main>
+    <section class="panel question" aria-labelledby="question-title">
+      <h2 id="question-title">Describe the drawing question</h2>
+      <p class="hint">Enter the complete KTU question, including the solids, dimensions, and stated position. Standard solids and a sphere centered on a prism are supported; unsupported combinations are reported rather than drawn as a single solid.</p>
+      <textarea id="question" placeholder="Example: Draw the isometric view of a hexagonal prism of base side 30 mm and axis 60 mm."></textarea>
+      <div class="question-actions"><button class="primary" id="analyze">Understand question</button><div class="status" id="status" role="status" aria-live="polite">Enter a solid and its dimensions to generate the isometric and front/top views.</div></div>
+    </section>
+    <div class="layout">
+      <section class="panel stage" aria-label="Generated views and learning steps">
+        <div class="stage-head"><div><h2 id="viewTitle">Waiting for a question</h2><p class="hint" id="viewSub">Enter a drawing question above to generate its views and construction steps.</p></div><div class="toolbar"><button type="button" class="secondary" id="export">Export SVG</button></div></div>
+        <svg id="iso" viewBox="0 0 720 410" role="img" aria-label="Isometric view drawing"></svg>
+        <div class="draw-grid">
+          <article class="draw-card"><h3>Front view / elevation</h3><p>First-angle projection</p><svg id="front" viewBox="0 0 340 220" role="img" aria-label="Front orthographic projection"></svg></article>
+          <article class="draw-card"><h3>Top view / plan</h3><p>Placed below the front view in first-angle projection</p><svg id="top" viewBox="0 0 340 220" role="img" aria-label="Top orthographic projection"></svg></article>
+          <article class="draw-card"><h3>Projection checkpoints</h3><p id="checkpoint">Checkpoints will appear here after you submit a question.</p><ol class="steps" id="projectionSteps"></ol></article>
+        </div>
+        <section class="lesson" aria-labelledby="lesson-title"><h2 id="lesson-title">Learn the construction</h2>
+          <div class="lesson-grid">
+            <div class="lesson-box"><h3>Isometric view vs projection</h3><p id="conventionText">An isometric view uses true lengths along the isometric axes. An isometric projection uses an isometric scale factor of approximately 0.816 on all three axes.</p></div>
+            <div class="lesson-box"><h3>Drawing sequence</h3><ol id="constructionSteps" class="steps"></ol></div>
+            <div class="lesson-box"><h3>Projection method</h3><p>Use first-angle projection: place the top view below the front view and align corresponding corners with thin construction projectors. Darken visible outlines after checking both views.</p></div>
+            <div class="lesson-box"><h3>Exam reminders</h3><ul><li>Use thin construction lines, then darken final visible outlines.</li><li>Show hidden edges dashed when required.</li><li>Write dimensions in millimetres and identify each view.</li><li>Represent circular ends as isometric ellipses, not true circles.</li></ul></div>
+          </div>
+          <p class="note">This interactive page demonstrates standard solids in simple positions. It does not claim to interpret every compound object, inclined-axis case, or cut feature automatically. Follow the specific syllabus question's position and orientation conditions.</p>
+        </section>
+      </section>
+    </div>
+  </main>
+  <script>
+    'use strict';
+    const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+    const state={mode:'view',type:'box',x:0,y:0,h:0,n:6,composition:null};
+    const SOLIDS={
+      box:{sides:4,kind:'prism'},cube:{sides:4,kind:'prism'},'tri-prism':{sides:3,kind:'prism'},'regular-prism':{sides:6,kind:'prism'},
+      'pent-prism':{sides:5,kind:'prism'},'hex-prism':{sides:6,kind:'prism'},
+      'square-pyramid':{sides:4,kind:'pyramid'},'hex-pyramid':{sides:6,kind:'pyramid'},'regular-pyramid':{sides:6,kind:'pyramid'},
+      cylinder:{sides:48,kind:'prism',circular:true},cone:{sides:48,kind:'pyramid',circular:true},frustum:{sides:48,kind:'prism',circular:true,frustum:true},
+      sphere:{sides:0,kind:'sphere',sphere:true},hemisphere:{sides:0,kind:'sphere',hemisphere:true}
+    };
+    function svgEl(parent,tag,attrs){const node=document.createElementNS(NS,tag);Object.entries(attrs||{}).forEach(([k,v])=>node.setAttribute(k,v));parent.appendChild(node);return node}
+    function clear(svg){while(svg.firstChild)svg.removeChild(svg.firstChild)}
+    function line(svg,a,b,cls){svgEl(svg,'line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],class:cls})}
+    function label(svg,x,y,value,cls){const t=svgEl(svg,'text',{x,y,class:cls||''});t.textContent=value}
+    function polygon(svg,points,cls){svgEl(svg,'polygon',{points:points.map(p=>`${p[0]},${p[1]}`).join(' '),class:cls})}
+    function regularPoints(n,rx,ry,cx,cy,start){return Array.from({length:n},(_,i)=>{const a=start+i*Math.PI*2/n;return[cx+rx*Math.cos(a),cy+ry*Math.sin(a)]})}
+    function makeGeometry(type=state.type,dims=state){
+      if(dims.composition)return makeStackGeometry(dims.composition);
+      const spec=SOLIDS[type],x0=dims.x,y0=dims.y,h=dims.h;
+      let x=x0,y=type==='cube'?x0:spec.frustum?y0:spec.circular?x0:y0,n=spec.sides;
+      if(!(x>0&&y>0&&h>0&&Number.isFinite(x+y+h)))throw new Error('Enter positive, finite dimensions for length/diameter, width, and height.');
+      if(type==='sphere'||type==='hemisphere'){
+        y=x;const radius=x/2;
+        const vertices=type==='sphere'?[[radius,0,0],[-radius,0,0],[0,radius,0],[0,-radius,0],[0,0,radius],[0,0,-radius]]:[[radius,0,0],[-radius,0,0],[0,radius,0],[0,-radius,0],[0,0,radius],[0,0,0]];
+        return{type,spec,x,y,h:type==='sphere'?x:radius,n:0,vertices,faces:[],edges:[],sphere:type==='sphere'?{center:[0,0,0],radius}:null,hemisphere:type==='hemisphere'?{base:[0,0,0],radius}:null,boundsVertices:vertices};
+      }
+      if(type==='regular-prism'||type==='regular-pyramid'){
+        n=dims.n;
+        if(!Number.isInteger(n)||n<3||n>12)throw new Error('A regular polygon must have an integer side count from 3 to 12.');
+      }
+      if(spec.circular)n=48;
+      if(type==='box'||type==='cube')n=4;
+      if(type==='tri-prism')n=3;if(type==='pent-prism')n=5;if(type==='hex-prism'||type==='hex-pyramid')n=6;if(type==='square-pyramid')n=4;
+      const vertices=[],faces=[],edges=new Set(),addEdge=(a,b)=>edges.add(a<b?`${a},${b}`:`${b},${a}`);
+      let base;
+      if(spec.circular)base=regularPoints(n,x/2,x/2,0,0,-Math.PI/2);
+      else if(type==='box')base=[[-x/2,-y/2],[x/2,-y/2],[x/2,y/2],[-x/2,y/2]];
+      else if(type==='cube')base=[[-x/2,-x/2],[x/2,-x/2],[x/2,x/2],[-x/2,x/2]];
+      else{const r=x/(2*Math.sin(Math.PI/n));base=regularPoints(n,r,r,0,0,-Math.PI/2-Math.PI/n)}
+      base.forEach(([px,py])=>vertices.push([px,py,0]));
+      if(spec.kind==='prism'){
+        const upper=spec.frustum?regularPoints(n,y/2,y/2,0,0,-Math.PI/2):base;
+        upper.forEach(([px,py])=>vertices.push([px,py,h]));
+      }else vertices.push([0,0,h]);
+      faces.push(Array.from({length:n},(_,i)=>i));
+      if(spec.kind==='prism')faces.push(Array.from({length:n},(_,i)=>n+i));
+      for(let i=0;i<n;i++){const j=(i+1)%n;if(spec.kind==='prism')faces.push([i,j,n+j,n+i]);else faces.push([i,j,n]);addEdge(i,j);if(spec.kind==='prism'){addEdge(n+i,n+j);addEdge(i,n+i)}else addEdge(i,n)}
+      return{type,spec,x,y,h,n,vertices,faces,edges:[...edges].map(k=>k.split(',').map(Number))};
+    }
+    function makeStackGeometry(parts){
+      const vertices=[],faces=[],edges=[],boundsVertices=[],markers=[];
+      let offset=0;
+      parts.forEach(part=>{
+        if(part.type==='sphere'||part.type==='hemisphere'){
+          const radius=part.x/2,isHemisphere=part.type==='hemisphere';
+          const center=isHemisphere?[0,0,offset]:[0,0,offset+radius];
+          markers.push({type:part.type,center,radius});
+          boundsVertices.push(...(isHemisphere
+            ?[[radius,0,offset],[-radius,0,offset],[0,radius,offset],[0,-radius,offset],[0,0,offset+radius]]
+            :[[radius,0,center[2]],[-radius,0,center[2]],[0,radius,center[2]],[0,-radius,center[2]],[0,0,center[2]+radius],[0,0,center[2]-radius]]));
+          offset+=isHemisphere?radius:radius*2;
+          return;
+        }
+        const geometry=makeGeometry(part.type,part),baseIndex=vertices.length;
+        geometry.vertices.forEach(([x,y,z])=>{const vertex=[x,y,z+offset];vertices.push(vertex);boundsVertices.push(vertex)});
+        geometry.faces.forEach(face=>faces.push(face.map(index=>index+baseIndex)));
+        geometry.edges.forEach(([a,b])=>edges.push([a+baseIndex,b+baseIndex]));
+        offset+=geometry.h;
+      });
+      const first=parts[0];
+      return{type:'compound',spec:{compound:true},x:first.x,y:first.y,h:offset,n:first.n||0,vertices,faces,edges,boundsVertices,markers,componentNames:parts.map(part=>part.type.replace(/-/g,' '))};
+    }
+    function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+    function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+    function faceVisibility(g,view){
+      const center=g.vertices.reduce((s,v)=>s.map((q,i)=>q+v[i]/g.vertices.length),[0,0,0]);
+      return g.faces.map(face=>{const p0=g.vertices[face[0]],p1=g.vertices[face[1]],p2=g.vertices[face[2]];let normal=cross(p1.map((v,i)=>v-p0[i]),p2.map((v,i)=>v-p0[i]));const fc=face.reduce((s,k)=>s.map((q,i)=>q+g.vertices[k][i]/face.length),[0,0,0]);if(dot(normal,fc.map((v,i)=>v-center[i]))<0)normal=normal.map(v=>-v);return{face,visible:dot(normal,view)>1e-8,depth:dot(fc,view)}})
+    }
+    function visibleEdgeSet(g,view){const set=new Set();faceVisibility(g,view).filter(f=>f.visible).forEach(({face})=>face.forEach((v,i)=>{const w=face[(i+1)%face.length];set.add(v<w?`${v},${w}`:`${w},${v}`)}));return set}
+    function drawIso(g){
+      const svg=$('iso');clear(svg);const f=state.mode==='projection'?.81649658:1;
+      const projected=g.vertices.map(([x,y,z])=>[(x-y)*Math.cos(Math.PI/6)*f,(x+y)*Math.sin(Math.PI/6)*f-z*f]);
+      const boundsProjected=(g.boundsVertices||g.vertices).map(([x,y,z])=>[(x-y)*Math.cos(Math.PI/6)*f,(x+y)*Math.sin(Math.PI/6)*f-z*f]);
+      const xs=boundsProjected.map(p=>p[0]),ys=boundsProjected.map(p=>p[1]),minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
+      const scale=Math.min(500/Math.max((maxX-minX)/f,1),275/Math.max((maxY-minY)/f,1)),cx=(minX+maxX)/2,cy=(minY+maxY)/2;
+      const screen=([x,y])=>[360+(x-cx)*scale,205+(y-cy)*scale],vis=faceVisibility(g,[1,-1,1]);
+      if(g.spec.sphere){
+        const c=screen([0,0]),r=g.x*scale*f/2;
+        svgEl(svg,'circle',{cx:c[0],cy:c[1],r,class:'solid-edge',fill:'#60a5fa','fill-opacity':'.12'});
+        label(svg,18,24,`${state.mode==='projection'?'Isometric projection':'Isometric view'} · sphere`);
+        label(svg,18,385,`Diameter ${g.x.toFixed(1)} mm`,'small-label');
+        label(svg,18,402,state.mode==='projection'?'Projected diameter uses the 0.816 isometric scale':'True diameter shown in the pictorial view','small-label');
+        return;
+      }
+      if(g.spec.hemisphere){
+        const r=g.x*scale*f/2,base=screen([0,0]),dome=screen([0,-r/scale]);
+        svgEl(svg,'circle',{cx:dome[0],cy:dome[1],r,class:'solid-edge',fill:'#fff'});
+        svgEl(svg,'ellipse',{cx:base[0],cy:base[1],rx:r*Math.sqrt(1.5),ry:r*Math.sqrt(.5),class:'solid-edge',fill:'none'});
+        label(svg,18,24,`${state.mode==='projection'?'Isometric projection':'Isometric view'} · hemisphere`);
+        label(svg,18,385,`Diameter ${g.x.toFixed(1)} mm · Height ${(g.x/2).toFixed(1)} mm`,'small-label');
+        label(svg,18,402,state.mode==='projection'?'Isometric scale: 0.816 × true length on each axis':'True lengths along the isometric axes','small-label');
+        return;
+      }
+      if(g.spec.circular&&!g.spec.compound){
+        const base=g.vertices.slice(0,g.n).map(v=>screen([(v[0]-v[1])*Math.cos(Math.PI/6)*f,(v[0]+v[1])*Math.sin(Math.PI/6)*f]));
+        const ring=(points,cls)=>svgEl(svg,'polyline',{points:points.map(p=>`${p[0]},${p[1]}`).join(' '),class:cls,fill:'none'});
+        if(g.type==='cylinder'){
+          const upper=g.vertices.slice(g.n,2*g.n).map(v=>screen([(v[0]-v[1])*Math.cos(Math.PI/6)*f,(v[0]+v[1])*Math.sin(Math.PI/6)*f-v[2]*f]));
+          const indexes=base.map((p,i)=>({i,x:p[0]})).sort((a,b)=>a.x-b.x);
+          const left=indexes[0].i,right=indexes[indexes.length-1].i;
+          polygon(svg,[base[left],base[right],upper[right],upper[left]],'face');
+          ring(upper.concat([upper[0]]),'solid-edge');
+          ring(base.concat([base[0]]),'hidden-edge');
+          [left,right].forEach(i=>line(svg,base[i],upper[i],'solid-edge'));
+        }else if(g.spec.frustum){
+          const upper=g.vertices.slice(g.n,2*g.n).map(v=>screen([(v[0]-v[1])*Math.cos(Math.PI/6)*f,(v[0]+v[1])*Math.sin(Math.PI/6)*f-v[2]*f]));
+          const indexes=base.map((p,i)=>({i,x:p[0]})).sort((a,b)=>a.x-b.x);
+          const left=indexes[0].i,right=indexes[indexes.length-1].i;
+          polygon(svg,[base[left],base[right],upper[right],upper[left]],'face');
+          ring(upper.concat([upper[0]]),'solid-edge');
+          ring(base.concat([base[0]]),'hidden-edge');
+          [left,right].forEach(i=>line(svg,base[i],upper[i],'solid-edge'));
+        }else{
+          const apex=screen([0,-g.h*f]);
+          const indexes=base.map((p,i)=>({i,x:p[0]})).sort((a,b)=>a.x-b.x);
+          const left=indexes[0].i,right=indexes[indexes.length-1].i;
+          polygon(svg,[apex,base[left],base[right]],'face');
+          ring(base.concat([base[0]]),'solid-edge');
+          [left,right].forEach(i=>line(svg,apex,base[i],'solid-edge'));
+        }
+        label(svg,18,24,`${state.mode==='projection'?'Isometric projection':'Isometric view'} · ${g.type==='frustum'?'frustum of cone':g.type}`);
+        label(svg,18,385,g.spec.frustum?`Base Ø ${g.x.toFixed(1)} mm · Top Ø ${g.y.toFixed(1)} mm · Height ${g.h.toFixed(1)} mm`:`Diameter ${g.x.toFixed(1)} mm  ·  Height ${g.h.toFixed(1)} mm`,'small-label');
+        label(svg,18,402,state.mode==='projection'?'Isometric scale: 0.816 × true length on each axis':'True lengths along the isometric axes','small-label');
+        return;
+      }
+      vis.filter(q=>q.visible).sort((a,b)=>a.depth-b.depth).forEach(q=>polygon(svg,q.face.map(i=>screen(projected[i])),'face'));
+      const visible=new Set();vis.filter(q=>q.visible).forEach(({face})=>face.forEach((v,i)=>{const w=face[(i+1)%face.length];visible.add(v<w?`${v},${w}`:`${w},${v}`)}));
+      g.edges.forEach(([a,b])=>line(svg,screen(projected[a]),screen(projected[b]),visible.has(a<b?`${a},${b}`:`${b},${a}`)?'solid-edge':'hidden-edge'));
+      (g.markers||[]).forEach(marker=>{
+        const [x,y,z]=marker.center||marker.base,r=marker.radius;
+        const center=screen([(x-y)*Math.cos(Math.PI/6)*f,(x+y)*Math.sin(Math.PI/6)*f-(z+(marker.type==='hemisphere'?r:0))*f]);
+        svgEl(svg,'circle',{cx:center[0],cy:center[1],r:r*scale*f,class:'solid-edge',fill:'#fff'});
+        if(marker.type==='hemisphere'){
+          const base=screen([(x-y)*Math.cos(Math.PI/6)*f,(x+y)*Math.sin(Math.PI/6)*f-z*f]);
+          svgEl(svg,'ellipse',{cx:base[0],cy:base[1],rx:r*scale*f*Math.sqrt(1.5),ry:r*scale*f*Math.sqrt(.5),class:'solid-edge',fill:'none'});
+        }
+      });
+      label(svg,18,24,`${state.mode==='projection'?'Isometric projection':'Isometric view'} · ${g.spec.compound?g.componentNames.join(' on '):g.type.replace(/-/g,' ')}`);
+      label(svg,18,385,g.spec.compound?`Stack height ${g.h.toFixed(1)} mm · ${g.componentNames.join(' + ')}`:`X ${g.x.toFixed(1)} mm  ·  Y ${g.y.toFixed(1)} mm  ·  Height ${g.h.toFixed(1)} mm`,'small-label');
+      label(svg,18,402,state.mode==='projection'?'Isometric scale: 0.816 × true length on each axis':'True lengths along the isometric axes','small-label');
+      const o=screen([(-0)*Math.cos(Math.PI/6),0]);
+      [[[35,0,0],'X'],[[0,35,0],'Y'],[[0,0,35],'Z']].forEach(([v,t])=>{const p=screen([(v[0]-v[1])*Math.cos(Math.PI/6)*f,(v[0]+v[1])*Math.sin(Math.PI/6)*f-v[2]*f]);line(svg,o,p,'axis');label(svg,p[0]+4,p[1]-4,t,'small-label')});
+    }
+    function drawOrtho(g,id,kind){
+      const svg=$(id);clear(svg);const project=kind==='front'?([x,y,z])=>[x,z]:([x,y,z])=>[x,y];
+      const pts=g.vertices.map(project),boundsPts=(g.boundsVertices||g.vertices).map(project),xs=boundsPts.map(p=>p[0]),ys=boundsPts.map(p=>p[1]),minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
+      const scale=Math.min(225/Math.max(maxX-minX,1),125/Math.max(maxY-minY,1)),cx=170-(minX+maxX)*scale/2,midY=(minY+maxY)/2,baseY=kind==='top'?108:177;
+      const screen=([x,y])=>[cx+x*scale,baseY-(kind==='front'?y-minY:y-midY)*scale],view=kind==='front'?[0,-1,0]:[0,0,1],visible=visibleEdgeSet(g,view);
+      if(g.spec.sphere){
+        const c=screen([0,0]),r=g.x*scale/2;
+        svgEl(svg,'circle',{cx:c[0],cy:c[1],r,class:'solid-edge',fill:'none'});
+        label(svg,8,15,kind==='front'?'Front elevation':'Top plan','small-label');
+        label(svg,8,207,kind==='top'?'First-angle: below front view':'XY reference aligned','small-label');
+        return;
+      }
+      if(g.spec.hemisphere){
+        const r=g.x*scale/2,base=screen([0,0]);
+        if(kind==='front'){
+          const d=`M ${base[0]-r} ${base[1]} A ${r} ${r} 0 0 1 ${base[0]+r} ${base[1]} L ${base[0]-r} ${base[1]} Z`;
+          svgEl(svg,'path',{d,class:'solid-edge',fill:'#fff'});
+        }else svgEl(svg,'circle',{cx:base[0],cy:base[1],r,class:'solid-edge',fill:'#fff'});
+        label(svg,8,15,kind==='front'?'Front elevation':'Top plan','small-label');
+        label(svg,8,207,kind==='top'?'First-angle: below front view':'XY reference aligned','small-label');
+        return;
+      }
+      if(g.spec.circular&&!g.spec.compound){
+        if(kind==='top'){
+          const center=screen([0,0]),r=(g.spec.frustum?g.y:g.x)*scale/2;
+          svgEl(svg,'circle',{cx:center[0],cy:center[1],r,class:'solid-edge',fill:'none'});
+          line(svg,[center[0]-r-5,center[1]],[center[0]+r+5,center[1]],'axis');
+          line(svg,[center[0],center[1]-r-5],[center[0],center[1]+r+5],'axis');
+        }else{
+          const width=g.x*scale,topWidth=(g.spec.frustum?g.y:g.x)*scale,height=g.h*scale,centerX=cx;
+          const topY=baseY-height;
+          if(g.spec.frustum){
+            line(svg,[centerX-topWidth/2,topY],[centerX+topWidth/2,topY],'solid-edge');
+            line(svg,[centerX-width/2,baseY],[centerX+width/2,baseY],'solid-edge');
+            line(svg,[centerX-topWidth/2,topY],[centerX-width/2,baseY],'solid-edge');
+            line(svg,[centerX+topWidth/2,topY],[centerX+width/2,baseY],'solid-edge');
+          }else if(g.type==='cylinder')svgEl(svg,'rect',{x:centerX-width/2,y:topY,width,height,class:'solid-edge',fill:'none'});
+          else{const apex=[centerX,topY],left=[centerX-width/2,baseY],right=[centerX+width/2,baseY];line(svg,apex,left,'solid-edge');line(svg,apex,right,'solid-edge');line(svg,left,right,'solid-edge')}
+          line(svg,[centerX,topY-5],[centerX,baseY+5],'axis');
+        }
+        label(svg,8,15,kind==='front'?'Front elevation':'Top plan','small-label');
+        label(svg,8,207,kind==='top'?'First-angle: below front view':'XY reference aligned','small-label');
+        return;
+      }
+      g.edges.forEach(([a,b])=>line(svg,screen(pts[a]),screen(pts[b]),visible.has(a<b?`${a},${b}`:`${b},${a}`)?'solid-edge':'hidden-edge'));
+      (g.markers||[]).forEach(marker=>{
+        const base=marker.base||marker.center,r=marker.radius;
+        if(marker.type==='hemisphere'&&kind==='front'){
+          const point=screen(project(base)),d=`M ${point[0]-r*scale} ${point[1]} A ${r*scale} ${r*scale} 0 0 1 ${point[0]+r*scale} ${point[1]} L ${point[0]-r*scale} ${point[1]} Z`;
+          svgEl(svg,'path',{d,class:'solid-edge',fill:'#fff'});
+        }else{
+          const point=screen(project(marker.type==='hemisphere'?base:marker.center));
+          svgEl(svg,'circle',{cx:point[0],cy:point[1],r:r*scale,class:'solid-edge',fill:'#fff'});
+        }
+      });
+      label(svg,8,15,kind==='front'?'Front elevation':'Top plan','small-label');
+      label(svg,8,207,kind==='top'?'First-angle: below front view':'XY reference aligned','small-label');
+    }
+    function updateLessons(g){
+      const f=state.mode==='projection'?'0.816':'1.000';$('viewTitle').textContent=state.mode==='projection'?'Isometric projection':'Isometric view';
+      $('viewSub').textContent=state.mode==='projection'?'Reduced lengths · isometric scale factor 0.816':'Pictorial view · true lengths along the three isometric axes';
+      $('conventionText').textContent=state.mode==='projection'?'Isometric projection uses scale factor 0.816 (approximately 0.8165) on X, Y, and Z. Multiply each true dimension by 0.816 to obtain its projected length.':'An isometric view uses true lengths along the isometric axes. An isometric projection uses the isometric scale factor 0.816. Both use the same 120° axis directions.';
+      $('projectionSteps').innerHTML='';[`X and Y axes are 30° to horizontal; Z is vertical.`,`Scale applied: ${f} × true dimensions.`,`First-angle arrangement: top view below front view; align corresponding projectors.`].forEach(t=>{const li=document.createElement('li');li.textContent=t;$('projectionSteps').appendChild(li)});
+      const baseStep=g.baseType==='box'
+        ?`Construct the rectangular prism ${g.x.toFixed(1)} × ${g.y.toFixed(1)} × ${g.h.toFixed(1)} mm in isometric axes.`
+        :`Construct the ${g.n}-sided ${g.baseType.replace(/-/g,' ')} with base side ${g.x.toFixed(1)} mm and height ${g.h.toFixed(1)} mm.`;
+      const steps=g.spec.compound
+        ?[baseStep,`Mark the centre of its top face and place the sphere centre ${g.sphere.radius.toFixed(1)} mm above it.`,`Draw the sphere with diameter ${(g.sphere.radius*2).toFixed(1)} mm; its lowest point touches the prism's top face.`]
+        :g.spec.sphere
+        ?[`Mark the centre and construct a circle of diameter ${g.x.toFixed(1)} mm.`,`For isometric projection use the isometric scale: projected diameter = ${(g.x*.81649658).toFixed(2)} mm.`,`The front and top orthographic views of a sphere are equal circles.`]
+        :g.spec.circular
+        ?[`Set out the isometric axes; mark diameter ${g.x.toFixed(1)} mm and height ${g.h.toFixed(1)} mm.`,'Construct circular ends as isometric ellipses; use a four-centre construction or ellipse template.',g.type==='cone'?'Locate the apex on the vertical axis and draw the tangent generators.':'Draw the second ellipse and join the visible tangent generators.']
+        :g.spec.kind==='pyramid'
+        ?[`Draw the ${g.n}-sided base in isometric axes using side ${g.x.toFixed(1)} mm.`,`Locate the apex ${g.h.toFixed(1)} mm above the base centre on the vertical axis.`,'Join the apex to base corners; darken visible edges and dash hidden edges if required.']
+        :[`Draw the base polygon with side/length ${g.x.toFixed(1)} mm on the isometric plane.`,`Project each base corner vertically by ${g.h.toFixed(1)} mm and join corresponding corners.`,'Complete the top face, darken visible outlines, and use dashed hidden edges where needed.'];
+      $('constructionSteps').innerHTML='';steps.forEach(t=>{const li=document.createElement('li');li.textContent=t;$('constructionSteps').appendChild(li)});
+      $('checkpoint').textContent=g.spec.compound
+        ?'The sphere is centered on the prism top face; check that the front and top projections share the same centreline.'
+        :g.spec.sphere
+        ?'A sphere has the same circular outline in all three orthographic views.'
+        :`Model: ${g.type.replace(/-/g,' ')} · ${g.n} base sides where applicable. Check corresponding corners in the front and top views.`;
+    }
+    function render(){
+      try{const g=makeGeometry();drawIso(g);drawOrtho(g,'front','front');drawOrtho(g,'top','top');updateLessons(g);
+        $('status').textContent=g.spec.compound
+          ?`Generated a sphere of diameter ${(g.sphere.radius*2).toFixed(1)} mm centered on a ${g.baseType.replace(/-/g,' ')}.`
+          :g.spec.sphere
+          ?`Generated a sphere of diameter ${g.x.toFixed(1)} mm. Confirm the isometric convention and projection scale below.`
+          :g.type==='box'
+          ?`Generated rectangular prism ${g.x.toFixed(1)} × ${g.y.toFixed(1)} × ${g.h.toFixed(1)} mm. Confirm the position and orientation stated in your question.`
+          :g.type==='cube'
+          ?`Generated cube with side ${g.x.toFixed(1)} mm. Confirm the position and orientation stated in your question.`
+          :`${g.type==='cylinder'||g.type==='cone'?'Generated '+g.type+' of diameter '+g.x.toFixed(1)+' mm':'Generated '+g.type.replace(/-/g,' ')+ ' with '+g.n+' base sides of '+g.x.toFixed(1)+' mm'} and height ${g.h.toFixed(1)} mm. Confirm the position and orientation stated in your question.`;
+        return true;
+      }catch(error){clearDrawings();$('status').textContent=error.message;return false}
+    }
+    function clearDrawings(){
+      ['iso','front','top'].forEach(id=>clear($(id)));
+      $('viewTitle').textContent='No drawing generated';
+      $('viewSub').textContent='Resolve the question details before generating a result.';
+      $('projectionSteps').innerHTML='';
+      $('constructionSteps').innerHTML='';
+      $('checkpoint').textContent='No result is available for the current question.';
+    }
+    function normalizedQuestion(value){
+      return value.toLowerCase().replace(/[−–—]/g,'-')
+        .replace(/([a-z])-([a-z])/g,'$1 $2')
+        .replace(/\bhorizontal plane\b/g,'hp').replace(/\bvertical plane\b/g,'vp')
+        .replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s*[- ]?\s*sided\b/g,(_,word)=>`${{one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12}[word]}-sided`);
+    }
+    function identifySolid(text){
+      const sideWords={triangular:3,square:4,quadrangular:4,quadrilateral:4,pentagonal:5,hexagonal:6,heptagonal:7,octagonal:8,nonagonal:9,decagonal:10,hendecagonal:11,undecagonal:11,dodecagonal:12};
+      const shapes='triangular|square|quadrangular|quadrilateral|pentagonal|hexagonal|heptagonal|octagonal|nonagonal|decagonal|hendecagonal|undecagonal|dodecagonal';
+      const sideMatch=text.match(/\b(\d+)\s*[- ]\s*sided\b/),polygonMatch=text.match(new RegExp(`\\b(${shapes})\\s+(?:based\\s+)?(?:right\\s+)?(prism|pyramid)\\b|\\b(prism|pyramid)\\s+(?:with|having|of)\\s+(?:a\\s+)?(${shapes})\\s+base\\b|\\b(prism|pyramid)\\b.{0,24}\\bbase\\s+(?:is\\s+)?(${shapes})\\b`));
+      if(/\bcube\b/.test(text))return{type:'cube'};
+      if(/\bsphere\b/.test(text))return{type:'sphere'};
+      if(/\bcylinder\b/.test(text))return{type:'cylinder'};
+      if(/\bcone\b/.test(text))return{type:'cone'};
+      if(/\b(?:cuboid|rectangular\s+prism|rectangular\s+block|rectangular\s+parallelepiped)\b|\bprism\s+with\s+(?:a\s+)?rectangular\s+base\b/.test(text))return{type:'box'};
+      if(polygonMatch){
+        const shape=polygonMatch[1]||polygonMatch[4]||polygonMatch[6],kind=polygonMatch[2]||polygonMatch[3]||polygonMatch[5],n=sideWords[shape];
+        if(kind==='pyramid'&&n===4)return{type:'square-pyramid'};
+        if(kind==='pyramid'&&n===6)return{type:'hex-pyramid'};
+        if(kind==='prism'&&n===3)return{type:'tri-prism'};
+        if(kind==='prism'&&n===5)return{type:'pent-prism'};
+        if(kind==='prism'&&n===6)return{type:'hex-prism'};
+        return{type:`regular-${kind}`,n};
+      }
+      if(sideMatch){
+        const n=Number(sideMatch[1]),kind=/\bpyramid\b/.test(text)?'pyramid':'prism';
+        if(n<3||n>12)return{error:'The model supports regular polygons with 3 to 12 sides.'};
+        if(kind==='pyramid'&&n===4)return{type:'square-pyramid'};
+        if(kind==='pyramid'&&n===6)return{type:'hex-pyramid'};
+        if(kind==='prism'&&n===3)return{type:'tri-prism'};
+        if(kind==='prism'&&n===5)return{type:'pent-prism'};
+        if(kind==='prism'&&n===6)return{type:'hex-prism'};
+        return{type:`regular-${kind}`,n};
+      }
+      if(/\bregular(?:\s+polygonal)?\s+(prism|pyramid)\b|\bprism\s+with\s+(?:a\s+)?regular\s+polygonal\s+base\b/.test(text)){
+        return{error:'Please state the number of sides in the regular polygonal base (3 to 12).'};
+      }
+      if(/\bpyramid\b/.test(text))return{error:'Please state the pyramid base shape (for example, square pyramid or hexagonal pyramid); the parser will not guess it.'};
+      if(/\bprism\b/.test(text))return{error:'Please state the prism base shape (for example, triangular prism or hexagonal prism), or say rectangular prism.'};
+      return null;
+    }
+    function identifyCombination(text){
+      const spherePresent=/\bsphere\b/.test(text);
+      const stacked=/\b(?:surmounted\s+(?:on|over|by)|surmounting\s+(?:on|over)|(?:placed|mounted|positioned|resting)\s+(?:on|over)|on\s+top\s+of|on\s+top|atop|topped\s+by)\b/.test(text);
+      if(!spherePresent||!stacked)return null;
+      const baseText=text.replace(/\bsphere\b/g,' ');
+      const base=identifySolid(baseText);
+      if(!base||base.error)return{error:'I found a sphere combination, but could not identify the lower solid and its base shape.'};
+      if(base.type!=='box'&&!base.type.endsWith('-prism'))return{error:'The current combination solver supports a sphere centered on a rectangular or polygonal prism.'};
+      return{baseType:base.type,n:base.n};
+    }
+    function dimensionValue(match){
+      if(!match)return null;
+      const value=Number(match[1]),unit=(match[2]||'mm').toLowerCase();
+      return value*(unit.startsWith('cm')||unit.startsWith('centi')?10:unit==='m'||unit.startsWith('met')?1000:1);
+    }
+    function findMeasure(text,before,after){
+      const number='(\\d+(?:\\.\\d+)?)\\s*(mm|millimet(?:er|re)s?|cm|centimet(?:er|re)s?|m|met(?:er|re)s?)?';
+      const unit=match=>{if(!match)return null;const u=(match[2]||'mm').toLowerCase();return Number(match[1])*(u.startsWith('cm')||u.startsWith('centi')?10:u==='m'||u.startsWith('met')?1000:1)};
+      let match=before&&text.match(new RegExp(before+'\\s*(?:length\\s*)?(?:of(?:\\s+(?:the\\s+)?(?:base\\s*)?)?|is|=|equal\\s+to)?\\s*'+number,'i'));
+      if(match)return unit(match);
+      match=after&&text.match(new RegExp(number+'\\s*(?:'+after+')\\b','i'));
+      return unit(match);
+    }
+    function parseQuestion(){
+      const text=normalizedQuestion($('question').value.trim());if(!text){clearDrawings();$('status').textContent='Type a question first.';return}
+      const combination=identifyCombination(text),parsed=combination||identifySolid(text);if(!parsed){clearDrawings();$('status').textContent='Could not identify the solid. Include its name and base shape where relevant (for example, “hexagonal prism”).';return}
+      if(parsed.error){clearDrawings();$('status').textContent=parsed.error;return}
+      state.type=combination?combination.baseType:parsed.type;
+      state.composition=combination?{kind:'sphere-on-prism',diameter:0}:null;
+      state.x=0;state.y=0;state.h=0;state.n=parsed.n||SOLIDS[state.type].sides;
+      const unit='(mm|millimet(?:er|re)s?|cm|centimet(?:er|re)s?|m|met(?:er|re)s?)?';
+      const number='(\\d+(?:\\.\\d+)?)\\s*'+unit;
+      const triple=text.match(new RegExp(number+'\\s*(?:x|×|by)\\s*'+number+'\\s*(?:x|×|by)\\s*'+number,'i'));
+      const pair=text.match(new RegExp(number+'\\s*(?:x|×|by)\\s*'+number,'i'));
+      const chainValues=match=>match&&[1,3,5].map((_,i)=>{const unitText=match[i*2+2]||'mm';return Number(match[i*2+1])*(unitText.toLowerCase().startsWith('cm')||unitText.toLowerCase().startsWith('centi')?10:unitText.toLowerCase()==='m'||unitText.toLowerCase().startsWith('met')?1000:1)});
+      const diameter=findMeasure(text,'(?:diameter|dia\\.?|ø)', '(?:diameter|dia\\.?|ø)')
+        ||(findMeasure(text,'radius','radius')||0)*2||null;
+      const side=findMeasure(text,'(?:base\\s+)?(?:side|edge)', '(?:base\\s+)?(?:side|edge)');
+      const length=findMeasure(text,'(?:length|long)', '(?:length|long)');
+      const width=findMeasure(text,'(?:width|breadth|wide)', '(?:width|breadth|wide)');
+      const height=findMeasure(text,'(?:height|axis|altitude|high)', '(?:height|axis|altitude|high)');
+      const base=state.type==='sphere'||SOLIDS[state.type].circular?diameter:side||length||(state.type!=='box'&&findMeasure(text,'base','base'));
+      const unsupported=/\b(cut|section|frustum|frustrum|hollow|shell|truncated|truncating|penetration|penetrating|intersecting|compound|combined|resting\s+on\s+(?:its\s+)?(?:one\s+)?(?:side|edge|corner|face)|lying\s+on\s+(?:its\s+)?(?:side|edge|corner|face)|on\s+(?:its\s+)?(?:side|edge|corner))\b/.test(text);
+      const explicitAngle=text.match(/\b(\d+(?:\.\d+)?)\s*(?:°|degrees?)\s*(?:to|with)\s+(?:the\s+)?(?:hp|vp)\b/);
+      const angleCondition=/\b(inclined|inclination|tilted|oblique|equally\s+inclined|makes?\s+an?\s+angle)\b/.test(text);
+      const nonStandardAngle=explicitAngle&&Number(explicitAngle[1])!==90;
+      const nonStandardRelation=/\b(?:parallel\s+to\s+(?:the\s+)?hp|perpendicular\s+to\s+(?:the\s+)?vp)\b/.test(text);
+      const multipleSolids=!combination&&(text.match(/\b(?:cube|cuboid|prism|pyramid|cylinder|cone|sphere)\b/g)||[]).length>1;
+      if(unsupported||multipleSolids||nonStandardRelation||nonStandardAngle||angleCondition&&!explicitAngle){clearDrawings();$('status').textContent='This question includes a cut, compound solid, or non-standard position that this model cannot construct yet. No standard-solid drawing was shown as a substitute.';return}
+      let values=chainValues(triple);
+      if(state.type==='cube'||state.type==='sphere'){
+        const size=base||dimensionValue(text.match(new RegExp(number,'i')));
+        if(size){state.x=size;state.y=size;state.h=size}
+      }else if(values){
+        state.x=values[0];state.y=values[1];state.h=values[2];
+      }else{
+        if(base)state.x=base;
+        if(state.type==='box'){if(width)state.y=width;if(height)state.h=height}
+        else if(height)state.h=height;
+        if(pair&&!base&&!height){const pairValues=chainValues(pair);state.x=pairValues[0];state.h=pairValues[1]}
+      }
+      if(state.type==='box'&&triple&&!width&&!height){values=chainValues(triple);state.x=values[0];state.y=values[1];state.h=values[2]}
+      state.mode=/\bisometric\s+projection\b/.test(text)?'projection':'view';
+      const solidDimensionsComplete=state.type==='cube'||state.type==='sphere'?!!(base||triple):state.type==='box'?!!(triple||base&&width&&height):!!(base&&height||pair);
+      const complete=solidDimensionsComplete&&(!combination||diameter>0);
+      if(!complete){clearDrawings();$('status').textContent=combination
+        ?`Recognized a sphere over a ${state.type.replace(/-/g,' ')}, but need both the sphere diameter and the prism dimensions.`
+        :`Recognized ${state.type.replace(/-/g,' ')}, but could not identify all required dimensions. Include the base side/diameter and height/axis (and length, width, and height for a rectangular prism).`;return}
+      if(combination)state.composition.diameter=diameter;
+      if(state.type!=='box')state.y=state.x;
+      if(!render())return;
+      const recognized=combination?`sphere on ${state.type.replace(/-/g,' ')}`:state.type.replace(/-/g,' ');
+      $('status').textContent=`Recognized ${recognized} and loaded its dimensions. Check that the generated simple-position result matches the question's stated orientation.`;
+    }
+    $('analyze').addEventListener('click',parseQuestion);
+    $('question').addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='Enter')parseQuestion()});
+    $('export').addEventListener('click',()=>{const clone=$('iso').cloneNode(true);clone.setAttribute('xmlns',NS);const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(clone)],{type:'image/svg+xml;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=`geodraft-${state.composition?`sphere-on-${state.type}`:state.type}-${state.mode}.svg`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)});
+  </script>
+</body>
+</html>
