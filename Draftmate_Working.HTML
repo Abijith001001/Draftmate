@@ -45,61 +45,7 @@ button { cursor: pointer; }
 .app {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 225px minmax(0, 1fr);
-}
-
-aside {
-  padding: 24px 15px;
-  background: var(--navy);
-  color: #dce4f6;
-}
-
-.brand {
-  margin-bottom: 34px;
-  color: white;
-  font: 700 24px "Space Grotesk", sans-serif;
-}
-
-.brand small {
-  display: block;
-  margin-top: 5px;
-  color: #99a6c1;
-  font: 11px "DM Sans", sans-serif;
-}
-
-.side-label {
-  margin: 23px 0 10px;
-  color: #8290aa;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.4px;
-}
-
-.side-item {
-  display: block;
-  width: 100%;
-  margin: 4px 0;
-  padding: 11px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: #aebbd2;
-  text-align: left;
-}
-
-.side-item.active {
-  background: #273453;
-  color: white;
-}
-
-.side-note {
-  margin-top: 30px;
-  padding: 12px;
-  border: 1px solid #293750;
-  border-radius: 9px;
-  color: #a9b5cb;
-  font-size: 11px;
-  line-height: 1.7;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 main {
@@ -464,11 +410,6 @@ footer {
 }
 
 @media (max-width: 950px) {
-  .app { grid-template-columns: 65px minmax(0, 1fr); }
-  aside { padding: 18px 7px; }
-  .brand { font-size: 0; }
-  .brand small, .side-label, .side-item span, .side-note { display: none; }
-  .side-item { text-align: center; }
   .workspace { grid-template-columns: 1fr; }
 }
 
@@ -483,24 +424,7 @@ footer {
 
 <body>
 <div class="app">
-  <aside>
-    <div class="brand">
-      DraftMate
-      <small>KTU · Engineering Graphics</small>
-    </div>
 
-    <div class="side-label">WORKSPACE</div>
-    <button class="side-item active" type="button">⌘ <span>Question solver</span></button>
-    <button class="side-item" id="topicButton" type="button">▦ <span>Topic library</span></button>
-
-    <div class="side-label">SOLIDS MODULE</div>
-    <button class="side-item active" type="button">01 <span>Projections of solids</span></button>
-
-    <div class="side-note">
-      <strong>DraftMate · Solids</strong><br>
-      Learn the construction process through 3D geometry, projections and animated stages.
-    </div>
-  </aside>
 
   <main>
     <header>
@@ -509,7 +433,7 @@ footer {
     </header>
 
     <section class="heading">
-      <div class="eyebrow">GEODRAFT · BASE-PLANE INCLINATION TEST COPY</div>
+      <div class="eyebrow">GEODRAFT · SOLIDS WORKSPACE</div>
       <h1>Make every projection <span>make sense.</span></h1>
       <div class="subtitle">
         Type a question, explore the solid in 3D and follow the construction stages.
@@ -2878,14 +2802,6 @@ $('downloadSvg').addEventListener('click', () => {
   anchor.remove();
 
   URL.revokeObjectURL(url);
-});
-
-/* Topic library placeholder. */
-$('topicButton').addEventListener('click', () => {
-  showNotice(
-    'The current mission focuses on the Projections of Solids module. Other Engineering Graphics modules will be developed separately.',
-    'success'
-  );
 });
 
 /* Start the completed page with the sample question. */
