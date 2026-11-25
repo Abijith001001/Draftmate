@@ -27,7 +27,9 @@
       box-sizing: border-box;
     }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       font-family: Inter, "Segoe UI", Arial, sans-serif;
@@ -85,18 +87,25 @@
       box-shadow: 0 0 28px rgba(66, 132, 255, 0.25);
     }
 
-    .brand .geo { color: var(--text); }
-    .brand .draft { color: var(--cyan); }
+    .brand .geo {
+      color: var(--text);
+    }
+
+    .brand .draft {
+      color: var(--cyan);
+    }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 25px;
+      gap: 28px;
       color: var(--muted);
       font-size: 14px;
     }
 
-    .nav-links a:hover { color: white; }
+    .nav-links a:hover {
+      color: white;
+    }
 
     .nav-cta {
       padding: 10px 17px;
@@ -124,7 +133,9 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .btn:hover { transform: translateY(-3px); }
+    .btn:hover {
+      transform: translateY(-3px);
+    }
 
     .btn-primary {
       color: #06101e;
@@ -142,7 +153,9 @@
       border-color: var(--border);
     }
 
-    .btn-secondary:hover { background: var(--panel); }
+    .btn-secondary:hover {
+      background: var(--panel);
+    }
 
     .hero {
       position: relative;
@@ -265,16 +278,22 @@
       font-size: 11px;
     }
 
-    .drawing-caption strong { color: #dbeaff; }
+    .drawing-caption strong {
+      color: #dbeaff;
+    }
 
     @keyframes float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
 
-    section { scroll-margin-top: 90px; }
+    section {
+      scroll-margin-top: 90px;
+    }
 
-    .section { padding: 85px 0; }
+    .section {
+      padding: 85px 0;
+    }
 
     .section-heading {
       max-width: 650px;
@@ -301,139 +320,6 @@
       margin-top: 15px;
       color: var(--muted);
       font-size: 15px;
-    }
-
-    /* MODULES */
-
-    .modules-section {
-      padding: 85px 0;
-      background:
-        radial-gradient(ellipse at 50% 0%,
-          rgba(55, 105, 190, 0.12), transparent 55%),
-        #080d19;
-      border-top: 1px solid rgba(255,255,255,0.035);
-      border-bottom: 1px solid rgba(255,255,255,0.035);
-    }
-
-    .module-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-
-    .module-card {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      min-height: 245px;
-      padding: 28px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 19px;
-      background: linear-gradient(145deg, #16243d, #0e1729);
-      transition: transform 0.25s, border-color 0.25s,
-                  box-shadow 0.25s;
-    }
-
-    a.module-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(100, 180, 255, 0.55);
-      box-shadow: 0 18px 45px rgba(0,0,0,0.25);
-    }
-
-    .module-card:focus-visible {
-      outline: 2px solid var(--cyan);
-      outline-offset: 4px;
-    }
-
-    .module-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .module-number {
-      color: #8298b8;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-    }
-
-    .module-icon {
-      width: 54px;
-      height: 54px;
-      display: grid;
-      place-items: center;
-      border-radius: 15px;
-      background: rgba(87, 148, 255, 0.13);
-      border: 1px solid rgba(87, 148, 255, 0.22);
-      color: #9bc5ff;
-      font-size: 27px;
-    }
-
-    .module-card h3 {
-      margin-top: 24px;
-      font-size: 21px;
-    }
-
-    .module-card p {
-      margin-top: 9px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.8;
-      max-width: 440px;
-    }
-
-    .module-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-top: auto;
-      padding-top: 22px;
-    }
-
-    .module-action {
-      color: var(--cyan);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .module-arrow {
-      color: #9cc6ff;
-      font-size: 20px;
-      transition: transform 0.2s;
-    }
-
-    a.module-card:hover .module-arrow {
-      transform: translateX(5px);
-    }
-
-    .module-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 6px 10px;
-      border-radius: 30px;
-      color: #ffd58a;
-      background: rgba(255, 190, 90, 0.09);
-      border: 1px solid rgba(255, 190, 90, 0.2);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-    }
-
-    .module-status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #ffc66d;
-    }
-
-    .module-card.developing {
-      background: linear-gradient(145deg, #131e31, #0d1525);
-      border-style: dashed;
     }
 
     .features {
@@ -485,6 +371,93 @@
       line-height: 1.8;
     }
 
+    /* GeoDraft module navigation */
+    .modules {
+      background: linear-gradient(180deg, #0b1120, #0a1020);
+      border-top: 1px solid rgba(255,255,255,0.035);
+      border-bottom: 1px solid rgba(255,255,255,0.035);
+    }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .module-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 17px;
+      min-height: 150px;
+      padding: 25px;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: linear-gradient(150deg, #162238, #0e1627);
+      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    a.module-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(87, 148, 255, 0.55);
+      background: linear-gradient(150deg, #1a2b48, #101b30);
+    }
+
+    .module-card:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 4px;
+    }
+
+    .module-number {
+      flex: 0 0 48px;
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(87, 148, 255, 0.25);
+      border-radius: 14px;
+      background: rgba(87, 148, 255, 0.12);
+      color: #8ab7ff;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .module-copy h3 {
+      margin: 2px 0 8px;
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    .module-copy p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .module-status {
+      display: inline-block;
+      margin-top: 12px;
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .module-card.is-planned {
+      border-style: dashed;
+      background: rgba(14, 22, 39, 0.55);
+    }
+
+    .module-card.is-planned .module-number {
+      color: #a5b2c9;
+      border-color: rgba(164, 190, 230, 0.18);
+      background: rgba(164, 190, 230, 0.07);
+    }
+
+    .module-card.is-planned .module-status {
+      color: #a5b2c9;
+    }
+
     .steps-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -510,7 +483,9 @@
       font-weight: 800;
     }
 
-    .step h3 { font-size: 17px; }
+    .step h3 {
+      font-size: 17px;
+    }
 
     .step p {
       max-width: 290px;
@@ -519,7 +494,9 @@
       font-size: 13px;
     }
 
-    .cta-section { padding: 25px 0 90px; }
+    .cta-section {
+      padding: 25px 0 90px;
+    }
 
     .cta-box {
       padding: 52px 25px;
@@ -585,23 +562,35 @@
         gap: 45px;
       }
 
-      .hero { padding: 65px 0; }
+      .hero {
+        padding: 65px 0;
+      }
 
-      .hero-copy { text-align: center; }
+      .hero-copy {
+        text-align: center;
+      }
 
       .hero-description {
         margin-left: auto;
         margin-right: auto;
       }
 
-      .hero-actions { justify-content: center; }
+      .hero-actions {
+        justify-content: center;
+      }
 
       .drawing-wrap {
         width: min(520px, 100%);
         margin: auto;
       }
 
-      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .module-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 560px) {
@@ -622,13 +611,11 @@
       .hero-actions { flex-direction: column; }
       .hero-actions .btn { width: 100%; }
       .drawing-card { padding: 12px; }
-      .section, .modules-section { padding: 65px 0; }
-      .feature-grid, .steps-grid, .module-grid {
-        grid-template-columns: 1fr;
-      }
+      .section { padding: 65px 0; }
+      .feature-grid, .steps-grid, .module-grid { grid-template-columns: 1fr; }
       .feature-card { padding: 23px; }
+      .module-card { min-height: 0; padding: 21px; }
       .steps-grid { gap: 18px; }
-      .module-card { min-height: 225px; padding: 24px; }
       .cta-box { padding: 38px 19px; }
     }
   </style>
@@ -644,10 +631,11 @@
       </a>
 
       <div class="nav-links">
-        <a class="nav-about" href="#modules">Modules</a>
+        <a class="nav-about" href="#workplaces">Workplaces</a>
         <a class="nav-about" href="#features">Features</a>
-        <a class="nav-about" href="#how-it-works">How it works</a>
-        <a class="nav-cta" href="#modules">Open GeoDraft ↗</a>
+        <a class="nav-cta" href="#workplaces">
+          Open GeoDraft ↗
+        </a>
       </div>
     </nav>
   </header>
@@ -674,8 +662,9 @@
           </p>
 
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#modules">
-              Explore Modules <span aria-hidden="true">→</span>
+            <a class="btn btn-primary"
+               href="#workplaces">
+              Choose a Workplace <span aria-hidden="true">→</span>
             </a>
 
             <a class="btn btn-secondary" href="#features">
@@ -780,110 +769,52 @@
       </div>
     </section>
 
-    <!-- GEODRAFT MODULES -->
-
-    <section class="modules-section" id="modules">
+    <section class="section modules" id="workplaces">
       <div class="container">
-
         <div class="section-heading">
-          <span class="section-kicker">Choose Your Workspace</span>
+          <span class="section-kicker">Choose Your Workplace</span>
           <h2>Explore GeoDraft Modules</h2>
           <p class="section-description">
-            Select an Engineering Graphics topic and enter its dedicated
-            workspace to start learning and solving problems.
+            Select an Engineering Graphics topic to open its dedicated learning workspace.
           </p>
         </div>
 
         <div class="module-grid">
-
-          <!-- 01: LINES -->
-          <article class="module-card developing">
-            <div class="module-top">
-              <span class="module-number">MODULE 01</span>
-              <div class="module-icon">📏</div>
-            </div>
-
-            <h3>Lines</h3>
-            <p>
-              Explore projections of lines, inclinations, traces,
-              and their construction methods.
-            </p>
-
-            <div class="module-bottom">
-              <span class="module-status">
-                <span class="module-status-dot"></span>
-                IN DEVELOPMENT
-              </span>
-              <span class="module-arrow">⌛</span>
-            </div>
-          </article>
-
-          <!-- 02: SOLIDS -->
-          <a class="module-card"
-             href="./Draftmate_Working.HTML"
-             aria-label="Open Solids workspace">
-
-            <div class="module-top">
-              <span class="module-number">MODULE 02</span>
-              <div class="module-icon">⬡</div>
-            </div>
-
-            <h3>Solids</h3>
-            <p>
-              Explore projections of prisms, pyramids, cylinders,
-              cones, and solid inclination problems.
-            </p>
-
-            <div class="module-bottom">
-              <span class="module-action">Open Solids Workspace</span>
-              <span class="module-arrow">→</span>
+          <a class="module-card" href="./GeoDraft_Lines_Rotation_Method.html" aria-label="Open Lines workplace">
+            <div class="module-number">01</div>
+            <div class="module-copy">
+              <h3>Lines</h3>
+              <p>Learn the projection of points and straight lines using guided construction and the Line Rotation Method.</p>
+              <span class="module-status">Open workplace →</span>
             </div>
           </a>
 
-          <!-- 03: SECTIONS AND DEVELOPMENT -->
-          <a class="module-card"
-             href="./GeoDraft_Sections_Development.html"
-             aria-label="Open Sections and Development workspace">
-
-            <div class="module-top">
-              <span class="module-number">MODULE 03</span>
-              <div class="module-icon">✂</div>
-            </div>
-
-            <h3>Sections &amp; Development</h3>
-            <p>
-              Study sectional views, cutting planes, true shapes
-              of sections, and development of surfaces.
-            </p>
-
-            <div class="module-bottom">
-              <span class="module-action">Open Sections Workspace</span>
-              <span class="module-arrow">→</span>
+          <a class="module-card" href="./Draftmate_Working.HTML" aria-label="Open Solids workplace">
+            <div class="module-number">02</div>
+            <div class="module-copy">
+              <h3>Solids</h3>
+              <p>Explore solid projections, orientations, construction stages and 3D visualisation.</p>
+              <span class="module-status">Open workplace →</span>
             </div>
           </a>
 
-          <!-- 04: ISOMETRIC -->
-          <a class="module-card"
-             href="./GeoDraft_ViewsandProjections.html"
-             aria-label="Open Isometric View and Projection workspace">
-
-            <div class="module-top">
-              <span class="module-number">MODULE 04</span>
-              <div class="module-icon">◈</div>
-            </div>
-
-            <h3>Isometric View &amp; Projection</h3>
-            <p>
-              Understand isometric views, isometric projections,
-              and the conversion of engineering views into 3D representations.
-            </p>
-
-            <div class="module-bottom">
-              <span class="module-action">Open Isometric Workspace</span>
-              <span class="module-arrow">→</span>
+          <a class="module-card" href="./GeoDraft_Sections_Development.html" aria-label="Open Sections and Development workplace">
+            <div class="module-number">03</div>
+            <div class="module-copy">
+              <h3>Sections and Development</h3>
+              <p>Study sectional views, cutting planes, true shapes and development of surfaces.</p>
+              <span class="module-status">Open workplace →</span>
             </div>
           </a>
 
+          <a class="module-card" href="./GeoDraft_ViewsandProjections.html" aria-label="Open Isometric View and Projection workplace">
+            <div class="module-number">04</div>
+            <div class="module-copy">
+              <h3>Isometric View and Projection</h3>
+              <p>Construct isometric views and projections and compare them with orthographic views.</p>
+              <span class="module-status">Open workplace →</span>
+            </div>
+          </a>
         </div>
       </div>
     </section>
@@ -933,7 +864,7 @@
           <article class="feature-card">
             <div class="feature-icon">⌘</div>
             <h3>One Convenient Workspace</h3>
-            <p>Start from one central homepage and move directly into the GeoDraft modules when you are ready to work.</p>
+            <p>Start from one central homepage and move directly into the GeoDraft solver when you are ready to work.</p>
           </article>
         </div>
       </div>
@@ -952,20 +883,20 @@
         <div class="steps-grid">
           <article class="step">
             <div class="step-number">01</div>
-            <h3>Choose a Module</h3>
-            <p>Select the Engineering Graphics topic you want to study.</p>
+            <h3>Open the Solver</h3>
+            <p>Click Start Solving to enter the GeoDraft workspace.</p>
           </article>
 
           <article class="step">
             <div class="step-number">02</div>
             <h3>Enter Your Question</h3>
-            <p>Type the Engineering Graphics problem you want to explore in the selected workspace.</p>
+            <p>Type the Engineering Graphics problem you want to explore.</p>
           </article>
 
           <article class="step">
             <div class="step-number">03</div>
             <h3>Explore the Result</h3>
-            <p>Review the construction, views, and visualization provided by the workspace.</p>
+            <p>Review the construction, views, and visualization provided by the solver.</p>
           </article>
         </div>
       </div>
@@ -978,10 +909,10 @@
           <h2>Ready to Start Drawing?</h2>
           <p>
             Take the next step in your Engineering Graphics learning journey.
-            Choose a GeoDraft module and explore your next problem.
+            Open GeoDraft and explore your next problem.
           </p>
-          <a class="btn btn-primary" href="#modules">
-            Choose Your Workspace <span aria-hidden="true">→</span>
+          <a class="btn btn-primary" href="#workplaces">
+            Choose a Workplace <span aria-hidden="true">→</span>
           </a>
         </div>
       </div>
@@ -999,4 +930,4 @@
   </footer>
 
 </body>
-</html>
+  </html>
