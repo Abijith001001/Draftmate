@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10203d">
+<title>GeoDraft | Lines</title>
+<style>
+:root{--ink:#17243a;--muted:#64748b;--line:#dbe3ef;--panel:#fff;--accent:#2563eb;--navy:#10203d;--shadow:0 12px 30px rgba(15,23,42,.08)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#f7f9fd,#eef4ff);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(120deg,#10203d,#17447c);color:#fff}.masthead,main{max-width:1380px;margin:auto;padding-left:20px;padding-right:20px}
+.masthead{padding:25px 0 20px;display:flex;align-items:end;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.eyebrow{color:#bfdbfe;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}h1{margin:8px 0 5px;font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.12}.subtitle{margin:0;color:#dbeafe}
+.chips,.toolbar,.examples{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border:1px solid #ffffff3b;border-radius:20px;background:#ffffff12;color:#edf6ff;font-size:11px}
+main{padding-top:18px;padding-bottom:38px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.question{padding:17px;margin-bottom:16px}.question h2{margin:0 0 5px;font-size:18px}.hint{color:var(--muted);font-size:12px;margin:0 0 10px}
+textarea,button{font:inherit}textarea{width:100%;min-height:94px;resize:vertical;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;color:var(--ink)}
+button{cursor:pointer}.primary{border:0;border-radius:9px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:800;padding:11px 14px}
+.secondary{border:1px solid #cfe0ff;border-radius:9px;background:#f8fbff;color:#1d4ed8;font-weight:700;padding:8px 10px;font-size:12px}
+.question-actions{display:grid;grid-template-columns:190px 1fr;gap:10px;margin-top:9px;align-items:stretch}.status{padding:10px 12px;border:1px solid #dbeafe;border-radius:9px;background:#eff6ff;color:#1d4ed8;font-size:12px}
+.toolbar{align-items:center}.stage{padding:14px;min-width:0}.stage-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.stage-head h2{margin:0;font-size:16px}.stage-head p{margin:2px 0 0}
+.main-drawing{width:100%;max-width:760px;height:auto;max-height:397px;display:block;object-fit:contain;background:linear-gradient(180deg,#fcfdff,#f5f8ff);border:1px solid var(--line);border-radius:10px;margin:10px auto 0}
+.walkthrough{margin-top:14px;padding:14px;border:1px solid #dbe3ef;border-radius:12px;background:linear-gradient(135deg,#f8fbff,#eef5ff)}.walk-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.walk-kicker{font-size:10px;font-weight:800;letter-spacing:.12em;color:#2563eb}.walk-head h3{margin:3px 0 0;font-size:16px}.walk-count{font-size:12px;font-weight:800;color:#1d4ed8}.walk-track{height:6px;margin:12px 0;background:#dbeafe;border-radius:20px;overflow:hidden}.walk-track>div{height:100%;width:0;background:#2563eb;transition:width .2s}.walk-content{display:flex;align-items:flex-start;gap:12px;min-height:82px;padding:10px 0}.walk-number{display:grid;place-items:center;flex:0 0 36px;height:36px;border-radius:10px;background:#dbeafe;color:#1d4ed8;font-weight:900}.walk-content h4{margin:0 0 4px;font-size:14px}.walk-content p{margin:0;color:#59677e;font-size:12px;line-height:1.6}.walk-actions{display:flex;justify-content:space-between;gap:10px}.walk-actions button:disabled{opacity:.45;cursor:not-allowed}.draw-grid{display:none}.draw-card{padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff;min-width:0}.draw-card h3{margin:0;font-size:12px;color:#334155}.draw-card p{margin:2px 0 0;color:var(--muted);font-size:11px}.draw-card svg{width:100%;max-width:420px;height:auto;display:block;margin:6px auto 0;background:#fcfdff}
+.lesson{margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff}.lesson h2{margin:0 0 8px;font-size:16px}.lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lesson-box{padding:10px;border-radius:9px;background:#f8fbff;border:1px solid #e8eef8}.lesson-box h3{margin:0 0 5px;font-size:12px}.lesson-box p,.lesson-box li{margin:0;color:#59677e;font-size:11px;line-height:1.6}.lesson-box ol,.lesson-box ul{margin:0;padding-left:18px}.steps{padding-left:20px;margin:8px 0 0;color:#475569;font-size:12px;line-height:1.7}.note{font-size:11px;color:#64748b;margin:10px 0 0}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;fill:#475569;font-size:12px}.xy{stroke:#64748b;stroke-width:1.5;stroke-dasharray:7 5}.projector{stroke:#94a3b8;stroke-width:1;stroke-dasharray:4 4}.visible{stroke:#2563eb;stroke-width:2.5;fill:none;stroke-linecap:round}.hidden{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:5 4;fill:none}.point{fill:#2563eb;stroke:#fff;stroke-width:2}.label{font-size:13px;font-weight:700;fill:#1e3a8a}.small{font-size:10px;fill:#64748b}.trace{fill:#d97706;stroke:#fff;stroke-width:2}
+@media(max-width:650px){.masthead,main{padding-left:12px;padding-right:12px}.question-actions,.draw-grid,.lesson-grid{grid-template-columns:1fr}.stage{padding:10px}.stage-head{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header><div class="masthead">
+ <div><div class="eyebrow">GeoDraft · KTU B.Tech Engineering Graphics</div><h1>Lines</h1><p class="subtitle">Projection of points and straight lines · first-angle construction workspace.</p></div>
+ <div class="chips"><span class="chip">Points · 4 quadrants</span><span class="chip">Straight lines</span><span class="chip">True length · θ · φ</span><span class="chip">Line Rotation Method</span><span class="chip">HT · VT</span></div>
+</div></header>
+<main>
+<section class="panel question">
+ <h2>Describe the drawing question</h2>
+ <p class="hint">Enter a point question or a straight-line question. Include all given dimensions, endpoint position, and the line's relation/inclinations to HP and VP.</p>
+ <textarea id="question" placeholder="Point: A point A is 25 mm above HP and 30 mm in front of VP.&#10;Line: A line AB 70 mm long has end A 20 mm above HP and 15 mm in front of VP. It is parallel to HP and inclined 30° to VP."></textarea>
+ <div class="examples">
+  <button class="secondary" data-q="A point A is 25 mm above HP and 30 mm in front of VP.">Point · I quadrant</button>
+  <button class="secondary" data-q="A point B is 20 mm above HP and 35 mm behind VP.">Point · II quadrant</button>
+  <button class="secondary" data-q="A point C is 15 mm below HP and 25 mm behind VP.">Point · III quadrant</button>
+  <button class="secondary" data-q="A point D is 30 mm below HP and 20 mm in front of VP.">Point · IV quadrant</button>
+  <button class="secondary" data-q="A line AB 70 mm long has end A 20 mm above HP and 15 mm in front of VP. It is parallel to HP and inclined 30 degrees to VP.">Line · parallel HP</button>
+  <button class="secondary" data-q="A line AB 80 mm long has end A 25 mm above HP and 20 mm in front of VP. It is parallel to VP and inclined 35 degrees to HP.">Line · parallel VP</button>
+  <button class="secondary" data-q="A line AB 80 mm long has end A 20 mm above HP and 15 mm in front of VP. It is inclined 30 degrees to HP and 45 degrees to VP.">Line · inclined both</button>
+  <button class="secondary" data-q="A line AB 60 mm long has end A 20 mm above HP and 15 mm in front of VP. It is perpendicular to HP.">Line · perpendicular HP</button>
+ </div>
+ <div class="question-actions"><button class="primary" id="analyze">Understand question</button><div class="status" id="status" role="status" aria-live="polite">Ready. Choose an example or enter your own question.</div></div>
+</section>
+<section class="panel stage">
+ <div class="stage-head"><div><h2 id="viewTitle">Waiting for a question</h2><p class="hint" id="viewSub">Front view, top view, XY, and construction details will appear here.</p></div><div class="toolbar"><button class="secondary" id="clear" type="button">Clear drawings</button><button class="secondary" id="export" type="button">Export main SVG</button></div></div>
+ <svg id="mainDrawing" class="main-drawing" viewBox="0 0 900 470" role="img" aria-label="Projection construction"></svg>
+ <section class="walkthrough" id="walkthrough" aria-live="polite">
+  <div class="walk-head"><div><span class="walk-kicker">LEARN THE CONSTRUCTION</span><h3 id="walkTitle">Step-by-step construction</h3></div><span class="walk-count" id="walkCount">0 / 0</span></div>
+  <div class="walk-track"><div id="walkProgress"></div></div>
+  <div class="walk-content"><div class="walk-number" id="walkNumber">—</div><div><h4 id="walkStepTitle">Enter a question to begin</h4><p id="walkDescription">Each step will explain what to draw, where to mark it, and why it is needed.</p></div></div>
+  <div class="walk-actions"><button class="secondary" id="prevStep" type="button" disabled>← Previous</button><button class="primary" id="nextStep" type="button" disabled>Next step →</button></div>
+ </section>
+ <div class="draw-grid">
+  <article class="draw-card"><h3>Front view / Elevation</h3><p>FV is projected on VP.</p><svg id="front" viewBox="0 0 420 190" role="img" aria-label="Front view"></svg></article>
+  <article class="draw-card"><h3>Top view / Plan</h3><p>TV is projected on HP and placed using first-angle convention.</p><svg id="top" viewBox="0 0 420 190" role="img" aria-label="Top view"></svg></article>
+  <article class="draw-card"><h3>Projection checkpoints</h3><p id="checkpoint">Checkpoints appear after analysis.</p><ol class="steps" id="projectionSteps"></ol></article>
+  <article class="draw-card"><h3>Calculated results</h3><p id="results">No result yet.</p><p class="note" id="quadrant">Point/line classification appears here.</p></article>
+ </div>
+ <section class="lesson">
+  <h2>Construction method and exam reminders</h2>
+  <div class="lesson-grid">
+   <div class="lesson-box"><h3>Reference planes</h3><p>HP is the horizontal plane, VP is the vertical plane, and XY is their intersection. Use one projector perpendicular to XY for each point.</p></div>
+   <div class="lesson-box"><h3>Construction sequence</h3><ol id="constructionSteps" class="steps"><li>Read the given data.</li><li>Identify the required views.</li><li>Construct and label FV and TV.</li></ol></div>
+   <div class="lesson-box"><h3>First-angle convention</h3><p>After HP is rotated downwards, a point in front of VP has its TV below XY; a point behind VP has its TV above XY. A point above HP has FV above XY; below HP has FV below XY.</p></div>
+   <div class="lesson-box"><h3>Line geometry</h3><p>True length is the 3D length. FV shows true length when the line is parallel to VP; TV shows true length when it is parallel to HP. Otherwise the corresponding view is foreshortened.</p></div>
+  </div>
+  <p class="note">The solver validates geometric consistency and reports missing/ambiguous data rather than inventing a drawing. For inclined lines, the endpoint direction is taken as increasing height and/or distance in front of VP unless the question states otherwise. Advanced change-of-position constructions and unusual wording may need additional clarification.</p>
+ </section>
+</section>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+let current=null,walkSteps=[],walkIndex=0;
+function svg(parent,tag,attrs={},value){const n=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));if(value!==undefined)n.textContent=value;parent.appendChild(n);return n}
+function clearSvg(node){while(node.firstChild)node.removeChild(node.firstChild)}
+function txt(s,x,y,v,c=''){svg(s,'text',{x,y,class:c},v)}
+function ln(s,a,b,c='visible'){svg(s,'line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],class:c})}
+function dot(s,p,label){svg(s,'circle',{cx:p[0],cy:p[1],r:5.5,class:'point'});txt(s,p[0]+9,p[1]-9,label,'label')}
+function mm(v,u){return v*(u==='cm'?10:u==='m'?1000:1)}
+function cleanText(s){return s.toLowerCase().replace(/[−–—]/g,'-').replace(/millimet(?:er|re)s?/g,'mm').replace(/degrees?/g,'deg').replace(/°/g,'deg').replace(/\s+/g,' ')}
+function readDist(s,kind){
+ const unit='(\\d+(?:\\.\\d+)?)\\s*(mm|cm|m)?';
+ const hp=new RegExp(unit+'\\s*(above|below)\\s*(?:the\\s*)?(?:hp|horizontal\\s+plane)\\b');
+ const vp=new RegExp(unit+'\\s*(in\\s+front\\s+of|front\\s+of|behind)\\s*(?:the\\s*)?(?:vp|vertical\\s+plane)\\b');
+ const m=s.match(kind==='hp'?hp:vp);if(!m)return null;
+ return{value:mm(Number(m[1]),m[2]||'mm'),positive:kind==='hp'?m[3]==='above':m[3]!=='behind',word:m[3]};
+}
+function pointName(s,fallback){const m=s.match(/\bpoint\s+([a-z])\b/)||s.match(/\b([a-z])\s*(?:is|lies)\s+\d/);return(m?m[1]:fallback).toUpperCase()}
+function parsePoint(s){
+ const h=readDist(s,'hp'),v=readDist(s,'vp');
+ if(!h||!v)throw Error('For a point, state both distances, e.g. “A is 25 mm above HP and 30 mm in front of VP.”');
+ const q=h.positive?(v.positive?1:2):(v.positive?4:3);
+ return{kind:'point',name:pointName(s,'A'),h:h.value,v:v.value,above:h.positive,inFront:v.positive,q};
+}
+function parseLine(s){
+ const lenMatch=s.match(/\b(?:length|long)\s*(?:of|is|=)?\s*(\d+(?:\.\d+)?)\s*(mm|cm|m)?|\b(\d+(?:\.\d+)?)\s*(mm|cm|m)?\s*long\b/);
+ if(!lenMatch)throw Error('For a line, include its true length, e.g. “line AB 70 mm long”.');
+ const L=mm(Number(lenMatch[1]||lenMatch[3]),lenMatch[2]||lenMatch[4]||'mm');
+ if(!(L>0))throw Error('Line length must be greater than zero.');
+ const h=readDist(s,'hp'),v=readDist(s,'vp');
+ if(!h||!v)throw Error('Give the position of one endpoint, for example: “end A is 20 mm above HP and 15 mm in front of VP”.');
+ const parHP=/\bparallel\s+to\s+(?:the\s+)?hp\b/.test(s),parVP=/\bparallel\s+to\s+(?:the\s+)?vp\b/.test(s);
+ const perpHP=/\bperpendicular\s+to\s+(?:the\s+)?hp\b/.test(s),perpVP=/\bperpendicular\s+to\s+(?:the\s+)?vp\b/.test(s);
+ const angHP=s.match(/(\d+(?:\.\d+)?)\s*deg\s*(?:to|with)\s*(?:the\s+)?hp\b/);
+ const angVP=s.match(/(\d+(?:\.\d+)?)\s*deg\s*(?:to|with)\s*(?:the\s+)?vp\b/);
+ // A line perpendicular to one principal plane is parallel to the other.
+ let theta=angHP?Number(angHP[1]):(parHP?0:(perpHP?90:(perpVP?0:null)));
+ let phi=angVP?Number(angVP[1]):(parVP?0:(perpVP?90:(perpHP?0:null)));
+ if(theta===null||phi===null)throw Error('A line needs its relation to both HP and VP. State “parallel to HP”, “parallel to VP”, “perpendicular to HP/VP”, or give both inclinations θ and φ.');
+ if(theta<0||theta>90||phi<0||phi>90)throw Error('Line inclinations must be between 0° and 90°.');
+ if(perpHP&&perpVP)throw Error('A non-zero line cannot be perpendicular to both HP and VP at the same time.');
+ const sinT=Math.sin(theta*Math.PI/180),sinP=Math.sin(phi*Math.PI/180),remain=1-sinT*sinT-sinP*sinP;
+ if(remain < -1e-8)throw Error(`These inclinations are geometrically inconsistent for a line: sin²(${theta}°) + sin²(${phi}°) must not exceed 1.`);
+ const dx=L*Math.sqrt(Math.max(0,remain)),dy=L*sinP,dz=L*sinT;
+ // Orient B in the positive x direction, and farther in front/above when the relevant component is non-zero.
+ const signY=v.positive?1:-1,signZ=h.positive?1:-1;
+ const A={x:0,y:(v.positive?1:-1)*v.value,z:(h.positive?1:-1)*h.value};
+ const B={x:dx,y:A.y+signY*dy,z:A.z+signZ*dz};
+ const labelMatch=s.match(/\bline\s+([a-z])\s*[-–]\s*([a-z])\b/i);
+ return{kind:'line',nameA:labelMatch?labelMatch[1].toUpperCase():'A',nameB:labelMatch?labelMatch[2].toUpperCase():'B',L,theta,phi,A,B,dx,dy:signY*dy,dz:signZ*dz,endpointAbove:h.positive,endpointFront:v.positive};
+}
+function fmt(n){return Number(n.toFixed(2)).toString()}
+function quadrant(q){return['','First','Second','Third','Fourth'][q]+' quadrant'}
+function projectPoint(p){return{fv:[p.x,p.z],tv:[p.x,p.y]}}
+function bounds(values){const xs=values.map(p=>p[0]),ys=values.map(p=>p[1]);return{minX:Math.min(...xs),maxX:Math.max(...xs),minY:Math.min(...ys),maxY:Math.max(...ys)}}
+function drawProjection(id,points,labels,kind){
+ const s=$(id);clearSvg(s);const w=420,h=190,xy=kind==='fv'?132:35;
+ const b=bounds(points),rangeX=Math.max(20,b.maxX-b.minX),rangeY=Math.max(20,b.maxY-b.minY);
+ const scale=Math.min(300/rangeX,100/rangeY),cx=210-(b.minX+b.maxX)*scale/2;
+ const screen=p=>[cx+p[0]*scale,xy-(kind==='fv'?p[1]:p[1])*scale*(kind==='fv'?-1:1)];
+ // Explicit screen sign: FV z positive above XY; TV y positive (front) below XY.
+ const pt=p=>kind==='fv'?[cx+p[0]*scale,xy-p[1]*scale]:[cx+p[0]*scale,xy+p[1]*scale];
+ ln(s,[20,xy],[400,xy],'xy');txt(s,8,xy+4,'XY','small');
+ const q=points.map(pt);if(q.length===2)ln(s,q[0],q[1],'visible');
+ q.forEach((p,i)=>dot(s,p,labels[i]));
+ txt(s,25,16,kind==='fv'?'FRONT VIEW / ELEVATION':'TOP VIEW / PLAN','small');
+}
+function drawMain(model,stage=999){
+ const s=$('mainDrawing');clearSvg(s);const xy=235;
+ ln(s,[55,xy],[845,xy],'xy');txt(s,22,xy+4,'XY','label');
+ txt(s,65,34,model.kind==='point'?'PROJECTION OF POINT · FIRST-ANGLE METHOD':'LINE ROTATION METHOD · FIRST-ANGLE CONSTRUCTION','label');
+ if(model.kind==='point'){
+  const extent=Math.max(model.h,model.v,1),scale=Math.min(4,150/extent),x=450;
+  const yF=xy+(model.above?-model.h*scale:model.h*scale),yT=xy+(model.inFront?model.v*scale:-model.v*scale);
+  if(stage>=1)ln(s,[x,75],[x,395],'projector');
+  if(stage>=2){dot(s,[x,yF],model.name+'′ · FV');txt(s,500,Math.max(70,Math.min(415,yF)),`${model.h} mm ${model.above?'above':'below'} HP`,'small')}
+  if(stage>=3){dot(s,[x,yT],model.name+' · TV');txt(s,500,Math.max(70,Math.min(415,yT)),`${model.v} mm ${model.inFront?'in front of':'behind VP'}`,'small')}
+  if(stage>=3)txt(s,80,440,quadrant(model.q)+' · FV '+(model.above?'above':'below')+' XY; TV '+(model.inFront?'below':'above')+' XY.','small');
+  return;
+ }
+ const sc=2.1,ax=260,ayF=xy-model.A.z*sc,ayT=xy+model.A.y*sc;
+ const tlx=ax+model.L*Math.cos(model.theta*Math.PI/180)*sc;
+ const b1y=ayF-model.L*Math.sin(model.theta*Math.PI/180)*sc;
+ const b2x=ax+model.L*Math.cos(model.phi*Math.PI/180)*sc;
+ const b2y=ayT+model.L*Math.sin(model.phi*Math.PI/180)*sc;
+ const fvLen=model.L*Math.cos(model.phi*Math.PI/180);
+ const tvLen=model.L*Math.cos(model.theta*Math.PI/180);
+ const rise=model.L*Math.sin(model.theta*Math.PI/180);
+ const depth=model.L*Math.sin(model.phi*Math.PI/180);
+ const common=Math.sqrt(Math.max(0,model.L*model.L-rise*rise-depth*depth));
+ const bpX=ax+common*sc, bpY=b1y, bX=ax+common*sc, bY=b2y;
+ const A1=[ax,ayF],a=[ax,ayT],b1p=[tlx,b1y],b2=[b2x,b2y];
+ const b1=[tlx,ayT],b2p=[b2x,ayF],bp=[bpX,bpY],b=[bX,bY];
+ const hline=(y)=>ln(s,[75,y],[825,y],'projector');
+ const vline=(x,y1=65,y2=420)=>ln(s,[x,y1],[x,y2],'projector');
+ if(stage>=1){
+  dot(s,A1,model.nameA+'′');dot(s,a,model.nameA);
+  txt(s,ax-65,ayF-12,`${fmt(Math.abs(model.A.z))} mm above HP`,'small');
+  txt(s,ax-65,ayT+23,`${fmt(Math.abs(model.A.y))} mm in front of VP`,'small');
+ }
+ if(stage>=2){hline(ayF);hline(ayT)}
+ if(stage>=3){
+  txt(s,105,ayF-12,`θ = ${fmt(model.theta)}°`,'label');
+  txt(s,105,ayT+25,`φ = ${fmt(model.phi)}°`,'label');
+ }
+ if(stage>=4){
+  ln(s,A1,b1p,'visible');ln(s,a,b2,'visible');
+  txt(s,(ax+tlx)/2-12,(ayF+b1y)/2-10,`TL ${fmt(model.L)} mm`,'small');
+  txt(s,(ax+b2x)/2-12,(ayT+b2y)/2+18,`TL ${fmt(model.L)} mm`,'small');
+ }
+ if(stage>=5){dot(s,b1p,'b₁′');dot(s,b2,'b₂')}
+ if(stage>=6){vline(tlx);vline(b2x);ln(s,b1p,b1,'hidden');ln(s,b2,b2p,'hidden')}
+ if(stage>=7){dot(s,b1,'b₁');dot(s,b2p,'b₂′')}
+ if(stage>=8){
+  ln(s,A1,b2p,'visible');ln(s,a,b1,'visible');
+  txt(s,ax+10,ayF-18,`FV length = ${fmt(fvLen)} mm`,'small');
+  txt(s,ax+10,ayT+39,`TV length = ${fmt(tvLen)} mm`,'small');
+ }
+ if(stage>=9){hline(b1y);hline(b2y)}
+ if(stage>=10){
+  // Actual rotation sweeps from apparent-view positions to the rotated endpoints.
+  svg(s,'path',{d:`M ${ax+fvLen*sc} ${ayF} A ${fvLen*sc} ${fvLen*sc} 0 0 0 ${bpX} ${bpY}`,fill:'none',stroke:'#d97706','stroke-width':2.5,'stroke-linecap':'round'});
+  svg(s,'path',{d:`M ${ax+tvLen*sc} ${ayT} A ${tvLen*sc} ${tvLen*sc} 0 0 1 ${bX} ${bY}`,fill:'none',stroke:'#ef4444','stroke-width':2.5,'stroke-linecap':'round'});
+  ln(s,A1,bp,'hidden');ln(s,a,b,'hidden');dot(s,bp,"b′");dot(s,b,"b");
+  txt(s,bpX+8,bpY-12,'Rotated FV end','small');txt(s,bX+8,bY+18,'Rotated TV end','small');
+ }
+ if(stage>=11)ln(s,A1,bp,'visible');
+ if(stage>=12)ln(s,a,b,'visible');
+ if(stage>=13){
+  // Keep the final angle values as text only; no extra green angle/rotation arcs.
+  txt(s,ax+48,ayF-25,'α = '+fmt(Math.atan2(rise,common)*180/Math.PI)+'°','label');
+  txt(s,ax+50,ayT+30,'β = '+fmt(Math.atan2(depth,common)*180/Math.PI)+'°','label');
+  txt(s,65,448,`Final FV: ${fmt(fvLen)} mm · Final TV: ${fmt(tvLen)} mm · α and β measured with XY`,'small');
+ }
+}
+function traceAt(m,plane){
+ const a=m.A,b=m.B,da=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z;
+ const start=plane==='hp'?a.z:a.y,delta=plane==='hp'?dz:dy;
+ if(Math.abs(delta)<1e-9)return null;
+ const t=-start/delta;if(!Number.isFinite(t))return null;
+ return{x:a.x+t*da,y:a.y+t*dy,z:a.z+t*dz};
+}
+function renderPoint(p){
+ walkSteps=[
+  {title:"Draw the XY reference line",desc:"XY represents the intersection of HP and VP. Draw it first as the common reference for both views."},
+  {title:"Draw the projector",desc:"Through the point position, draw a thin projector perpendicular to XY. Both projections of the same point must lie on this projector."},
+  {title:"Locate the front view (FV)",desc:`The point is ${p.h} mm ${p.above?"above":"below"} HP. Mark ${p.name}′ at that distance from XY: above XY if above HP, below XY if below HP.`},
+  {title:"Locate the top view (TV)",desc:`The point is ${p.v} mm ${p.inFront?"in front of":"behind"} VP. In first-angle projection, mark ${p.name} ${p.inFront?"below":"above"} XY at that distance. The two views are now complete.`}
+ ];walkIndex=0;drawMain(p,0);drawProjection('front',[[0,p.above?p.h:-p.h]], [p.name+'′'],'fv');drawProjection('top',[[0,p.inFront?p.v:-p.v]],[p.name],'tv');
+ $('viewTitle').textContent=`Projection of point ${p.name}`;$('viewSub').textContent=`${quadrant(p.q)} · distances measured from HP and VP`;
+ $('checkpoint').textContent=`${p.name}′ is the front view; ${p.name} is the top view. Both lie on one projector perpendicular to XY.`;
+ $('results').textContent=`${quadrant(p.q)} | ${p.h} mm ${p.above?'above':'below'} HP | ${p.v} mm ${p.inFront?'in front of':'behind'} VP`;
+ $('quadrant').textContent='Point projection completed.';
+ setSteps([`Draw XY as the reference line.`,`Mark ${p.name}′ ${p.h} mm ${p.above?'above':'below'} XY.`,`Mark ${p.name} ${p.v} mm ${p.inFront?'below':'above'} XY.`,`Keep both views on the same projector perpendicular to XY.`]);
+ $('status').textContent=`Recognized ${p.name} in the ${quadrant(p.q)}. FV and TV generated.`;current=p;updateWalkthrough();
+}
+function renderLine(m){
+ const d=Math.PI/180;
+ m.fvLen=m.L*Math.cos(m.phi*d);
+ m.tvLen=m.L*Math.cos(m.theta*d);
+ m.rise=m.L*Math.sin(m.theta*d);
+ m.depth=m.L*Math.sin(m.phi*d);
+ m.common=Math.sqrt(Math.max(0,m.L*m.L-m.rise*m.rise-m.depth*m.depth));
+ m.alpha=Math.atan2(m.rise,m.common)/d;
+ m.beta=Math.atan2(m.depth,m.common)/d;
+ walkSteps=[
+  {title:"Draw the XY reference line",desc:"Draw the XY reference line first. It represents the intersection of HP and VP."},
+  {title:"Mark the given end A",desc:`On the same projector, mark a′ ${fmt(Math.abs(m.A.z))} mm above XY and a ${fmt(Math.abs(m.A.y))} mm below XY.`},
+  {title:"Draw the first parallel lines",desc:"Through a′ and a, draw thin horizontal lines parallel to XY."},
+  {title:"Identify θ and φ",desc:`θ = ${fmt(m.theta)}° is the angle used above XY from a′. φ = ${fmt(m.phi)}° is the angle used below XY from a.`},
+  {title:"Set off the true length",desc:`From a′ draw the true-length line ${fmt(m.L)} mm at θ above XY. From a draw another true-length line ${fmt(m.L)} mm at φ below XY.`},
+  {title:"Mark b₁′ and b₂",desc:"Mark the endpoints of those two true-length lines as b₁′ (above XY) and b₂ (below XY)."},
+  {title:"Project to the opposite parallel lines",desc:"From b₁′ project down to the parallel line through a to locate b₁. From b₂ project up to the parallel line through a′ to locate b₂′."},
+  {title:"Mark b₁ and b₂′",desc:"The two projectors meet the opposite parallel lines at b₁ and b₂′. Keep the projectors thin and construction lines distinct."},
+  {title:"Obtain the apparent view lengths",desc:`Measure a′–b₂′ for the elevation length (${fmt(m.fvLen)} mm), and a–b₁ for the plan length (${fmt(m.tvLen)} mm).`},
+  {title:"Draw the two additional parallel lines",desc:"Through b₁′ and b₂, draw the additional horizontal lines parallel to XY. These are the loci for the rotated endpoints."},
+  {title:"Rotate to locate b′ and b",desc:`With centre a′ and radius equal to the elevation length ${fmt(m.fvLen)} mm, locate b′ on the line through b₁′. With centre a and radius equal to the plan length ${fmt(m.tvLen)} mm, locate b on the line through b₂.`},
+  {title:"Join a′ to b′",desc:"Join a′ and b′. This is the resultant front view (elevation)."},
+  {title:"Join a to b",desc:"Join a and b. This is the resultant top view (plan)."},
+  {title:"Read α and β",desc:`The final elevation makes α = ${fmt(m.alpha)}° with XY. The final plan makes β = ${fmt(m.beta)}° with XY.`}
+ ];
+ walkIndex=0;drawMain(m,0);
+ const A=m.A;
+ const finalB={x:m.common,y:A.y+m.depth,z:A.z+m.rise};
+ drawProjection('front',[[0,A.z],[m.common,finalB.z]],[m.nameA+'′',m.nameB+'′'],'fv');
+ drawProjection('top',[[0,A.y],[m.common,finalB.y]],[m.nameA,m.nameB],'tv');
+ $('viewTitle').textContent=`Line Rotation Method · ${m.nameA}${m.nameB}`;
+ $('viewSub').textContent=`TL ${fmt(m.L)} mm · θ ${fmt(m.theta)}° · φ ${fmt(m.phi)}° · step-by-step construction`;
+ const hp=traceAt(m,'hp'),vp=traceAt(m,'vp');
+ $('results').textContent=`True length: ${fmt(m.L)} mm | Elevation: ${fmt(m.fvLen)} mm | Plan: ${fmt(m.tvLen)} mm | α: ${fmt(m.alpha)}° | β: ${fmt(m.beta)}°`;
+ $('quadrant').textContent=`Line Rotation Method · Endpoint A: ${fmt(Math.abs(A.z))} mm above HP and ${fmt(Math.abs(A.y))} mm in front of VP.`;
+ $('checkpoint').textContent='The final elevation is a′b′ and the final plan is ab. The two final view angles are α and β.';
+ const steps=[
+ `Draw XY. Mark a′ ${fmt(Math.abs(A.z))} mm above XY and a ${fmt(Math.abs(A.y))} mm below XY.`,
+ `Draw parallel lines through a′ and a. Draw TL ${fmt(m.L)} mm at θ = ${fmt(m.theta)}° above XY and φ = ${fmt(m.phi)}° below XY.`,
+ `Mark b₁′ and b₂. Project b₁′ down to the lower parallel for b₁, and b₂ up to the upper parallel for b₂′.`,
+ `Measure a′b₂′ = ${fmt(m.fvLen)} mm (elevation length) and ab₁ = ${fmt(m.tvLen)} mm (plan length).`,
+ `Draw parallel lines through b₁′ and b₂. Rotate the elevation length from a′ to locate b′, and the plan length from a to locate b.`,
+ `Join a′b′ for elevation and ab for plan. α = ${fmt(m.alpha)}°; β = ${fmt(m.beta)}°.`
+ ];
+ if(hp)steps.push(`Calculated horizontal trace (HT) is available at x = ${fmt(hp.x)} mm.`);
+ if(vp)steps.push(`Calculated vertical trace (VT) is available at x = ${fmt(vp.x)} mm.`);
+ setSteps(steps);
+ $('status').textContent='Line Rotation Method constructed. Use Next step to reveal each stage of the drawing.';current=m;updateWalkthrough();
+}
+function updateWalkthrough(){
+ const total=walkSteps.length,step=walkSteps[walkIndex];
+ $("walkCount").textContent=total?`${walkIndex+1} / ${total}`:"0 / 0";
+ $("walkProgress").style.width=total?`${((walkIndex+1)/total)*100}%`:"0%";
+ $("walkNumber").textContent=total?String(walkIndex+1):"—";
+ $("walkStepTitle").textContent=step?step.title:"Enter a question to begin";
+ $("walkDescription").textContent=step?step.desc:"Each step will explain what to draw, where to mark it, and why it is needed.";
+ $("prevStep").disabled=!total||walkIndex===0;$("nextStep").disabled=!total||walkIndex===total-1;
+ $("nextStep").textContent=total&&walkIndex===total-1?"Construction complete":"Next step →";
+ if(current)drawMain(current,current.kind==="point"?walkIndex:walkIndex);
+}
+function setSteps(items){$('projectionSteps').innerHTML='';$('constructionSteps').innerHTML='';items.forEach((t,i)=>{const a=document.createElement('li');a.textContent=t;$('projectionSteps').appendChild(a);const b=document.createElement('li');b.textContent=t;$('constructionSteps').appendChild(b)})}
+function analyze(){
+ try{
+  const s=cleanText($('question').value.trim());if(!s)throw Error('Enter a point or straight-line drawing question.');
+  const isLine=/\bline\b|\btrue length\b|\blong\b/.test(s);
+  if(isLine)renderLine(parseLine(s));else renderPoint(parsePoint(s));
+ }catch(e){clearAll();$('status').textContent=e.message}
+}
+function clearAll(){
+ ['mainDrawing','front','top'].forEach(id=>clearSvg($(id)));
+ $('viewTitle').textContent='Waiting for a question';$('viewSub').textContent='Front view, top view, XY, and construction details will appear here.';
+ $('checkpoint').textContent='Checkpoints appear after analysis.';$('results').textContent='No result yet.';$('quadrant').textContent='Point/line classification appears here.';
+ $('projectionSteps').innerHTML='';$('constructionSteps').innerHTML='';current=null;walkSteps=[];walkIndex=0;updateWalkthrough();
+}
+$('analyze').addEventListener('click',analyze);
+$('prevStep').addEventListener('click',()=>{if(walkIndex>0){walkIndex--;updateWalkthrough()}});
+$('nextStep').addEventListener('click',()=>{if(walkIndex<walkSteps.length-1){walkIndex++;updateWalkthrough()}});
+$('question').addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='Enter')analyze()});
+$('clear').addEventListener('click',()=>{clearAll();$('status').textContent='Drawings cleared.'});
+document.querySelectorAll('[data-q]').forEach(b=>b.addEventListener('click',()=>{$('question').value=b.dataset.q;analyze()}));
+$('export').addEventListener('click',()=>{if(!$('mainDrawing').children.length){$('status').textContent='Generate a drawing before exporting.';return}const clone=$('mainDrawing').cloneNode(true);clone.setAttribute('xmlns',NS);const blob=new Blob([new XMLSerializer().serializeToString(clone)],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='GeoDraft-Lines-Projection.svg';a.click();URL.revokeObjectURL(url)});
+clearAll();
+</script>
+</body>
+</html>
